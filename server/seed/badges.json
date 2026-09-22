@@ -1,0 +1,19 @@
+[
+  { "key": "first_step", "icon": "🌱", "name": "First Step", "description": "Complete your first lesson", "triggerEvent": "lesson_completed:1" },
+  { "key": "streak_7", "icon": "🔥", "name": "7-Day Streak", "description": "Study 7 days in a row", "triggerEvent": "streak:7" },
+  { "key": "streak_30", "icon": "🔥", "name": "30-Day Streak", "description": "Study 30 days in a row", "triggerEvent": "streak:30" },
+  { "key": "english_starter", "icon": "📖", "name": "English Starter", "description": "Complete English Sub-Course A", "triggerEvent": "course_completed:english-reading" },
+  { "key": "writer", "icon": "✍️", "name": "Writer", "description": "Complete English Sub-Course B", "triggerEvent": "course_completed:english-writing-basics" },
+  { "key": "essay_master", "icon": "📝", "name": "Essay Master", "description": "Complete English Sub-Course C", "triggerEvent": "course_completed:english-essays" },
+  { "key": "speaker", "icon": "🎤", "name": "Speaker", "description": "Complete English Sub-Course D", "triggerEvent": "course_completed:english-speaking" },
+  { "key": "scholarship_writer", "icon": "🏆", "name": "Scholarship Writer", "description": "Complete English Sub-Course E", "triggerEvent": "course_completed:english-scholarship-writing" },
+  { "key": "tech_starter", "icon": "💻", "name": "Tech Starter", "description": "Complete Computer Skills Sub-Course A", "triggerEvent": "course_completed:computer-intro" },
+  { "key": "internet_ready", "icon": "🌐", "name": "Internet Ready", "description": "Complete Computer Skills Sub-Course B", "triggerEvent": "course_completed:computer-internet-email" },
+  { "key": "digital_toolbox", "icon": "🛠️", "name": "Digital Toolbox", "description": "Complete Computer Skills Sub-Course C", "triggerEvent": "course_completed:computer-digital-tools" },
+  { "key": "apply_ready", "icon": "🎓", "name": "Apply Ready", "description": "Complete Computer Skills Sub-Course D", "triggerEvent": "course_completed:computer-university-online" },
+  { "key": "full_english", "icon": "⭐", "name": "Full English Track", "description": "Complete all 5 English sub-courses", "triggerEvent": "track_completed:english" },
+  { "key": "full_computer", "icon": "⭐", "name": "Full Computer Track", "description": "Complete all 4 Computer sub-courses", "triggerEvent": "track_completed:computer" },
+  { "key": "first_application", "icon": "🎓", "name": "First Scholarship Applied", "description": "Submit your first scholarship application", "triggerEvent": "application_submitted:1" },
+  { "key": "first_mentor_session", "icon": "🤝", "name": "First Mentor Session", "description": "Complete your first mentorship session", "triggerEvent": "session_completed:1" },
+  { "key": "inuka_graduate", "icon": "🌟", "name": "INUKA Graduate", "description": "Complete both full tracks", "triggerEvent": "track_completed:all" }
+]

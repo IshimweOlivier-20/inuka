@@ -1,0 +1,44 @@
+import { Link, useLocation } from 'react-router-dom';
+
+// Links to a section of the home page, from any public page.
+export function SectionLink({ id, className = '', onClick, children, ...props }) {
+  const { pathname } = useLocation();
+  const handle = (e) => {
+    onClick?.(e);
+    if (pathname === '/') {
+      e.preventDefault();
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+      window.history.replaceState(null, '', `/#${id}`);
+    }
+  };
+  return <Link to={{ pathname: '/', hash: `#${id}` }} onClick={handle} className={className} {...props}>{children}</Link>;
+}
+
+export function SectionHeading({ title, intro, align = 'left', light }) {
+  return (
+    <div className={`mb-10 max-w-2xl ${align === 'center' ? 'mx-auto text-center' : ''}`}>
+      <h2 className={`text-3xl font-bold ${light ? 'text-white' : ''}`}>{title}</h2>
+      {intro && <p className={`mt-3 text-lg ${light ? 'text-white/80' : 'text-ink-soft'}`}>{intro}</p>}
+    </div>
+  );
+}
+
+// Shown only in development, on placeholder content that must be replaced before launch.
+export function SampleBadge({ show }) {
+  if (!show) return null;
+  return (
+    <span className="inline-flex items-center rounded-full bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 text-[11px] font-semibold"
+      title="Placeholder content. It is hidden automatically in production.">
+      Sample
+    </span>
+  );
+}
+
+const AVATAR_TONES = ['bg-forest text-white', 'bg-gold text-ink', 'bg-teal text-white', 'bg-[#7C3AED] text-white', 'bg-[#DB2777] text-white'];
+export function Avatar({ name, photoUrl, size = 'w-14 h-14 text-lg', index = 0 }) {
+  if (photoUrl) return <img src={photoUrl} alt="" loading="lazy" className={`${size} rounded-full object-cover`} />;
+  const initials = name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
+  return <span aria-hidden="true" className={`${size} shrink-0 rounded-full font-display font-semibold flex items-center justify-center ${AVATAR_TONES[index % AVATAR_TONES.length]}`}>{initials}</span>;
+}
+
+export const CATEGORY_LABEL = { news: 'News', guide: 'Guide', story: 'Story' };

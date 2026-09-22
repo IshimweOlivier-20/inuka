@@ -1,0 +1,79 @@
+{
+  "tips": [
+    { "icon": "📅", "title": "Start early", "body": "Many scholarships open 6 to 12 months before studies begin. Make a list of deadlines now and check it every month." },
+    { "icon": "🔍", "title": "Read eligibility first", "body": "Before you write anything, check age, nationality, level and grades. If you are not eligible, move on to the next one." },
+    { "icon": "🗂️", "title": "Scan your documents once", "body": "Scan your ID, S4–S6 reports and diploma as clear PDFs. Save them in your INUKA vault so every application is faster." },
+    { "icon": "✍️", "title": "Tailor every essay", "body": "Committees can tell when a letter is copied. Answer their exact question and explain why this programme fits your goals." },
+    { "icon": "👩‍🏫", "title": "Ask recommenders early", "body": "Give teachers or community leaders at least four weeks. Share your goals and the deadline so they can write a strong letter." },
+    { "icon": "📧", "title": "Use a professional email", "body": "Create an address with your name, like aline.uwase@gmail.com. Check it often: universities reply by email." },
+    { "icon": "🧾", "title": "Keep proof of submission", "body": "Take a screenshot of the confirmation page and save any reference number. It protects you if something goes wrong." },
+    { "icon": "⚠️", "title": "Never pay for a promise", "body": "Be careful of anyone who asks for money to guarantee a scholarship. Apply directly on the official website." }
+  ],
+  "faq": [
+    { "question": "Is INUKA really free?", "answer": "Yes. All courses, scholarship listings, the document vault and INUKA AI are free for students, and will stay free." },
+    { "question": "Who can use INUKA?", "answer": "INUKA is made for young people who finished secondary school (S4, S5 or S6) in Rwanda or elsewhere in Africa, and for refugee and displaced youth. Anyone can learn from the courses." },
+    { "question": "Do I need to be a refugee to use INUKA?", "answer": "No. INUKA is for all high school graduates. If you are a refugee, you can choose to tell us so we can show you scholarships made for refugees. This is optional and private." },
+    { "question": "Does INUKA send my application to universities?", "answer": "No. You always apply on the official scholarship or university website. INUKA helps you find opportunities, prepare your documents and skills, and track your applications." },
+    { "question": "Can INUKA guarantee that I get a scholarship?", "answer": "No one can guarantee a scholarship. INUKA helps you prepare the strongest possible application. Be careful of anyone who promises a guaranteed scholarship for money." },
+    { "question": "Who can see my documents?", "answer": "Only you. Documents in your vault are private to your account. INUKA does not share them with anyone." },
+    { "question": "Can I use INUKA on my phone or with slow internet?", "answer": "Yes. INUKA is designed for phones and slow connections. Pages load in small pieces and lessons are mostly text, with an option to listen." },
+    { "question": "Is the INUKA English certificate accepted instead of IELTS or TOEFL?", "answer": "Most scholarships require an official English test. A few accept other proof of English. Your INUKA certificate shows your progress, but always check what each scholarship accepts." },
+    { "question": "How can I become a mentor?", "answer": "Create an account and choose “I am a mentor”. The INUKA team reviews every mentor profile before students can book sessions." }
+  ],
+  "posts": [
+    {
+      "slug": "documents-for-scholarship-applications",
+      "title": "The documents you need for a scholarship application",
+      "category": "guide",
+      "coverEmoji": "🗂️",
+      "readMinutes": 4,
+      "excerpt": "Most applications ask for the same core documents. Prepare them once, and every application becomes faster.",
+      "contentHtml": "<p>Every scholarship is different, but most of them ask for the same core documents. If you prepare these once, carefully, every new application becomes much faster.</p><h3>The documents almost every application needs</h3><ul><li><strong>National ID or passport.</strong> Check the expiry date. Some programmes need a passport that is valid for your whole study period.</li><li><strong>S4, S5 and S6 reports.</strong> Official results, with the school stamp.</li><li><strong>School leaving certificate or diploma.</strong></li><li><strong>A recent passport-size photo</strong>, as a digital JPG or PNG.</li><li><strong>A personal statement or motivation letter</strong>, typed and saved as a PDF.</li><li><strong>Proof of refugee status</strong>, if you are a refugee: for example your UNHCR card or refugee ID.</li></ul><h3>Documents some scholarships ask for</h3><ul><li>An English test certificate (IELTS, TOEFL or similar)</li><li>Two letters of recommendation</li><li>A birth certificate</li><li>A medical certificate</li><li>Proof of financial need</li></ul><h3>How to scan them well</h3><p>Use a scanner app on your phone to save each document as a PDF. Put the paper on a dark, flat surface in good light. Check that every word is readable before you save it.</p><p>Give each file a clear name, like <em>Aline-Uwase-S6-Report.pdf</em>. Admissions officers see thousands of files; a clear name helps them, and helps you.</p><h3>Keep them in one place</h3><p>Upload your documents to your INUKA vault. When you click <strong>Apply now</strong> on a scholarship, INUKA shows you which documents you already have and which ones are missing.</p>"
+    },
+    {
+      "slug": "personal-statement-that-sounds-like-you",
+      "title": "How to write a personal statement that sounds like you",
+      "category": "guide",
+      "coverEmoji": "✍️",
+      "readMinutes": 5,
+      "excerpt": "A strong statement is not about big words. It is a clear, honest story about where you come from and where you want to go.",
+      "contentHtml": "<p>Many students think a personal statement needs difficult words. It does not. Committees want to understand <strong>who you are</strong>, <strong>what you want to study</strong>, and <strong>why it matters</strong>.</p><h3>1. Start with a real moment</h3><p>Begin with something that happened to you: a problem you saw in your community, a teacher who changed your thinking, a responsibility you carried. One real moment is stronger than a general sentence like “I have always loved science.”</p><h3>2. Connect your past to your plan</h3><p>Explain what you want to study and how your experience led you there. Be specific. “I want to study civil engineering so I can design safer roads in rural districts” is better than “I want to help my country.”</p><h3>3. Show, don't only tell</h3><p>Instead of “I am a leader,” describe what you did: “I organised a study group of twelve students in our camp and we met every Saturday for a year.”</p><h3>4. Answer their question</h3><p>Read the prompt again before you finish. If they ask about community impact, make sure your statement clearly talks about community impact.</p><h3>5. Edit, then edit again</h3><p>Read it out loud. Remove sentences that repeat. Ask a teacher or mentor to read it. You can also paste it into INUKA AI for feedback.</p><p>The <em>Writing for Scholarships</em> course on INUKA walks you through this step by step, with templates.</p>"
+    },
+    {
+      "slug": "how-to-spot-a-scholarship-scam",
+      "title": "How to spot a scholarship scam",
+      "category": "guide",
+      "coverEmoji": "⚠️",
+      "readMinutes": 3,
+      "excerpt": "Real scholarships rarely ask you to pay. Learn the warning signs before you share money or documents.",
+      "contentHtml": "<p>Scholarships change lives, so some people try to take advantage of students who want them. These warning signs can protect you.</p><h3>Warning signs</h3><ul><li><strong>Someone asks for money</strong> to guarantee you a scholarship, or to “process” an award you never applied for.</li><li><strong>You “won” a scholarship you never applied for.</strong></li><li><strong>The message comes from a free email address</strong> (like Gmail) but claims to be a government or university.</li><li><strong>They pressure you to act today</strong>, or to keep it secret.</li><li><strong>They ask for your passwords</strong> or bank details.</li></ul><h3>What to do</h3><p>Always apply on the <strong>official website</strong> of the scholarship or university. Find it yourself through a search, not through a link someone sent you. If you are unsure, ask a teacher, book a mentor on INUKA, or ask INUKA AI.</p><p>Remember: most legitimate scholarships are free to apply for. If something feels wrong, stop and check.</p>"
+    },
+    {
+      "slug": "welcome-to-inuka",
+      "title": "Welcome to INUKA",
+      "category": "news",
+      "coverEmoji": "🌱",
+      "readMinutes": 2,
+      "excerpt": "INUKA is a free platform to learn English and computer skills, find scholarships and prepare your applications.",
+      "contentHtml": "<p><strong>Inuka</strong> means <em>rise up</em> in Kiswahili. That is our mission: to help African high school graduates and refugee youth rise through education.</p><h3>What you can do today</h3><ul><li>Take free <strong>English</strong> and <strong>computer skills</strong> courses, with short lessons and quizzes.</li><li>Search <strong>scholarships</strong> in Africa and worldwide, and filter for refugee-friendly programmes.</li><li>Keep your documents in a private <strong>vault</strong>, and see what is missing before you apply.</li><li>Track your <strong>progress</strong>, streaks, badges and certificates.</li></ul><h3>Coming soon</h3><p>Mentor booking and INUKA AI, your 24/7 learning guide, are being built now.</p><p>INUKA is free, and will stay free for students. Create your account and take your first lesson today.</p>"
+    }
+  ],
+  "team": [
+    { "name": "Olivier Ishimwe", "role": "Founder & Lead Developer", "bio": "Software engineering student who designed and built INUKA to open the way to higher education for young people across Africa.", "isSample": false },
+    { "name": "Sample team member", "role": "Mentorship Lead", "bio": "Recruits and supports INUKA mentors. Replace this with a real team member.", "isSample": true },
+    { "name": "Sample team member", "role": "Curriculum Lead", "bio": "Writes and reviews English and computer skills lessons. Replace this with a real team member.", "isSample": true },
+    { "name": "Sample team member", "role": "Refugee Outreach Lead", "bio": "Works with communities and camps to reach refugee youth. Replace this with a real team member.", "isSample": true }
+  ],
+  "testimonials": [
+    { "name": "Sample student", "country": "Rwanda", "role": "S6 graduate", "quote": "Replace this with a real student's words, with their permission. For example: what they learned, and what changed for them.", "isSample": true },
+    { "name": "Sample student", "country": "Kenya (refugee)", "role": "University applicant", "quote": "Real testimonials build trust. Ask students who used INUKA to share one or two honest sentences.", "isSample": true },
+    { "name": "Sample mentor", "country": "Uganda", "role": "Admissions counsellor", "quote": "Mentors can share why they volunteer on INUKA. Always get written permission before publishing anyone's name or photo.", "isSample": true }
+  ],
+  "partners": [
+    { "name": "University partner", "kind": "partner", "description": "A university that shares opportunities with INUKA students.", "isSample": true },
+    { "name": "Refugee education NGO", "kind": "partner", "description": "An organisation that helps INUKA reach refugee youth.", "isSample": true },
+    { "name": "Community library", "kind": "partner", "description": "A place where students can use computers to learn on INUKA.", "isSample": true },
+    { "name": "Telecom sponsor", "kind": "sponsor", "description": "A sponsor that could provide free data for learning.", "isSample": true },
+    { "name": "Foundation sponsor", "kind": "sponsor", "description": "A foundation that funds INUKA's free courses.", "isSample": true }
+  ]
+}

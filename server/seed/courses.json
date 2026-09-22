@@ -1,0 +1,486 @@
+[
+  {
+    "slug": "english-reading",
+    "category": "english",
+    "track": "A",
+    "level": "Beginner",
+    "title": "Reading & Comprehension",
+    "description": "Learn English sounds and common words, then read sentences, paragraphs, instructions and scholarship pages with confidence.",
+    "lessons": [
+      {
+        "title": "The Alphabet and Phonics",
+        "summary": "Sounds of English letters and common combinations",
+        "content": "<p>English has <strong>26 letters</strong>. But it has more than 40 sounds. This is why English spelling can feel hard. Do not worry. We will learn step by step.</p><h3>Vowels</h3><p>Five letters are vowels: <strong>a, e, i, o, u</strong>. Every English word has at least one vowel sound.</p><ul><li><strong>a</strong> as in <em>bag</em></li><li><strong>e</strong> as in <em>bed</em></li><li><strong>i</strong> as in <em>sit</em></li><li><strong>o</strong> as in <em>hot</em></li><li><strong>u</strong> as in <em>cup</em></li></ul><h3>Letter pairs</h3><p>Some letters make one new sound when they are together:</p><ul><li><strong>sh</strong> as in <em>shop</em></li><li><strong>ch</strong> as in <em>chair</em></li><li><strong>th</strong> as in <em>think</em> and <em>this</em></li><li><strong>ph</strong> sounds like <strong>f</strong>, as in <em>phone</em></li></ul><p><strong>Tip:</strong> Kinyarwanda and Swahili are read the way they are written. English is not always like that. Listen to words, then say them out loud.</p>",
+        "quiz": [
+          {
+            "question": "How many letters are in the English alphabet?",
+            "options": [
+              "24",
+              "26",
+              "40",
+              "52"
+            ],
+            "answer": "26",
+            "explanation": "English has 26 letters, but more than 40 sounds."
+          },
+          {
+            "question": "Which of these is a vowel?",
+            "options": [
+              "b",
+              "t",
+              "o",
+              "s"
+            ],
+            "answer": "o",
+            "explanation": "The vowels are a, e, i, o and u."
+          },
+          {
+            "question": "In the word 'phone', the letters 'ph' sound like…",
+            "options": [
+              "p",
+              "h",
+              "f",
+              "v"
+            ],
+            "answer": "f",
+            "explanation": "'ph' makes an 'f' sound, as in phone and photo."
+          }
+        ]
+      },
+      {
+        "title": "Basic Vocabulary",
+        "summary": "The most common English words, with audio",
+        "content": "<p>About <strong>100 words</strong> make up half of everything people write in English. If you know them well, reading becomes much easier.</p><h3>Words you will see everywhere</h3><p><em>the, a, an, and, is, are, was, to, of, in, for, on, with, you, I, we, they, have, do, can, will</em></p><h3>Words for applications</h3><ul><li><strong>apply</strong> — to ask formally for something, like a place at a university</li><li><strong>deadline</strong> — the last day you can do something</li><li><strong>eligible</strong> — allowed to apply because you meet the rules</li><li><strong>requirement</strong> — something you must have or do</li><li><strong>submit</strong> — to send your finished work or form</li></ul><p><strong>Practice:</strong> Write each word in a notebook. Write one sentence with it. For example: <em>The deadline is 30 March.</em></p>",
+        "quiz": [
+          {
+            "question": "What does 'deadline' mean?",
+            "options": [
+              "The first day to apply",
+              "The last day you can do something",
+              "A type of scholarship",
+              "A school report"
+            ],
+            "answer": "The last day you can do something",
+            "explanation": "A deadline is the final day. After it, you cannot apply."
+          },
+          {
+            "question": "If you are 'eligible', you…",
+            "options": [
+              "meet the rules to apply",
+              "have already won",
+              "must pay money",
+              "cannot apply"
+            ],
+            "answer": "meet the rules to apply",
+            "explanation": "Eligible means you are allowed to apply because you meet the rules."
+          },
+          {
+            "question": "Choose the correct sentence.",
+            "options": [
+              "I submit my form yesterday.",
+              "I submitted my form yesterday.",
+              "I submitting my form yesterday.",
+              "I submits my form yesterday."
+            ],
+            "answer": "I submitted my form yesterday.",
+            "explanation": "'Yesterday' is in the past, so we use the past tense: submitted."
+          }
+        ]
+      },
+      {
+        "title": "Reading Short Sentences",
+        "summary": "Simple subject-verb-object structure"
+      },
+      {
+        "title": "Reading Short Paragraphs",
+        "summary": "Topic sentence and supporting details"
+      },
+      {
+        "title": "Understanding Instructions",
+        "summary": "Reading how-to and application texts"
+      },
+      {
+        "title": "Reading Academic Texts",
+        "summary": "University website content and scholarship pages"
+      },
+      {
+        "title": "Comprehension Strategies",
+        "summary": "Identifying main idea, inference, context clues"
+      },
+      {
+        "title": "Practice Passage + Final Quiz",
+        "summary": "Put all your reading skills together"
+      }
+    ]
+  },
+  {
+    "slug": "english-writing-basics",
+    "category": "english",
+    "track": "B",
+    "level": "Beginner",
+    "title": "Writing: Sentences & Paragraphs",
+    "description": "Build correct sentences, use punctuation well, and write clear paragraphs about yourself.",
+    "lessons": [
+      {
+        "title": "Parts of a Sentence",
+        "summary": "Subject, verb, object"
+      },
+      {
+        "title": "Common Grammar Rules",
+        "summary": "Tense, agreement, articles (a/an/the)"
+      },
+      {
+        "title": "Punctuation",
+        "summary": "Full stops, commas, question marks, capital letters"
+      },
+      {
+        "title": "Writing Simple Sentences",
+        "summary": "Fill-in-the-blank and free writing"
+      },
+      {
+        "title": "Paragraph Structure",
+        "summary": "Topic sentence, body, conclusion"
+      },
+      {
+        "title": "Connecting Ideas",
+        "summary": "Transition words: however, therefore, in addition"
+      },
+      {
+        "title": "Writing a Descriptive Paragraph",
+        "summary": "Write a paragraph about yourself"
+      },
+      {
+        "title": "Final Writing Task + AI Feedback",
+        "summary": "Paste your text and get INUKA AI feedback"
+      }
+    ]
+  },
+  {
+    "slug": "english-essays",
+    "category": "english",
+    "track": "C",
+    "level": "Intermediate",
+    "title": "Essay Composition",
+    "description": "Plan, write and edit complete essays: argumentative, descriptive and narrative.",
+    "lessons": [
+      {
+        "title": "What is an Essay?",
+        "summary": "Types of essays and their purpose"
+      },
+      {
+        "title": "Essay Structure",
+        "summary": "Introduction, body paragraphs, conclusion"
+      },
+      {
+        "title": "Writing an Introduction",
+        "summary": "Hook, background, thesis statement"
+      },
+      {
+        "title": "Writing Body Paragraphs",
+        "summary": "PEEL: Point, Evidence, Explain, Link"
+      },
+      {
+        "title": "Writing a Conclusion",
+        "summary": "Summarising, not repeating"
+      },
+      {
+        "title": "Argumentative Essays",
+        "summary": "Taking a position and defending it"
+      },
+      {
+        "title": "Descriptive Essays",
+        "summary": "Describing a place, person, or experience"
+      },
+      {
+        "title": "Narrative Essays",
+        "summary": "Telling a story with structure"
+      },
+      {
+        "title": "Editing and Proofreading",
+        "summary": "Common mistakes and self-correction"
+      },
+      {
+        "title": "Full Essay Practice",
+        "summary": "Write a 400-word essay with INUKA AI feedback"
+      }
+    ]
+  },
+  {
+    "slug": "english-speaking",
+    "category": "english",
+    "track": "D",
+    "level": "Beginner–Intermediate",
+    "title": "Speaking & Pronunciation",
+    "description": "Speak clearly, introduce yourself, and prepare for scholarship interviews and video calls.",
+    "lessons": [
+      {
+        "title": "English Sounds",
+        "summary": "Vowels, consonants, common mistakes for Kinyarwanda and Swahili speakers"
+      },
+      {
+        "title": "Word Stress",
+        "summary": "Which syllable to emphasise"
+      },
+      {
+        "title": "Sentence Rhythm and Intonation",
+        "summary": "Rising and falling tones"
+      },
+      {
+        "title": "Introducing Yourself",
+        "summary": "Practice conversation"
+      },
+      {
+        "title": "Asking and Answering Questions",
+        "summary": "Common interview-style exchanges"
+      },
+      {
+        "title": "Expressing Opinions",
+        "summary": "Phrases for academic discussion"
+      },
+      {
+        "title": "Telephone and Video Call English",
+        "summary": "Zoom and Google Meet scenarios"
+      },
+      {
+        "title": "Scholarship Interview Preparation",
+        "summary": "Mock questions and model answers"
+      }
+    ]
+  },
+  {
+    "slug": "english-scholarship-writing",
+    "category": "english",
+    "track": "E",
+    "level": "Intermediate",
+    "title": "Writing for Scholarships",
+    "description": "Write a strong personal statement, motivation letter and professional emails.",
+    "lessons": [
+      {
+        "title": "What Scholarship Committees Look For",
+        "summary": "Understand how applications are judged"
+      },
+      {
+        "title": "The Personal Statement",
+        "summary": "Purpose, structure, dos and don'ts"
+      },
+      {
+        "title": "Writing Your Personal Statement",
+        "summary": "Guided template with prompts"
+      },
+      {
+        "title": "The Motivation Letter",
+        "summary": "How it differs from a personal statement"
+      },
+      {
+        "title": "Writing a Motivation Letter",
+        "summary": "Guided template"
+      },
+      {
+        "title": "Email Etiquette",
+        "summary": "Writing to a university admissions office"
+      },
+      {
+        "title": "Asking for a Letter of Recommendation",
+        "summary": "Email templates"
+      },
+      {
+        "title": "Full Draft Review",
+        "summary": "Submit your draft for detailed INUKA AI feedback"
+      }
+    ]
+  },
+  {
+    "slug": "computer-intro",
+    "category": "computer",
+    "track": "A",
+    "level": "Absolute Beginner",
+    "title": "Introduction to Computers",
+    "description": "Learn what a computer is, how to use a keyboard and mouse, and how to save and find your files.",
+    "lessons": [
+      {
+        "title": "What is a Computer?",
+        "summary": "Desktop vs laptop vs tablet vs smartphone",
+        "content": "<p>A <strong>computer</strong> is a machine that stores information and follows instructions. You may already use one every day: your <strong>smartphone</strong> is a small computer.</p><h3>Four kinds of computers</h3><ul><li><strong>Desktop</strong> — stays on a table. It has a separate screen, keyboard and mouse. It needs electricity all the time.</li><li><strong>Laptop</strong> — folds closed and has a battery. You can carry it.</li><li><strong>Tablet</strong> — a flat touch screen, bigger than a phone.</li><li><strong>Smartphone</strong> — fits in your pocket. Good for messages, but hard for writing long documents.</li></ul><h3>Why this matters for you</h3><p>Most university applications are easier on a laptop or desktop. You will type essays and upload documents. If you do not own one, a school, library, or cyber café can help.</p>",
+        "quiz": [
+          {
+            "question": "Which computer usually has a battery and folds closed?",
+            "options": [
+              "Desktop",
+              "Laptop",
+              "Printer",
+              "Monitor"
+            ],
+            "answer": "Laptop",
+            "explanation": "A laptop folds closed and runs on a battery, so you can carry it."
+          },
+          {
+            "question": "Is a smartphone a computer?",
+            "options": [
+              "Yes",
+              "No"
+            ],
+            "answer": "Yes",
+            "explanation": "A smartphone is a small computer. It stores information and runs programs."
+          },
+          {
+            "question": "For writing a long scholarship essay, which is usually easiest?",
+            "options": [
+              "A smartphone",
+              "A laptop or desktop",
+              "A calculator",
+              "A radio"
+            ],
+            "answer": "A laptop or desktop",
+            "explanation": "A full keyboard and a bigger screen make long writing much easier."
+          }
+        ]
+      },
+      {
+        "title": "Parts of a Computer",
+        "summary": "Screen, keyboard, mouse, USB, charger, battery"
+      },
+      {
+        "title": "Turning On, Logging In, and Shutting Down",
+        "summary": "Doing it safely"
+      },
+      {
+        "title": "Using a Keyboard",
+        "summary": "Typing practice with an on-screen keyboard"
+      },
+      {
+        "title": "Using a Mouse or Touchpad",
+        "summary": "Clicking, scrolling, right-clicking"
+      },
+      {
+        "title": "Files and Folders",
+        "summary": "Create, rename, move, delete"
+      },
+      {
+        "title": "Saving Your Work",
+        "summary": "Where files are saved and how to find them again"
+      },
+      {
+        "title": "Quiz + Practical Task",
+        "summary": "Complete a simulated computer task"
+      }
+    ]
+  },
+  {
+    "slug": "computer-internet-email",
+    "category": "computer",
+    "track": "B",
+    "level": "Beginner",
+    "title": "Internet & Email Basics",
+    "description": "Browse and search safely, create a Gmail account, and send professional emails with attachments.",
+    "lessons": [
+      {
+        "title": "What is the Internet?",
+        "summary": "How it works, safe and unsafe sites"
+      },
+      {
+        "title": "Using a Web Browser",
+        "summary": "Address bar, tabs, bookmarks, back and forward"
+      },
+      {
+        "title": "How to Search Effectively",
+        "summary": "Search tips and judging results"
+      },
+      {
+        "title": "Creating a Gmail Account",
+        "summary": "Step by step with screenshots"
+      },
+      {
+        "title": "Reading and Writing Emails",
+        "summary": "To, from, subject, body, signature"
+      },
+      {
+        "title": "Sending a Professional Email to a University",
+        "summary": "Template practice"
+      },
+      {
+        "title": "Email Attachments",
+        "summary": "How to attach a PDF document"
+      },
+      {
+        "title": "Staying Safe Online",
+        "summary": "Passwords, phishing, privacy settings"
+      }
+    ]
+  },
+  {
+    "slug": "computer-digital-tools",
+    "category": "computer",
+    "track": "C",
+    "level": "Beginner–Intermediate",
+    "title": "Digital Tools for Education",
+    "description": "Use Google Docs, Sheets, Slides and Drive, scan documents with your phone, and join video calls.",
+    "lessons": [
+      {
+        "title": "Introduction to Google Workspace",
+        "summary": "Docs, Sheets, Slides, Drive"
+      },
+      {
+        "title": "Using Google Docs",
+        "summary": "Create, format and share a document"
+      },
+      {
+        "title": "Using Google Sheets",
+        "summary": "Basic data entry and simple sums"
+      },
+      {
+        "title": "Using Google Slides",
+        "summary": "Create a simple presentation"
+      },
+      {
+        "title": "Google Drive",
+        "summary": "Upload, organise and share files"
+      },
+      {
+        "title": "Scanning Documents with a Phone",
+        "summary": "Scan and save as PDF"
+      },
+      {
+        "title": "Using Zoom and Google Meet",
+        "summary": "Joining a call, microphone, camera, chat"
+      },
+      {
+        "title": "Uploading Documents Online",
+        "summary": "Practice on a simulated form"
+      }
+    ]
+  },
+  {
+    "slug": "computer-university-online",
+    "category": "computer",
+    "track": "D",
+    "level": "Intermediate",
+    "title": "Preparing for University Online",
+    "description": "Navigate university websites, complete online application forms, and prepare for video interviews.",
+    "lessons": [
+      {
+        "title": "Navigating a University Website",
+        "summary": "Find admissions, scholarship and contact pages"
+      },
+      {
+        "title": "Filling in an Online Application Form",
+        "summary": "Field-by-field walkthrough"
+      },
+      {
+        "title": "Uploading Documents to an Application Portal",
+        "summary": "File size, format, naming"
+      },
+      {
+        "title": "Taking a Screenshot",
+        "summary": "Keep a record of your submission"
+      },
+      {
+        "title": "Video Interview Preparation",
+        "summary": "Background, lighting and sound"
+      },
+      {
+        "title": "Final Practice",
+        "summary": "Complete a full simulated online application"
+      }
+    ]
+  }
+]

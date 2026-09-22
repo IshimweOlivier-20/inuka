@@ -1,0 +1,834 @@
+[
+  {
+    "slug": "mastercard-foundation-scholars",
+    "name": "Mastercard Foundation Scholars Program",
+    "orgName": "Mastercard Foundation",
+    "hostCountry": "Multiple (Africa and worldwide)",
+    "hostUniversity": null,
+    "region": "Global",
+    "fundingType": "fully_funded",
+    "level": "both",
+    "openToRefugees": true,
+    "refugeesOnly": false,
+    "languageOfStudy": "English",
+    "deadline": null,
+    "deadlineNote": "Each partner university sets its own deadline.",
+    "description": "Full scholarships for academically talented young Africans facing financial hardship, delivered through partner universities in Africa and around the world. Scholars also receive leadership training and career support.",
+    "eligibility": [
+      "Citizen of an African country, including refugees and displaced youth",
+      "Strong academic results",
+      "Demonstrated financial need",
+      "Commitment to giving back to your community"
+    ],
+    "coverage": [
+      "Full tuition",
+      "Accommodation",
+      "Living stipend",
+      "Travel costs",
+      "Books and supplies",
+      "Leadership and career support"
+    ],
+    "applicationSteps": [
+      "Read the eligibility rules on the official website",
+      "Prepare every document on your checklist",
+      "Write your personal statement or motivation letter",
+      "Complete the online application form",
+      "Submit before the deadline and save a screenshot as proof"
+    ],
+    "documentsRequired": [
+      "recommendation_letters",
+      "financial_need",
+      "english_proficiency",
+      "community_service"
+    ],
+    "applyUrl": "https://mastercardfdn.org/en/what-we-do/our-programs/mastercard-foundation-scholars-program/",
+    "isFeatured": true
+  },
+  {
+    "slug": "unhcr-dafi",
+    "name": "UNHCR DAFI Tertiary Scholarship",
+    "orgName": "UNHCR",
+    "hostCountry": "Your country of asylum",
+    "hostUniversity": null,
+    "region": "Global",
+    "fundingType": "fully_funded",
+    "level": "undergraduate",
+    "openToRefugees": true,
+    "refugeesOnly": true,
+    "languageOfStudy": "English",
+    "deadline": null,
+    "deadlineNote": "Applications are opened by UNHCR country offices; dates vary by country.",
+    "description": "The DAFI programme gives refugees the chance to earn an undergraduate degree in their country of asylum. It is only for refugees.",
+    "eligibility": [
+      "Recognised refugee status in your country of asylum",
+      "Completed secondary school with good results",
+      "Usually under 28 years old (check your country office)",
+      "No other scholarship support"
+    ],
+    "coverage": [
+      "Tuition and fees",
+      "Monthly allowance",
+      "Study materials",
+      "Transport",
+      "Academic and psychosocial support"
+    ],
+    "applicationSteps": [
+      "Read the eligibility rules on the official website",
+      "Prepare every document on your checklist",
+      "Write your personal statement or motivation letter",
+      "Complete the online application form",
+      "Submit before the deadline and save a screenshot as proof"
+    ],
+    "documentsRequired": [
+      "recommendation_letters",
+      "financial_need",
+      "birth_certificate"
+    ],
+    "applyUrl": "https://www.unhcr.org",
+    "isFeatured": true
+  },
+  {
+    "slug": "daad-development",
+    "name": "DAAD Scholarships for Development-Related Postgraduate Courses (EPOS)",
+    "orgName": "DAAD",
+    "hostCountry": "Germany",
+    "hostUniversity": null,
+    "region": "Global",
+    "fundingType": "fully_funded",
+    "level": "postgraduate",
+    "openToRefugees": true,
+    "refugeesOnly": false,
+    "languageOfStudy": "English",
+    "deadline": "2026-10-31",
+    "deadlineNote": "Estimated from past cycles. Always confirm the exact date on the official website.",
+    "description": "Master's and PhD scholarships in Germany for professionals from developing countries, in courses linked to development.",
+    "eligibility": [
+      "Bachelor's degree",
+      "Usually at least two years of work experience",
+      "Degree not older than six years",
+      "Language requirements of the chosen course"
+    ],
+    "coverage": [
+      "Monthly stipend",
+      "Travel allowance",
+      "Health insurance",
+      "Study and research allowance",
+      "German language course"
+    ],
+    "applicationSteps": [
+      "Read the eligibility rules on the official website",
+      "Prepare every document on your checklist",
+      "Write your personal statement or motivation letter",
+      "Complete the online application form",
+      "Submit before the deadline and save a screenshot as proof"
+    ],
+    "documentsRequired": [
+      "english_proficiency",
+      "recommendation_letters",
+      "transcripts",
+      "research_proposal"
+    ],
+    "applyUrl": "https://www.daad.de/en/study-and-research-in-germany/scholarships/",
+    "isFeatured": false
+  },
+  {
+    "slug": "african-union-scholarships",
+    "name": "African Union Scholarships (Mwalimu Nyerere)",
+    "orgName": "African Union",
+    "hostCountry": "Multiple African countries",
+    "hostUniversity": null,
+    "region": "Global",
+    "fundingType": "fully_funded",
+    "level": "both",
+    "openToRefugees": true,
+    "refugeesOnly": false,
+    "languageOfStudy": "English",
+    "deadline": "2027-03-31",
+    "deadlineNote": "Estimated from past cycles. Always confirm the exact date on the official website.",
+    "description": "The African Union's scholarship scheme for young Africans studying at African universities, focused on science, technology and development.",
+    "eligibility": [
+      "Citizen of an AU member state",
+      "Admission to an eligible African university",
+      "Commitment to work in Africa after study"
+    ],
+    "coverage": [
+      "Tuition",
+      "Living allowance",
+      "Research support",
+      "Travel"
+    ],
+    "applicationSteps": [
+      "Read the eligibility rules on the official website",
+      "Prepare every document on your checklist",
+      "Write your personal statement or motivation letter",
+      "Complete the online application form",
+      "Submit before the deadline and save a screenshot as proof"
+    ],
+    "documentsRequired": [
+      "recommendation_letters",
+      "transcripts",
+      "birth_certificate"
+    ],
+    "applyUrl": "https://au.int",
+    "isFeatured": false
+  },
+  {
+    "slug": "aga-khan-isp",
+    "name": "Aga Khan Foundation International Scholarship Programme",
+    "orgName": "Aga Khan Foundation",
+    "hostCountry": "Multiple",
+    "hostUniversity": null,
+    "region": "Global",
+    "fundingType": "partial",
+    "level": "postgraduate",
+    "openToRefugees": true,
+    "refugeesOnly": false,
+    "languageOfStudy": "English",
+    "deadline": "2027-03-31",
+    "deadlineNote": "Estimated from past cycles. Always confirm the exact date on the official website.",
+    "description": "Postgraduate support for outstanding students from selected developing countries with no other way to fund their studies. Awarded as 50% grant and 50% loan.",
+    "eligibility": [
+      "Citizen of an eligible country (includes several East African countries)",
+      "Excellent academic record",
+      "Genuine financial need",
+      "Admission to a reputable university"
+    ],
+    "coverage": [
+      "Tuition",
+      "Living expenses (half grant, half loan)"
+    ],
+    "applicationSteps": [
+      "Read the eligibility rules on the official website",
+      "Prepare every document on your checklist",
+      "Write your personal statement or motivation letter",
+      "Complete the online application form",
+      "Submit before the deadline and save a screenshot as proof"
+    ],
+    "documentsRequired": [
+      "financial_need",
+      "recommendation_letters",
+      "transcripts",
+      "english_proficiency"
+    ],
+    "applyUrl": "https://the.akdn",
+    "isFeatured": false
+  },
+  {
+    "slug": "korean-gks",
+    "name": "Global Korea Scholarship (GKS / KGSP)",
+    "orgName": "Government of the Republic of Korea",
+    "hostCountry": "South Korea",
+    "hostUniversity": null,
+    "region": "Global",
+    "fundingType": "fully_funded",
+    "level": "both",
+    "openToRefugees": true,
+    "refugeesOnly": false,
+    "languageOfStudy": "English",
+    "deadline": "2027-03-01",
+    "deadlineNote": "Estimated from past cycles. Always confirm the exact date on the official website.",
+    "description": "Korean government scholarship for international students, including a year of Korean language training before the degree.",
+    "eligibility": [
+      "Not a Korean citizen",
+      "Under 25 (undergraduate) or under 40 (graduate)",
+      "Good academic results (usually 80% or above)",
+      "Good health"
+    ],
+    "coverage": [
+      "Full tuition",
+      "Airfare",
+      "Monthly allowance",
+      "Korean language training",
+      "Medical insurance",
+      "Settlement allowance"
+    ],
+    "applicationSteps": [
+      "Read the eligibility rules on the official website",
+      "Prepare every document on your checklist",
+      "Write your personal statement or motivation letter",
+      "Complete the online application form",
+      "Submit before the deadline and save a screenshot as proof"
+    ],
+    "documentsRequired": [
+      "medical_certificate",
+      "recommendation_letters",
+      "transcripts",
+      "birth_certificate"
+    ],
+    "applyUrl": "https://www.studyinkorea.go.kr",
+    "isFeatured": false
+  },
+  {
+    "slug": "chinese-government-csc",
+    "name": "Chinese Government Scholarship (CSC)",
+    "orgName": "Chinese Government",
+    "hostCountry": "China",
+    "hostUniversity": null,
+    "region": "Global",
+    "fundingType": "fully_funded",
+    "level": "both",
+    "openToRefugees": true,
+    "refugeesOnly": false,
+    "languageOfStudy": "English",
+    "deadline": "2027-03-31",
+    "deadlineNote": "Estimated from past cycles. Always confirm the exact date on the official website.",
+    "description": "Scholarships for international students to study at Chinese universities, offered through embassies and universities.",
+    "eligibility": [
+      "Not a Chinese citizen",
+      "In good health",
+      "High school diploma for undergraduate study; bachelor's for master's"
+    ],
+    "coverage": [
+      "Tuition",
+      "Accommodation",
+      "Monthly stipend",
+      "Medical insurance"
+    ],
+    "applicationSteps": [
+      "Read the eligibility rules on the official website",
+      "Prepare every document on your checklist",
+      "Write your personal statement or motivation letter",
+      "Complete the online application form",
+      "Submit before the deadline and save a screenshot as proof"
+    ],
+    "documentsRequired": [
+      "medical_certificate",
+      "recommendation_letters",
+      "transcripts",
+      "research_proposal"
+    ],
+    "applyUrl": "https://www.campuschina.org",
+    "isFeatured": false
+  },
+  {
+    "slug": "turkiye-burslari",
+    "name": "Türkiye Bursları (Türkiye Scholarships)",
+    "orgName": "Turkish Government",
+    "hostCountry": "Türkiye",
+    "hostUniversity": null,
+    "region": "Global",
+    "fundingType": "fully_funded",
+    "level": "both",
+    "openToRefugees": true,
+    "refugeesOnly": false,
+    "languageOfStudy": "English",
+    "deadline": "2027-02-20",
+    "deadlineNote": "Estimated from past cycles. Always confirm the exact date on the official website.",
+    "description": "A fully funded Turkish government scholarship for undergraduate, master's and PhD study, including a Turkish language preparation year.",
+    "eligibility": [
+      "Not a Turkish citizen",
+      "Minimum grades (usually 70% for undergraduate)",
+      "Age limits: under 21 for undergraduate, under 30 for master's"
+    ],
+    "coverage": [
+      "Full tuition",
+      "Monthly stipend",
+      "Accommodation",
+      "Health insurance",
+      "Return flight",
+      "Turkish language course"
+    ],
+    "applicationSteps": [
+      "Read the eligibility rules on the official website",
+      "Prepare every document on your checklist",
+      "Write your personal statement or motivation letter",
+      "Complete the online application form",
+      "Submit before the deadline and save a screenshot as proof"
+    ],
+    "documentsRequired": [
+      "recommendation_letters",
+      "transcripts"
+    ],
+    "applyUrl": "https://www.turkiyeburslari.gov.tr",
+    "isFeatured": false
+  },
+  {
+    "slug": "eiffel-excellence",
+    "name": "Eiffel Excellence Scholarship",
+    "orgName": "French Government (Campus France)",
+    "hostCountry": "France",
+    "hostUniversity": null,
+    "region": "Global",
+    "fundingType": "partial",
+    "level": "postgraduate",
+    "openToRefugees": false,
+    "refugeesOnly": false,
+    "languageOfStudy": "Both",
+    "deadline": "2027-01-08",
+    "deadlineNote": "French universities nominate candidates; ask your chosen university for its internal deadline.",
+    "description": "Funds excellent international master's and PhD students at French institutions. You apply through the French university, not directly.",
+    "eligibility": [
+      "Not a French citizen",
+      "Under 25 for master's, under 30 for PhD",
+      "Applying to a master's or PhD programme at a French institution"
+    ],
+    "coverage": [
+      "Monthly allowance",
+      "Travel",
+      "Insurance",
+      "Cultural activities"
+    ],
+    "applicationSteps": [
+      "Read the eligibility rules on the official website",
+      "Prepare every document on your checklist",
+      "Write your personal statement or motivation letter",
+      "Complete the online application form",
+      "Submit before the deadline and save a screenshot as proof"
+    ],
+    "documentsRequired": [
+      "english_proficiency",
+      "recommendation_letters",
+      "transcripts"
+    ],
+    "applyUrl": "https://www.campusfrance.org/en/eiffel-scholarship-program-of-excellence",
+    "isFeatured": false
+  },
+  {
+    "slug": "mext-japan",
+    "name": "MEXT Scholarship (Japan)",
+    "orgName": "Japanese Government",
+    "hostCountry": "Japan",
+    "hostUniversity": null,
+    "region": "Global",
+    "fundingType": "fully_funded",
+    "level": "both",
+    "openToRefugees": true,
+    "refugeesOnly": false,
+    "languageOfStudy": "English",
+    "deadline": "2027-05-15",
+    "deadlineNote": "Embassy recommendation deadlines vary by country.",
+    "description": "Japanese government scholarship for undergraduate, research and graduate study in Japan, usually applied for through the Japanese embassy.",
+    "eligibility": [
+      "Citizen of a country with diplomatic relations with Japan",
+      "Age limits apply (usually 17–24 for undergraduate)",
+      "Good health",
+      "Willing to learn Japanese"
+    ],
+    "coverage": [
+      "Full tuition",
+      "Monthly allowance",
+      "Round-trip airfare"
+    ],
+    "applicationSteps": [
+      "Read the eligibility rules on the official website",
+      "Prepare every document on your checklist",
+      "Write your personal statement or motivation letter",
+      "Complete the online application form",
+      "Submit before the deadline and save a screenshot as proof"
+    ],
+    "documentsRequired": [
+      "medical_certificate",
+      "recommendation_letters",
+      "transcripts",
+      "research_proposal"
+    ],
+    "applyUrl": "https://www.studyinjapan.go.jp/en/",
+    "isFeatured": false
+  },
+  {
+    "slug": "commonwealth-masters",
+    "name": "Commonwealth Master's Scholarship",
+    "orgName": "Commonwealth Scholarship Commission (UK)",
+    "hostCountry": "United Kingdom",
+    "hostUniversity": null,
+    "region": "Global",
+    "fundingType": "fully_funded",
+    "level": "postgraduate",
+    "openToRefugees": true,
+    "refugeesOnly": false,
+    "languageOfStudy": "English",
+    "deadline": "2026-10-15",
+    "deadlineNote": "Estimated from past cycles. Always confirm the exact date on the official website.",
+    "description": "Fully funded one-year master's in the UK for talented students from eligible Commonwealth countries, focused on development impact.",
+    "eligibility": [
+      "Citizen or refugee resident of an eligible Commonwealth country",
+      "Upper second-class bachelor's degree or equivalent",
+      "Unable to afford UK study without support"
+    ],
+    "coverage": [
+      "Tuition",
+      "Airfare",
+      "Monthly stipend",
+      "Thesis grant",
+      "Arrival allowance"
+    ],
+    "applicationSteps": [
+      "Read the eligibility rules on the official website",
+      "Prepare every document on your checklist",
+      "Write your personal statement or motivation letter",
+      "Complete the online application form",
+      "Submit before the deadline and save a screenshot as proof"
+    ],
+    "documentsRequired": [
+      "recommendation_letters",
+      "transcripts",
+      "financial_need",
+      "english_proficiency"
+    ],
+    "applyUrl": "https://cscuk.fcdo.gov.uk",
+    "isFeatured": false
+  },
+  {
+    "slug": "chevening",
+    "name": "Chevening Scholarship",
+    "orgName": "UK Government",
+    "hostCountry": "United Kingdom",
+    "hostUniversity": null,
+    "region": "Global",
+    "fundingType": "fully_funded",
+    "level": "postgraduate",
+    "openToRefugees": true,
+    "refugeesOnly": false,
+    "languageOfStudy": "English",
+    "deadline": "2026-10-07",
+    "deadlineNote": "Estimated from past cycles. Always confirm the exact date on the official website.",
+    "description": "The UK government's global scholarship for future leaders to study a one-year master's at any UK university.",
+    "eligibility": [
+      "Citizen of a Chevening-eligible country",
+      "Bachelor's degree",
+      "At least two years of work experience",
+      "Return home for two years after the award"
+    ],
+    "coverage": [
+      "Tuition",
+      "Monthly living allowance",
+      "Travel to and from the UK",
+      "Visa costs"
+    ],
+    "applicationSteps": [
+      "Read the eligibility rules on the official website",
+      "Prepare every document on your checklist",
+      "Write your personal statement or motivation letter",
+      "Complete the online application form",
+      "Submit before the deadline and save a screenshot as proof"
+    ],
+    "documentsRequired": [
+      "english_proficiency",
+      "recommendation_letters",
+      "transcripts"
+    ],
+    "applyUrl": "https://www.chevening.org",
+    "isFeatured": false
+  },
+  {
+    "slug": "fulbright-foreign-student",
+    "name": "Fulbright Foreign Student Program",
+    "orgName": "US Government",
+    "hostCountry": "United States",
+    "hostUniversity": null,
+    "region": "Global",
+    "fundingType": "fully_funded",
+    "level": "postgraduate",
+    "openToRefugees": true,
+    "refugeesOnly": false,
+    "languageOfStudy": "English",
+    "deadline": "2027-04-30",
+    "deadlineNote": "Each country's US embassy or Fulbright commission sets its own deadline.",
+    "description": "Graduate study and research in the United States for students and young professionals, run through US embassies and Fulbright commissions.",
+    "eligibility": [
+      "Bachelor's degree",
+      "Strong English skills",
+      "Leadership potential",
+      "Apply through the programme in your country of citizenship"
+    ],
+    "coverage": [
+      "Tuition",
+      "Airfare",
+      "Living stipend",
+      "Health insurance"
+    ],
+    "applicationSteps": [
+      "Read the eligibility rules on the official website",
+      "Prepare every document on your checklist",
+      "Write your personal statement or motivation letter",
+      "Complete the online application form",
+      "Submit before the deadline and save a screenshot as proof"
+    ],
+    "documentsRequired": [
+      "english_proficiency",
+      "recommendation_letters",
+      "transcripts",
+      "research_proposal"
+    ],
+    "applyUrl": "https://foreign.fulbrightonline.org",
+    "isFeatured": false
+  },
+  {
+    "slug": "intra-africa-mobility",
+    "name": "Intra-Africa Academic Mobility Scheme",
+    "orgName": "African Union / European Union",
+    "hostCountry": "Multiple African countries",
+    "hostUniversity": null,
+    "region": "Global",
+    "fundingType": "fully_funded",
+    "level": "both",
+    "openToRefugees": true,
+    "refugeesOnly": false,
+    "languageOfStudy": "English",
+    "deadline": null,
+    "deadlineNote": "Each university partnership publishes its own calls and deadlines.",
+    "description": "Scholarships for African students to study master's, PhD or short exchanges at another African university in a partnership network.",
+    "eligibility": [
+      "Citizen and resident of an African country",
+      "Meet the host university's admission rules",
+      "Not studying in the partnership already"
+    ],
+    "coverage": [
+      "Tuition",
+      "Monthly subsistence allowance",
+      "Travel",
+      "Insurance"
+    ],
+    "applicationSteps": [
+      "Read the eligibility rules on the official website",
+      "Prepare every document on your checklist",
+      "Write your personal statement or motivation letter",
+      "Complete the online application form",
+      "Submit before the deadline and save a screenshot as proof"
+    ],
+    "documentsRequired": [
+      "recommendation_letters",
+      "transcripts",
+      "english_proficiency"
+    ],
+    "applyUrl": "https://www.eacea.ec.europa.eu",
+    "isFeatured": false
+  },
+  {
+    "slug": "rwanda-government",
+    "name": "Rwanda Government Scholarship",
+    "orgName": "Ministry of Education (MINEDUC) and Higher Education Council",
+    "hostCountry": "Rwanda",
+    "hostUniversity": "Public universities in Rwanda",
+    "region": "East Africa",
+    "fundingType": "fully_funded",
+    "level": "undergraduate",
+    "openToRefugees": true,
+    "refugeesOnly": false,
+    "languageOfStudy": "English",
+    "deadline": null,
+    "deadlineNote": "Allocations follow national examination results each year.",
+    "description": "Government support for top-performing secondary school graduates to study at public higher-learning institutions in Rwanda.",
+    "eligibility": [
+      "Completed Rwandan national examinations (S6)",
+      "Meet the minimum weighted score for your chosen programme"
+    ],
+    "coverage": [
+      "Tuition",
+      "Living allowance (for some categories)"
+    ],
+    "applicationSteps": [
+      "Read the eligibility rules on the official website",
+      "Prepare every document on your checklist",
+      "Write your personal statement or motivation letter",
+      "Complete the online application form",
+      "Submit before the deadline and save a screenshot as proof"
+    ],
+    "documentsRequired": [
+      "birth_certificate",
+      "transcripts"
+    ],
+    "applyUrl": "https://hec.gov.rw",
+    "isFeatured": true
+  },
+  {
+    "slug": "uct-international",
+    "name": "University of Cape Town International Scholarships",
+    "orgName": "University of Cape Town",
+    "hostCountry": "South Africa",
+    "hostUniversity": "University of Cape Town",
+    "region": "Southern Africa",
+    "fundingType": "partial",
+    "level": "both",
+    "openToRefugees": true,
+    "refugeesOnly": false,
+    "languageOfStudy": "English",
+    "deadline": null,
+    "deadlineNote": "Deadline varies. Check the official website.",
+    "description": "Merit and need-based awards for international students admitted to UCT, one of Africa's top-ranked universities.",
+    "eligibility": [
+      "Admission offer from UCT",
+      "Strong academic record",
+      "Financial need for some awards"
+    ],
+    "coverage": [
+      "Partial tuition",
+      "Some awards include living support"
+    ],
+    "applicationSteps": [
+      "Read the eligibility rules on the official website",
+      "Prepare every document on your checklist",
+      "Write your personal statement or motivation letter",
+      "Complete the online application form",
+      "Submit before the deadline and save a screenshot as proof"
+    ],
+    "documentsRequired": [
+      "financial_need",
+      "transcripts",
+      "english_proficiency"
+    ],
+    "applyUrl": "https://www.uct.ac.za",
+    "isFeatured": true
+  },
+  {
+    "slug": "uon-bursary",
+    "name": "University of Nairobi International Student Bursary",
+    "orgName": "University of Nairobi",
+    "hostCountry": "Kenya",
+    "hostUniversity": "University of Nairobi",
+    "region": "East Africa",
+    "fundingType": "partial",
+    "level": "undergraduate",
+    "openToRefugees": true,
+    "refugeesOnly": false,
+    "languageOfStudy": "English",
+    "deadline": null,
+    "deadlineNote": "Deadline varies. Check the official website.",
+    "description": "Bursary support for admitted undergraduate students at the University of Nairobi who show financial need.",
+    "eligibility": [
+      "Admitted to the University of Nairobi",
+      "Demonstrated financial need"
+    ],
+    "coverage": [
+      "Partial tuition"
+    ],
+    "applicationSteps": [
+      "Read the eligibility rules on the official website",
+      "Prepare every document on your checklist",
+      "Write your personal statement or motivation letter",
+      "Complete the online application form",
+      "Submit before the deadline and save a screenshot as proof"
+    ],
+    "documentsRequired": [
+      "financial_need",
+      "recommendation_letters"
+    ],
+    "applyUrl": "https://www.uonbi.ac.ke",
+    "isFeatured": false
+  },
+  {
+    "slug": "makerere-international",
+    "name": "Makerere University International Scholarships",
+    "orgName": "Makerere University",
+    "hostCountry": "Uganda",
+    "hostUniversity": "Makerere University",
+    "region": "East Africa",
+    "fundingType": "partial",
+    "level": "both",
+    "openToRefugees": true,
+    "refugeesOnly": false,
+    "languageOfStudy": "English",
+    "deadline": null,
+    "deadlineNote": "Deadline varies. Check the official website.",
+    "description": "Scholarship opportunities for international students at Makerere University, often through partner programmes.",
+    "eligibility": [
+      "Admission to Makerere University",
+      "Meet the specific programme's criteria"
+    ],
+    "coverage": [
+      "Partial tuition",
+      "Some programmes include a stipend"
+    ],
+    "applicationSteps": [
+      "Read the eligibility rules on the official website",
+      "Prepare every document on your checklist",
+      "Write your personal statement or motivation letter",
+      "Complete the online application form",
+      "Submit before the deadline and save a screenshot as proof"
+    ],
+    "documentsRequired": [
+      "recommendation_letters",
+      "transcripts",
+      "financial_need"
+    ],
+    "applyUrl": "https://www.mak.ac.ug",
+    "isFeatured": true
+  },
+  {
+    "slug": "afdb-japan",
+    "name": "African Development Bank / Japan Scholarship Program",
+    "orgName": "African Development Bank",
+    "hostCountry": "Multiple African countries",
+    "hostUniversity": null,
+    "region": "Global",
+    "fundingType": "fully_funded",
+    "level": "postgraduate",
+    "openToRefugees": true,
+    "refugeesOnly": false,
+    "languageOfStudy": "English",
+    "deadline": "2027-03-31",
+    "deadlineNote": "Estimated from past cycles. Always confirm the exact date on the official website.",
+    "description": "Master's scholarships in development-related fields such as energy, agriculture, engineering and health at partner universities in Africa and Japan.",
+    "eligibility": [
+      "Citizen of an AfDB member country",
+      "Under 35 years old",
+      "Bachelor's degree and at least three years of work experience",
+      "Admission to a partner programme"
+    ],
+    "coverage": [
+      "Tuition",
+      "Monthly stipend",
+      "Travel",
+      "Health insurance",
+      "Books"
+    ],
+    "applicationSteps": [
+      "Read the eligibility rules on the official website",
+      "Prepare every document on your checklist",
+      "Write your personal statement or motivation letter",
+      "Complete the online application form",
+      "Submit before the deadline and save a screenshot as proof"
+    ],
+    "documentsRequired": [
+      "recommendation_letters",
+      "transcripts",
+      "english_proficiency",
+      "medical_certificate"
+    ],
+    "applyUrl": "https://www.afdb.org",
+    "isFeatured": true
+  },
+  {
+    "slug": "mandela-rhodes",
+    "name": "Mandela Rhodes Scholarship",
+    "orgName": "Mandela Rhodes Foundation",
+    "hostCountry": "South Africa",
+    "hostUniversity": null,
+    "region": "Southern Africa",
+    "fundingType": "fully_funded",
+    "level": "postgraduate",
+    "openToRefugees": true,
+    "refugeesOnly": false,
+    "languageOfStudy": "English",
+    "deadline": "2027-04-15",
+    "deadlineNote": "Estimated from past cycles. Always confirm the exact date on the official website.",
+    "description": "Postgraduate scholarship for young Africans with leadership potential to study at a South African university, with a leadership development programme.",
+    "eligibility": [
+      "Citizen of an African country",
+      "Aged 19 to 29",
+      "Bachelor's degree with good results",
+      "Leadership and commitment to Africa"
+    ],
+    "coverage": [
+      "Full tuition",
+      "Accommodation",
+      "Living allowance",
+      "Travel",
+      "Leadership programme"
+    ],
+    "applicationSteps": [
+      "Read the eligibility rules on the official website",
+      "Prepare every document on your checklist",
+      "Write your personal statement or motivation letter",
+      "Complete the online application form",
+      "Submit before the deadline and save a screenshot as proof"
+    ],
+    "documentsRequired": [
+      "recommendation_letters",
+      "transcripts",
+      "community_service"
+    ],
+    "applyUrl": "https://www.mandelarhodes.org",
+    "isFeatured": false
+  }
+]
