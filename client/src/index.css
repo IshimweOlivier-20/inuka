@@ -70,12 +70,12 @@
 @keyframes pop-in { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: none; } }
 
 /* Provider strip: continuous horizontal scroll, with soft faded edges */
-.marquee { mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent); }
+.marquee { mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent); }
 .marquee-track { animation: marquee 45s linear infinite; }
 @keyframes marquee { to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) {
   .marquee { mask-image: none; }
-  .marquee-track { animation: none; flex-wrap: wrap; justify-content: center; width: auto; padding: 0 1.25rem; row-gap: 0.5rem; }
+  .marquee-track { animation: none; flex-wrap: wrap; justify-content: center; width: auto; row-gap: 0.5rem; }
   .marquee-track li[aria-hidden="true"] { display: none; }
 }
 /* FAQ: remove the default triangle marker in Safari */
@@ -84,3 +84,40 @@
 @keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
 @keyframes drift { from { translate: 0 0; } to { translate: 0 8px; } }
 @keyframes progress { from { width: 0; } to { width: 100%; } }
+
+
+/* ---------- Our impact band ---------- */
+.impact-band {
+  background:
+    radial-gradient(ellipse 60% 70% at 100% 0%, rgba(250, 172, 0, 0.22), transparent 60%),
+    radial-gradient(ellipse 50% 60% at 0% 100%, rgba(3, 160, 31, 0.25), transparent 60%),
+    linear-gradient(135deg, #00562A 0%, #003D1D 100%);
+}
+
+/* ---------- INUKA AI section ---------- */
+.ai-section {
+  background:
+    radial-gradient(ellipse 50% 40% at 50% 18%, rgba(3, 160, 31, 0.12), transparent 70%),
+    linear-gradient(180deg, #F3F8F5 0%, #FFFFFF 55%, #FFF8EA 100%);
+}
+.ai-sweep {
+  background: conic-gradient(from 0deg, rgba(3, 160, 31, 0.22), rgba(3, 160, 31, 0) 28%, transparent 100%);
+  -webkit-mask-image: radial-gradient(circle, transparent 38%, #000 39%, #000 70%, transparent 71%);
+  mask-image: radial-gradient(circle, transparent 38%, #000 39%, #000 70%, transparent 71%);
+}
+.ai-core { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.9), 0 0 60px 10px rgba(3, 160, 31, 0.45); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .ai-sweep { animation: spin 9s linear infinite; }
+  .ai-spin { animation: spin 16s linear infinite; }
+  .ai-spin-reverse { animation: spin 22s linear infinite reverse; }
+  .ai-core { animation: core-glow 3.2s ease-in-out infinite; }
+  .ai-pill { animation: bob 4s ease-in-out infinite; }
+  .live-ping { animation: ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite; }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes core-glow {
+  0%, 100% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.9), 0 0 50px 6px rgba(3, 160, 31, 0.40); }
+  50% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.9), 0 0 80px 18px rgba(3, 160, 31, 0.55); }
+}
+@keyframes ping { 75%, 100% { transform: scale(2.2); opacity: 0; } }

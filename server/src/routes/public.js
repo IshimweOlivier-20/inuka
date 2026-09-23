@@ -16,26 +16,14 @@ router.get('/landing', async (req, res) => {
   // Cache for 1 hour in production (spec 21.2). No cache in development, so edits show immediately.
   if (isProd() && cache.data && Date.now() - cache.at < 3600_000) return res.json(cache.data);
 
-  const [featured, providers, scholarshipCount, courseCount, lessonCount, tips, testimonials, posts, team, partners, faq] =
+  const [providers, scholarshipCount, courseCount, lessonCount, studentCount, testimonials, team, partners, faq] =
     await Promise.all([
-      prisma.scholarship.findMany({
-        where: { isActive: true, isFeatured: true },
-        select: { id: true, name: true, orgName: true, hostCountry: true, deadline: true, fundingType: true, openToRefugees: true },
-        orderBy: { deadline: { sort: 'asc', nulls: 'last' } },
-        take: 6,
-      }),
       prisma.scholarship.findMany({ where: { isActive: true }, select: { orgName: true }, distinct: ['orgName'] }),
       prisma.scholarship.count({ where: { isActive: true } }),
       prisma.course.count({ where: { isPublished: true } }),
       prisma.lesson.count({ where: { isPublished: true } }),
-      prisma.tip.findMany({ where: { isPublished: true }, orderBy: { orderIndex: 'asc' } }),
+      prisma.user.count({ where: { role: 'student', isVerified: true, isActive: true } }),
       prisma.testimonial.findMany({ where: visible(), orderBy: { orderIndex: 'asc' } }),
-      prisma.post.findMany({
-        where: { ...visible(), publishedAt: { lte: new Date() } },
-        orderBy: { publishedAt: 'desc' },
-        take: 3,
-        select: { id: true, slug: true, title: true, category: true, excerpt: true, coverEmoji: true, readMinutes: true, publishedAt: true, isSample: true },
-      }),
       prisma.teamMember.findMany({ where: visible(), orderBy: { orderIndex: 'asc' } }),
       prisma.partner.findMany({ where: visible(), orderBy: { orderIndex: 'asc' } }),
       prisma.faqItem.findMany({ where: { isPublished: true }, orderBy: { orderIndex: 'asc' } }),
@@ -44,10 +32,9 @@ router.get('/landing', async (req, res) => {
   cache = {
     at: Date.now(),
     data: {
-      featured,
       providers: providers.map((p) => p.orgName),
-      stats: { scholarshipCount, courseCount, lessonCount },
-      tips, testimonials, posts, team, partners, faq,
+      stats: { scholarshipCount, courseCount, lessonCount, studentCount },
+      testimonials, team, partners, faq,
     },
   };
   res.json(cache.data);

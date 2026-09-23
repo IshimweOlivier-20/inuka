@@ -41,14 +41,21 @@ export function ProviderStrip({ providers }) {
   if (!providers?.length) return null;
   const items = [...providers, ...providers]; // doubled for a seamless loop
   return (
-    <section className="bg-white border-b border-line py-6 overflow-hidden" aria-label="Scholarship programmes listed on INUKA">
-      <p className="text-center text-sm text-ink-soft mb-4 px-5">Find scholarships from programmes like these. INUKA lists them for free; it is not affiliated with them.</p>
-      <div className="marquee group relative">
-        <ul className="marquee-track flex w-max gap-10 group-hover:[animation-play-state:paused]">
-          {items.map((p, i) => (
-            <li key={i} aria-hidden={i >= providers.length} className="font-display font-semibold text-lg text-ink/45 whitespace-nowrap">{p}</li>
-          ))}
-        </ul>
+    <section className="bg-[#E3F1E8] border-y border-forest/10 py-7" aria-label="Scholarship programmes listed on INUKA">
+      {/* Same width as the navbar content, so names fade in and out where the navbar starts and ends */}
+      <div className="max-w-[1200px] mx-auto px-5">
+        <p className="text-center text-sm text-forest/80 font-medium mb-4">
+          Find scholarships from programmes like these. INUKA lists them for free; it is not affiliated with them.
+        </p>
+        <div className="marquee group relative overflow-hidden">
+          <ul className="marquee-track flex w-max gap-12 group-hover:[animation-play-state:paused]">
+            {items.map((p, i) => (
+              <li key={i} aria-hidden={i >= providers.length} className="flex items-center gap-12 font-display font-semibold text-lg text-forest/55 whitespace-nowrap">
+                {p}<span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );

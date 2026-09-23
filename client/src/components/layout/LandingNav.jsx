@@ -35,9 +35,12 @@ export default function LandingNav({ solid = false }) {
 
         {scrolled && (
           <nav aria-label="Main" className="nav-pop hidden lg:flex items-center gap-1">
-            {NAV_SECTIONS.map((s) => (
-              <SectionLink key={s.id} id={s.id} className="min-h-11 px-3.5 inline-flex items-center rounded-lg font-medium text-ink hover:text-forest hover:bg-leaf">{s.label}</SectionLink>
-            ))}
+            {NAV_SECTIONS.map((s) => {
+              const cls = 'min-h-11 px-3.5 inline-flex items-center rounded-lg font-medium text-ink hover:text-forest hover:bg-leaf';
+              return s.to
+                ? <Link key={s.to} to={s.to} className={cls}>{s.label}</Link>
+                : <SectionLink key={s.id} id={s.id} className={cls}>{s.label}</SectionLink>;
+            })}
           </nav>
         )}
 
@@ -55,9 +58,12 @@ export default function LandingNav({ solid = false }) {
 
       {scrolled && menuOpen && (
         <nav id="site-menu" aria-label="Main" className="lg:hidden border-t border-line bg-white px-5 pb-4">
-          {NAV_SECTIONS.map((s) => (
-            <SectionLink key={s.id} id={s.id} onClick={() => setMenuOpen(false)} className="flex items-center min-h-12 font-medium border-b border-line">{s.label}</SectionLink>
-          ))}
+          {NAV_SECTIONS.map((s) => {
+            const cls = 'flex items-center min-h-12 font-medium border-b border-line';
+            return s.to
+              ? <Link key={s.to} to={s.to} onClick={() => setMenuOpen(false)} className={cls}>{s.label}</Link>
+              : <SectionLink key={s.id} id={s.id} onClick={() => setMenuOpen(false)} className={cls}>{s.label}</SectionLink>;
+          })}
           {!user && <Link to="/register" className="mt-4 flex items-center justify-center min-h-12 rounded-lg bg-gold text-ink font-display font-semibold">Get started — it's free</Link>}
         </nav>
       )}

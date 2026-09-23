@@ -55,12 +55,12 @@ export default function SiteFooter() {
           <FooterCol title="Platform">
             <Link to="/register" className={col}>Create an account</Link>
             <SectionLink id="how-it-works" className={col}>How it works</SectionLink>
-            <SectionLink id="scholarships" className={col}>Scholarships</SectionLink>
-            <SectionLink id="features" className={col}>Features</SectionLink>
+            <SectionLink id="inuka-ai" className={col}>INUKA AI</SectionLink>
+            <Link to="/scholarships" className={col}>Scholarships</Link>
           </FooterCol>
           <FooterCol title="Resources">
             <Link to="/news" className={col}>News & guides</Link>
-            <SectionLink id="tips" className={col}>Application tips</SectionLink>
+            <SectionLink id="impact" className={col}>Our impact</SectionLink>
             <SectionLink id="faq" className={col}>FAQ</SectionLink>
           </FooterCol>
           <FooterCol title="Organisation">

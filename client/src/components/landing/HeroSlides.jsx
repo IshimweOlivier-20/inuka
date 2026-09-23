@@ -10,7 +10,7 @@ const MINT = '#DDEFE4';
 const d = (s) => ({ '--d': `${s}s` }); // animation delay helper
 
 // A young person, drawn around the centre of the head (0, 0).
-function Person({ x, y, s = 1, skin = '#8D5A3B', hair = 'short', hairColor = '#1F140D', shirt = GOLD, glasses, body = 'bust', smile = true }) {
+export function Person({ x, y, s = 1, skin = '#8D5A3B', hair = 'short', hairColor = '#1F140D', shirt = GOLD, glasses, body = 'bust', smile = true }) {
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
       {hair === 'puff' && <circle cx="0" cy="-50" r="22" fill={hairColor} />}
@@ -60,7 +60,7 @@ function Shadow() {
   return <ellipse cx="210" cy="318" rx="170" ry="18" fill="#000" opacity=".15" />;
 }
 
-function Sparkle({ x, y, r = 7, delay = 0, color = GOLD }) {
+export function Sparkle({ x, y, r = 7, delay = 0, color = GOLD }) {
   return <path className="pop" style={d(delay)} d={`M${x} ${y - r}L${x + r * 0.3} ${y - r * 0.3}L${x + r} ${y}L${x + r * 0.3} ${y + r * 0.3}L${x} ${y + r}L${x - r * 0.3} ${y + r * 0.3}L${x - r} ${y}L${x - r * 0.3} ${y - r * 0.3}Z`} fill={color} />;
 }
 

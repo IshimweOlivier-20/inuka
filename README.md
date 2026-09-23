@@ -101,7 +101,9 @@ to a future date schedules the article.
 **Email sign-ups** from the "Get scholarship alerts" box are saved in the `subscribers` table.
 Sending the alert emails comes in a later phase.
 
-**Contact email and social media links** are in `client/src/config/site.js`. Social icons appear in the
+**Contact email and social media links** are in `client/src/config/site.js`.
+
+**Impact goals** (the big numbers such as 20K+) are in `IMPACT` in `client/src/config/site.js`. The page presents them as goals for the year you set. The live numbers underneath come from the database automatically. Social icons appear in the
 footer only when you add a URL.
 
 ## 5. Troubleshooting
@@ -141,7 +143,7 @@ inuka/
 | Spec section | Status |
 |---|---|
 | §4 Auth (student + mentor registration, login, email verification, password reset, rate limiting, refresh tokens) | ✅ Done (Google sign-in: Phase 2) |
-| §5 Landing page | ✅ Done, plus: who it's for, provider strip, tips, testimonials, news & guides (with article pages), team, partners & sponsors, FAQ, email alerts |
+| §5 Landing page | ✅ Hero slideshow, programme strip, mission, who it's for, how it works, **our impact** (goals + live numbers), **INUKA AI** preview, testimonials, team, partners, FAQ, email alerts. Tips and news have their own data ready for their future pages (`/news` already works). |
 | §6 Student dashboard | ✅ Done |
 | §7–8 Courses, lessons, quizzes (60% pass mark), lesson locking, listen-aloud audio | ✅ Done — 5 lessons have full content; the other 67 have titles and need content |
 | §9 My Learning (tracks, streak heatmap, badges, certificates) | ✅ Done (weekly bar chart and quiz history table: Phase 2) |
@@ -184,3 +186,4 @@ INUKA, check each entry in `server/seed/scholarships.json` against the official 
 - `client/public/favicon-*.png`, `apple-touch-icon.png`: browser tab and phone home-screen icons.
 
 Contact details, address and social media links are in `client/src/config/site.js`.
+

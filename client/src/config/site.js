@@ -27,11 +27,24 @@ export const SITE = {
   },
 };
 
-// Sections linked from the navbar (ids on the home page)
+// Navbar links: `id` scrolls to a section of the home page, `to` opens another page.
 export const NAV_SECTIONS = [
   { id: 'how-it-works', label: 'How it works' },
-  { id: 'scholarships', label: 'Scholarships' },
-  { id: 'tips', label: 'Tips' },
-  { id: 'news', label: 'News' },
+  { id: 'inuka-ai', label: 'INUKA AI' },
+  { id: 'impact', label: 'Our impact' },
+  { to: '/news', label: 'News' },
   { id: 'faq', label: 'FAQ' },
 ];
+
+// "Our impact" section on the home page.
+// These are GOALS, and the page labels them as goals. Change the numbers and the year to your real targets.
+// Live numbers (scholarships, courses, lessons, students) are shown underneath automatically from the database.
+export const IMPACT = {
+  goalYear: 2027,
+  goals: [
+    { value: 20000, label: 'students learning on INUKA' },
+    { value: 1500, label: 'scholarships listed' },
+    { value: 6000, label: 'mentor sessions held' },
+    { value: 50, label: 'countries reached' },
+  ],
+};
