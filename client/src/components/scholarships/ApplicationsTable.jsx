@@ -3,6 +3,7 @@ import { Alert, Button, EmptyState } from '../ui';
 import { api, errorMessage } from '../../services/api';
 import { APP_STATUS, formatDate } from '../../utils/format';
 import { ListRowsSkeleton } from '../ui/Skeletons';
+import { ExternalLink, FileText } from 'lucide-react';
 
 // Spec 10.4 — students update their own status and notes.
 export default function ApplicationsTable() {
@@ -16,14 +17,14 @@ export default function ApplicationsTable() {
     setApps((list) => list.map((a) => (a.id === id ? { ...a, ...patch } : a)));
     try {
       const { data } = await api.patch(`/applications/${id}`, patch);
-      if (data.newBadge) setMsg(`You earned the ${data.newBadge.name} badge! ${data.newBadge.icon}`);
+      if (data.newBadge) setMsg(`You earned the ${data.newBadge.name} badge!`);
     } catch (e) { setError(errorMessage(e)); load(); }
   };
   const remove = async (id) => { await api.delete(`/applications/${id}`); load(); };
 
   if (error) return <Alert>{error}</Alert>;
   if (!apps) return <ListRowsSkeleton label="Loading your applications" />;
-  if (!apps.length) return <EmptyState icon="📝" title="No applications yet">When you click “Apply now” on a scholarship and continue to its website, it appears here so you can track it.</EmptyState>;
+  if (!apps.length) return <EmptyState icon={FileText} title="No applications yet">When you click “Apply now” on a scholarship and continue to its website, it appears here so you can track it.</EmptyState>;
 
   return (
     <div className="space-y-3">
@@ -48,7 +49,7 @@ export default function ApplicationsTable() {
                 className="w-full min-h-11 rounded-lg border border-line px-3" />
             </label>
             <div className="flex gap-1">
-              <Button variant="ghost" href={a.scholarship.applyUrl} target="_blank" rel="noopener noreferrer" className="px-3">Open ↗</Button>
+              <Button variant="ghost" href={a.scholarship.applyUrl} target="_blank" rel="noopener noreferrer" className="px-3">Open <ExternalLink size={15} aria-hidden="true" /></Button>
               <Button variant="ghost" onClick={() => remove(a.id)} className="px-3 text-danger" aria-label={`Remove ${a.scholarship.name}`}>Remove</Button>
             </div>
           </li>

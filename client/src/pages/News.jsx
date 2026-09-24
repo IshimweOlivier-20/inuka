@@ -1,24 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import DOMPurify from 'dompurify';
-import LandingNav from '../components/layout/LandingNav';
-import SiteFooter from '../components/landing/SiteFooter';
-import { CATEGORY_LABEL, SampleBadge } from '../components/landing/common';
+import PublicShell from '../components/landing/PublicShell';
+import { CATEGORY_LABEL } from '../components/landing/common';
 import { PostCard } from '../components/landing/Sections';
 import { Button, Pill } from '../components/ui';
 import { Skeleton } from '../components/ui/Skeletons';
 import { api, errorMessage } from '../services/api';
 import { formatDate } from '../utils/format';
-
-function PublicShell({ children }) {
-  return (
-    <div className="bg-paper min-h-screen flex flex-col">
-      <LandingNav solid />
-      <main className="flex-1 pt-16">{children}</main>
-      <SiteFooter />
-    </div>
-  );
-}
+import IconTile from '../components/ui/IconTile';
+import { CATEGORY_ICON, Newspaper } from '../components/landing/categoryIcons';
 
 const FILTERS = [['', 'All'], ['guide', 'Guides'], ['news', 'News']];
 
@@ -86,13 +77,12 @@ export function Article() {
               <div className="flex flex-wrap items-center gap-2 text-sm text-ink-soft">
                 <Pill tone={data.post.category === 'news' ? 'amber' : 'forest'}>{CATEGORY_LABEL[data.post.category] || data.post.category}</Pill>
                 <span>{data.post.readMinutes} min read</span>
-                <SampleBadge show={data.post.isSample} />
               </div>
               <h1 className="text-3xl md:text-[2.6rem] font-bold mt-3 leading-tight">{data.post.title}</h1>
               <p className="text-lg text-ink-soft mt-3">{data.post.excerpt}</p>
               <p className="text-sm text-ink-soft mt-4">By {data.post.authorName}, {formatDate(data.post.publishedAt)}</p>
             </header>
-            <div className="mt-8 h-44 rounded-2xl bg-gradient-to-br from-leaf to-[#DDEFE4] flex items-center justify-center text-7xl" aria-hidden>{data.post.coverEmoji || '📰'}</div>
+            <div className="mt-8 h-44 rounded-2xl bg-gradient-to-br from-leaf to-[#DDEFE4] flex items-center justify-center" aria-hidden="true"><IconTile icon={CATEGORY_ICON[data.post.category] || Newspaper} tone={data.post.category === 'news' ? 'gold' : 'forest'} size="xl" /></div>
             <div className="lesson-prose mt-8" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(data.post.contentHtml) }} />
 
             <aside className="mt-10 rounded-2xl bg-forest text-white p-6 flex flex-col sm:flex-row sm:items-center gap-4">
@@ -107,7 +97,7 @@ export function Article() {
                   {data.more.map((m) => (
                     <li key={m.slug}>
                       <Link to={`/news/${m.slug}`} className="flex items-center gap-4 rounded-xl bg-white border border-line p-4 hover:border-forest/40">
-                        <span className="text-3xl" aria-hidden>{m.coverEmoji || '📰'}</span>
+                        <IconTile icon={CATEGORY_ICON[m.category] || Newspaper} tone={m.category === 'news' ? 'gold' : 'forest'} size="md" />
                         <span className="flex-1"><span className="block font-semibold">{m.title}</span><span className="text-sm text-ink-soft">{CATEGORY_LABEL[m.category]}, {m.readMinutes} min read</span></span>
                       </Link>
                     </li>

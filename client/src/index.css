@@ -69,15 +69,6 @@
 @keyframes unfold { to { transform: scale(1); } }
 @keyframes pop-in { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: none; } }
 
-/* Provider strip: continuous horizontal scroll, with soft faded edges */
-.marquee { mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent); }
-.marquee-track { animation: marquee 45s linear infinite; }
-@keyframes marquee { to { transform: translateX(-50%); } }
-@media (prefers-reduced-motion: reduce) {
-  .marquee { mask-image: none; }
-  .marquee-track { animation: none; flex-wrap: wrap; justify-content: center; width: auto; row-gap: 0.5rem; }
-  .marquee-track li[aria-hidden="true"] { display: none; }
-}
 /* FAQ: remove the default triangle marker in Safari */
 .faq summary::-webkit-details-marker { display: none; }
 @keyframes pop { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: scale(1); } }

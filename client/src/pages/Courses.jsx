@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom';
 import { Alert, Button, Pill, ProgressBar } from '../components/ui';
 import { api, errorMessage } from '../services/api';
 import { CoursesSkeleton } from '../components/ui/Skeletons';
+import { BookOpen, Check, Laptop } from 'lucide-react';
+import IconTile from '../components/ui/IconTile';
 
 const TRACKS = [
-  { key: 'english', title: 'English Language', icon: '📖', text: 'From the alphabet to a strong scholarship essay.' },
-  { key: 'computer', title: 'Basic Computer Skills', icon: '💻', text: 'From your first click to a full online application.' },
+  { key: 'english', title: 'English Language', icon: BookOpen, tone: 'forest', text: 'From the alphabet to a strong scholarship essay.' },
+  { key: 'computer', title: 'Basic Computer Skills', icon: Laptop, tone: 'sky', text: 'From your first click to a full online application.' },
 ];
 
 export default function Courses() {
@@ -25,7 +27,7 @@ export default function Courses() {
       {TRACKS.map((t) => (
         <section key={t.key}>
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-3xl" aria-hidden>{t.icon}</span>
+            <IconTile icon={t.icon} tone={t.tone} size="md" />
             <div><h2 className="text-xl font-semibold">{t.title}</h2><p className="text-ink-soft text-sm">{t.text}</p></div>
           </div>
           <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -44,7 +46,7 @@ function CourseCard({ c }) {
       <div className={`px-5 pt-5 pb-4 ${c.category === 'english' ? 'bg-leaf' : 'bg-amber-50'}`}>
         <div className="flex items-center justify-between">
           <span className="font-display font-bold text-3xl text-forest/80" aria-label={`Sub-course ${c.track}`}>{c.track}</span>
-          {c.status === 'completed' ? <Pill tone="green">Completed ✓</Pill> : <Pill tone="grey">{c.level}</Pill>}
+          {c.status === 'completed' ? <Pill tone="green"><Check size={14} strokeWidth={3} aria-hidden="true" />Completed</Pill> : <Pill tone="grey">{c.level}</Pill>}
         </div>
         <h3 className="font-semibold text-lg mt-2 leading-snug"><Link to={`/courses/${c.slug}`} className="hover:underline">{c.title}</Link></h3>
       </div>

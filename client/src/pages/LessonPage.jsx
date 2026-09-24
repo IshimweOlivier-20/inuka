@@ -6,6 +6,7 @@ import QuizWidget from '../components/courses/QuizWidget';
 import ListenButton from '../components/courses/ListenButton';
 import { api, errorMessage } from '../services/api';
 import { LessonSkeleton } from '../components/ui/Skeletons';
+import { BadgeMedal } from '../utils/badgeIcons';
 
 export default function LessonPage() {
   const { id } = useParams();
@@ -80,7 +81,7 @@ export default function LessonPage() {
         footer={<Button onClick={() => { setCelebrate(null); goNext(); }}>{nextLessonId ? 'Continue' : 'Back to course'}</Button>}>
         <div className="text-center py-4">
           {celebrate?.newBadges?.map((b) => (
-            <div key={b.id} className="mb-4"><div className="text-6xl" aria-hidden>{b.icon}</div><p className="font-display font-semibold text-xl mt-2">{b.name}</p><p className="text-ink-soft">{b.description}</p></div>
+            <div key={b.id} className="mb-4 flex flex-col items-center"><BadgeMedal badgeKey={b.key} size={88} /><p className="font-display font-semibold text-xl mt-3">{b.name}</p><p className="text-ink-soft">{b.description}</p></div>
           ))}
           {celebrate?.certificate && <p className="mt-2">Your certificate is ready in <Link to="/my-learning" className="text-forest underline font-semibold">My Learning</Link>.</p>}
         </div>

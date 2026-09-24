@@ -1,24 +1,83 @@
 {
   "tips": [
-    { "icon": "📅", "title": "Start early", "body": "Many scholarships open 6 to 12 months before studies begin. Make a list of deadlines now and check it every month." },
-    { "icon": "🔍", "title": "Read eligibility first", "body": "Before you write anything, check age, nationality, level and grades. If you are not eligible, move on to the next one." },
-    { "icon": "🗂️", "title": "Scan your documents once", "body": "Scan your ID, S4–S6 reports and diploma as clear PDFs. Save them in your INUKA vault so every application is faster." },
-    { "icon": "✍️", "title": "Tailor every essay", "body": "Committees can tell when a letter is copied. Answer their exact question and explain why this programme fits your goals." },
-    { "icon": "👩‍🏫", "title": "Ask recommenders early", "body": "Give teachers or community leaders at least four weeks. Share your goals and the deadline so they can write a strong letter." },
-    { "icon": "📧", "title": "Use a professional email", "body": "Create an address with your name, like aline.uwase@gmail.com. Check it often: universities reply by email." },
-    { "icon": "🧾", "title": "Keep proof of submission", "body": "Take a screenshot of the confirmation page and save any reference number. It protects you if something goes wrong." },
-    { "icon": "⚠️", "title": "Never pay for a promise", "body": "Be careful of anyone who asks for money to guarantee a scholarship. Apply directly on the official website." }
+    {
+      "icon": "📅",
+      "title": "Start early",
+      "body": "Many scholarships open 6 to 12 months before studies begin. Make a list of deadlines now and check it every month."
+    },
+    {
+      "icon": "🔍",
+      "title": "Read eligibility first",
+      "body": "Before you write anything, check age, nationality, level and grades. If you are not eligible, move on to the next one."
+    },
+    {
+      "icon": "🗂️",
+      "title": "Scan your documents once",
+      "body": "Scan your ID, S4–S6 reports and diploma as clear PDFs. Save them in your INUKA vault so every application is faster."
+    },
+    {
+      "icon": "✍️",
+      "title": "Tailor every essay",
+      "body": "Committees can tell when a letter is copied. Answer their exact question and explain why this programme fits your goals."
+    },
+    {
+      "icon": "👩‍🏫",
+      "title": "Ask recommenders early",
+      "body": "Give teachers or community leaders at least four weeks. Share your goals and the deadline so they can write a strong letter."
+    },
+    {
+      "icon": "📧",
+      "title": "Use a professional email",
+      "body": "Create an address with your name, like aline.uwase@gmail.com. Check it often: universities reply by email."
+    },
+    {
+      "icon": "🧾",
+      "title": "Keep proof of submission",
+      "body": "Take a screenshot of the confirmation page and save any reference number. It protects you if something goes wrong."
+    },
+    {
+      "icon": "⚠️",
+      "title": "Never pay for a promise",
+      "body": "Be careful of anyone who asks for money to guarantee a scholarship. Apply directly on the official website."
+    }
   ],
   "faq": [
-    { "question": "Is INUKA really free?", "answer": "Yes. All courses, scholarship listings, the document vault and INUKA AI are free for students, and will stay free." },
-    { "question": "Who can use INUKA?", "answer": "INUKA is made for young people who finished secondary school (S4, S5 or S6) in Rwanda or elsewhere in Africa, and for refugee and displaced youth. Anyone can learn from the courses." },
-    { "question": "Do I need to be a refugee to use INUKA?", "answer": "No. INUKA is for all high school graduates. If you are a refugee, you can choose to tell us so we can show you scholarships made for refugees. This is optional and private." },
-    { "question": "Does INUKA send my application to universities?", "answer": "No. You always apply on the official scholarship or university website. INUKA helps you find opportunities, prepare your documents and skills, and track your applications." },
-    { "question": "Can INUKA guarantee that I get a scholarship?", "answer": "No one can guarantee a scholarship. INUKA helps you prepare the strongest possible application. Be careful of anyone who promises a guaranteed scholarship for money." },
-    { "question": "Who can see my documents?", "answer": "Only you. Documents in your vault are private to your account. INUKA does not share them with anyone." },
-    { "question": "Can I use INUKA on my phone or with slow internet?", "answer": "Yes. INUKA is designed for phones and slow connections. Pages load in small pieces and lessons are mostly text, with an option to listen." },
-    { "question": "Is the INUKA English certificate accepted instead of IELTS or TOEFL?", "answer": "Most scholarships require an official English test. A few accept other proof of English. Your INUKA certificate shows your progress, but always check what each scholarship accepts." },
-    { "question": "How can I become a mentor?", "answer": "Create an account and choose “I am a mentor”. The INUKA team reviews every mentor profile before students can book sessions." }
+    {
+      "question": "Is INUKA really free?",
+      "answer": "Yes. All courses, scholarship listings, the document vault and INUKA AI are free for students, and will stay free."
+    },
+    {
+      "question": "Who can use INUKA?",
+      "answer": "INUKA is made for young people who finished secondary school (S4, S5 or S6) in Rwanda or elsewhere in Africa, and for refugee and displaced youth. Anyone can learn from the courses."
+    },
+    {
+      "question": "Do I need to be a refugee to use INUKA?",
+      "answer": "No. INUKA is for all high school graduates. If you are a refugee, you can choose to tell us so we can show you scholarships made for refugees. This is optional and private."
+    },
+    {
+      "question": "Does INUKA send my application to universities?",
+      "answer": "No. You always apply on the official scholarship or university website. INUKA helps you find opportunities, prepare your documents and skills, and track your applications."
+    },
+    {
+      "question": "Can INUKA guarantee that I get a scholarship?",
+      "answer": "No one can guarantee a scholarship. INUKA helps you prepare the strongest possible application. Be careful of anyone who promises a guaranteed scholarship for money."
+    },
+    {
+      "question": "Who can see my documents?",
+      "answer": "Only you. Documents in your vault are private to your account. INUKA does not share them with anyone."
+    },
+    {
+      "question": "Can I use INUKA on my phone or with slow internet?",
+      "answer": "Yes. INUKA is designed for phones and slow connections. Pages load in small pieces and lessons are mostly text, with an option to listen."
+    },
+    {
+      "question": "Is the INUKA English certificate accepted instead of IELTS or TOEFL?",
+      "answer": "Most scholarships require an official English test. A few accept other proof of English. Your INUKA certificate shows your progress, but always check what each scholarship accepts."
+    },
+    {
+      "question": "How can I become a mentor?",
+      "answer": "Create an account and choose “I am a mentor”. The INUKA team reviews every mentor profile before students can book sessions."
+    }
   ],
   "posts": [
     {
@@ -59,21 +118,123 @@
     }
   ],
   "team": [
-    { "name": "Olivier Ishimwe", "role": "Founder & Lead Developer", "bio": "Software engineering student who designed and built INUKA to open the way to higher education for young people across Africa.", "isSample": false },
-    { "name": "Sample team member", "role": "Mentorship Lead", "bio": "Recruits and supports INUKA mentors. Replace this with a real team member.", "isSample": true },
-    { "name": "Sample team member", "role": "Curriculum Lead", "bio": "Writes and reviews English and computer skills lessons. Replace this with a real team member.", "isSample": true },
-    { "name": "Sample team member", "role": "Refugee Outreach Lead", "bio": "Works with communities and camps to reach refugee youth. Replace this with a real team member.", "isSample": true }
+    {
+      "name": "Olivier Ishimwe",
+      "role": "Founder & Lead Developer",
+      "bio": "Software engineering student who designed and built INUKA to open the way to higher education for young people across Africa.",
+      "isSample": false
+    },
+    {
+      "name": "Sample team member",
+      "role": "Mentorship Lead",
+      "bio": "Recruits and supports INUKA mentors. Replace this with a real team member.",
+      "isSample": true
+    },
+    {
+      "name": "Sample team member",
+      "role": "Curriculum Lead",
+      "bio": "Writes and reviews English and computer skills lessons. Replace this with a real team member.",
+      "isSample": true
+    },
+    {
+      "name": "Sample team member",
+      "role": "Refugee Outreach Lead",
+      "bio": "Works with communities and camps to reach refugee youth. Replace this with a real team member.",
+      "isSample": true
+    }
   ],
   "testimonials": [
-    { "name": "Sample student", "country": "Rwanda", "role": "S6 graduate", "quote": "Replace this with a real student's words, with their permission. For example: what they learned, and what changed for them.", "isSample": true },
-    { "name": "Sample student", "country": "Kenya (refugee)", "role": "University applicant", "quote": "Real testimonials build trust. Ask students who used INUKA to share one or two honest sentences.", "isSample": true },
-    { "name": "Sample mentor", "country": "Uganda", "role": "Admissions counsellor", "quote": "Mentors can share why they volunteer on INUKA. Always get written permission before publishing anyone's name or photo.", "isSample": true }
+    {
+      "name": "Sample student",
+      "country": "Rwanda",
+      "role": "S6 graduate",
+      "quote": "Replace this with a real student's words, with their permission. For example: what they learned, and what changed for them.",
+      "isSample": true
+    },
+    {
+      "name": "Sample student",
+      "country": "Kenya (refugee)",
+      "role": "University applicant",
+      "quote": "Real testimonials build trust. Ask students who used INUKA to share one or two honest sentences.",
+      "isSample": true
+    },
+    {
+      "name": "Sample mentor",
+      "country": "Uganda",
+      "role": "Admissions counsellor",
+      "quote": "Mentors can share why they volunteer on INUKA. Always get written permission before publishing anyone's name or photo.",
+      "isSample": true
+    }
   ],
-  "partners": [
-    { "name": "University partner", "kind": "partner", "description": "A university that shares opportunities with INUKA students.", "isSample": true },
-    { "name": "Refugee education NGO", "kind": "partner", "description": "An organisation that helps INUKA reach refugee youth.", "isSample": true },
-    { "name": "Community library", "kind": "partner", "description": "A place where students can use computers to learn on INUKA.", "isSample": true },
-    { "name": "Telecom sponsor", "kind": "sponsor", "description": "A sponsor that could provide free data for learning.", "isSample": true },
-    { "name": "Foundation sponsor", "kind": "sponsor", "description": "A foundation that funds INUKA's free courses.", "isSample": true }
+  "partnerOrganisations": [
+    {
+      "name": "African Leadership University",
+      "kind": "partner",
+      "websiteUrl": "https://www.alueducation.com",
+      "logoUrl": "/partners/alu.png"
+    },
+    {
+      "name": "MINEMA",
+      "description": "Ministry in Charge of Emergency Management, Rwanda",
+      "kind": "partner",
+      "websiteUrl": "https://www.minema.gov.rw",
+      "logoUrl": "/partners/minema.png"
+    },
+    {
+      "name": "MINEDUC",
+      "description": "Ministry of Education, Rwanda",
+      "kind": "partner",
+      "websiteUrl": "https://www.mineduc.gov.rw",
+      "logoUrl": "/partners/mineduc.png"
+    },
+    {
+      "name": "REMA",
+      "description": "Rwanda Environment Management Authority",
+      "kind": "partner",
+      "websiteUrl": "https://www.rema.gov.rw",
+      "logoUrl": "/partners/rema.png"
+    },
+    {
+      "name": "Mastercard Foundation",
+      "kind": "sponsor",
+      "websiteUrl": "https://mastercardfdn.org",
+      "logoUrl": "/partners/mastercard-foundation.png"
+    },
+    {
+      "name": "Rwanda Red Cross",
+      "kind": "partner",
+      "websiteUrl": "",
+      "logoUrl": "/partners/red-cross.png"
+    },
+    {
+      "name": "Alight",
+      "kind": "partner",
+      "websiteUrl": "https://wearealight.org",
+      "logoUrl": "/partners/alight.png"
+    },
+    {
+      "name": "UNICEF",
+      "kind": "partner",
+      "websiteUrl": "https://www.unicef.org/rwanda",
+      "logoUrl": "/partners/unicef.png"
+    },
+    {
+      "name": "Save the Children",
+      "kind": "partner",
+      "websiteUrl": "https://www.savethechildren.net",
+      "logoUrl": "/partners/save-the-children.png"
+    },
+    {
+      "name": "Inkomoko",
+      "kind": "partner",
+      "websiteUrl": "https://www.inkomoko.com",
+      "logoUrl": "/partners/inkomoko.png"
+    },
+    {
+      "name": "World Vision",
+      "kind": "partner",
+      "websiteUrl": "https://www.wvi.org/rwanda",
+      "logoUrl": "/partners/world-vision.png"
+    }
   ]
 }

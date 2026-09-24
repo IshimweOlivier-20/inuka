@@ -78,7 +78,19 @@ async function seedHomeContent() {
   await fill('faqItem', home.faq, 'FAQ items');
   await fill('teamMember', home.team, 'team members');
   await fill('testimonial', home.testimonials, 'testimonials (samples)');
-  await fill('partner', home.partners, 'partners (samples)');
+  // Partners: remove old placeholder partners, then add the organisations list.
+  // They are added UNPUBLISHED: publish each one (isPublished = true) only once that organisation has agreed
+  // to be shown as an INUKA partner and has given you its logo file.
+  const removed = await prisma.partner.deleteMany({ where: { isSample: true } });
+  if (removed.count) console.log(`✓ removed ${removed.count} placeholder partners`);
+  let added = 0;
+  for (const [i, org] of home.partnerOrganisations.entries()) {
+    const exists = await prisma.partner.findFirst({ where: { name: org.name } });
+    if (exists) continue;
+    await prisma.partner.create({ data: { ...org, websiteUrl: org.websiteUrl || null, orderIndex: i, isPublished: false } });
+    added++;
+  }
+  console.log(`✓ ${added} partner organisations added (unpublished until confirmed)`);
   console.log(`✓ ${home.posts.length} news & guides`);
 }
 

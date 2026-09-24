@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Button, Modal } from '../ui';
+import { Check, ExternalLink } from 'lucide-react';
 
 // Spec 10.2 — shown every time a student clicks Apply, before leaving INUKA.
 export default function DocumentChecklist({ open, scholarship, checklist, onClose, onContinue, onSave }) {
@@ -11,7 +12,7 @@ export default function DocumentChecklist({ open, scholarship, checklist, onClos
       footer={<>
         <Button variant="ghost" onClick={onClose}>Close</Button>
         {!scholarship.saved && <Button variant="outline" onClick={onSave}>Save this scholarship for later</Button>}
-        <Button onClick={onContinue}>I have all my documents — continue to apply ↗</Button>
+        <Button onClick={onContinue}>I have all my documents — continue to apply <ExternalLink size={16} aria-hidden="true" /></Button>
       </>}>
       <p className="text-ink-soft">
         <strong className="text-ink">{scholarship.name}</strong>. You have <strong className="text-ink">{ready} of {all.length}</strong> documents in your vault.
@@ -33,7 +34,7 @@ function Group({ title, items }) {
         {items.map((d) => (
           <li key={d.key} className="flex items-center gap-3 px-3 py-2.5">
             <span className={`w-6 h-6 shrink-0 rounded flex items-center justify-center text-sm ${d.uploaded ? 'bg-success text-white' : 'border-2 border-line'}`} aria-label={d.uploaded ? 'In your vault' : 'Not uploaded'}>
-              {d.uploaded ? '✓' : ''}
+              {d.uploaded ? <Check size={15} strokeWidth={3} /> : null}
             </span>
             <span className="flex-1 text-[15px]">{d.label}</span>
             {!d.uploaded && (

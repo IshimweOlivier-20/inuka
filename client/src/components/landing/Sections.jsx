@@ -3,16 +3,19 @@ import { Link } from 'react-router-dom';
 import Reveal from '../ui/Reveal';
 import { Button, Pill } from '../ui';
 import { Skeleton } from '../ui/Skeletons';
-import { Avatar, CATEGORY_LABEL, SampleBadge, SectionHeading } from './common';
+import { Avatar, CATEGORY_LABEL, SectionHeading } from './common';
 import { SITE } from '../../config/site';
 import { api, errorMessage } from '../../services/api';
 import { formatDate } from '../../utils/format';
+import { Check, Earth, GraduationCap, HeartHandshake } from 'lucide-react';
+import IconTile from '../ui/IconTile';
+import { CATEGORY_ICON, Newspaper } from './categoryIcons';
 
 /* ---------- Who INUKA is for ---------- */
 const AUDIENCES = [
-  { icon: '🎓', title: 'High school graduates', text: 'You finished S4, S5 or S6 and want to go to university, but you are not sure where to start.', points: ['Improve your English', 'Learn computer basics', 'Find scholarships you qualify for'] },
-  { icon: '🏕️', title: 'Refugee and displaced youth', text: 'You have finished secondary school and want to continue, wherever you live now.', points: ['See refugee-friendly scholarships', 'Know which documents to prepare', 'Get guidance from mentors'] },
-  { icon: '🤝', title: 'Mentors', text: 'You work in education or you have been through the process, and you want to help.', points: ['Share your experience', 'Review essays and plans', 'Choose your own hours'] },
+  { icon: GraduationCap, tone: 'forest', title: 'High school graduates', text: 'You finished S4, S5 or S6 and want to go to university, but you are not sure where to start.', points: ['Improve your English', 'Learn computer basics', 'Find scholarships you qualify for'] },
+  { icon: Earth, tone: 'gold', title: 'Refugee and displaced youth', text: 'You have finished secondary school and want to continue, wherever you live now.', points: ['See refugee-friendly scholarships', 'Know which documents to prepare', 'Get guidance from mentors'] },
+  { icon: HeartHandshake, tone: 'sprout', title: 'Mentors', text: 'You work in education or you have been through the process, and you want to help.', points: ['Share your experience', 'Review essays and plans', 'Choose your own hours'] },
 ];
 
 export function AudienceSection() {
@@ -22,40 +25,15 @@ export function AudienceSection() {
       <div className="grid md:grid-cols-3 gap-5">
         {AUDIENCES.map((a, i) => (
           <Reveal key={a.title} delay={i * 110} className="bg-white rounded-2xl border border-line p-6 flex flex-col">
-            <span className="text-4xl" aria-hidden>{a.icon}</span>
+            <IconTile icon={a.icon} tone={a.tone} size="lg" />
             <h3 className="text-xl font-semibold mt-4">{a.title}</h3>
             <p className="text-ink-soft mt-2">{a.text}</p>
             <ul className="mt-4 space-y-2 flex-1">
-              {a.points.map((p) => <li key={p} className="flex gap-2"><span className="text-forest font-bold" aria-hidden>✓</span>{p}</li>)}
+              {a.points.map((p) => <li key={p} className="flex items-start gap-2"><Check size={18} strokeWidth={3} className="text-sprout mt-1 shrink-0" aria-hidden="true" />{p}</li>)}
             </ul>
             <Link to="/register" className="mt-5 text-forest font-semibold hover:underline">{a.title === 'Mentors' ? 'Become a mentor' : 'Start for free'}</Link>
           </Reveal>
         ))}
-      </div>
-    </section>
-  );
-}
-
-/* ---------- Scrolling strip of scholarship providers ---------- */
-export function ProviderStrip({ providers }) {
-  if (!providers?.length) return null;
-  const items = [...providers, ...providers]; // doubled for a seamless loop
-  return (
-    <section className="bg-[#E3F1E8] border-y border-forest/10 py-7" aria-label="Scholarship programmes listed on INUKA">
-      {/* Same width as the navbar content, so names fade in and out where the navbar starts and ends */}
-      <div className="max-w-[1200px] mx-auto px-5">
-        <p className="text-center text-sm text-forest/80 font-medium mb-4">
-          Find scholarships from programmes like these. INUKA lists them for free; it is not affiliated with them.
-        </p>
-        <div className="marquee group relative overflow-hidden">
-          <ul className="marquee-track flex w-max gap-12 group-hover:[animation-play-state:paused]">
-            {items.map((p, i) => (
-              <li key={i} aria-hidden={i >= providers.length} className="flex items-center gap-12 font-display font-semibold text-lg text-forest/55 whitespace-nowrap">
-                {p}<span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
-              </li>
-            ))}
-          </ul>
-        </div>
       </div>
     </section>
   );
@@ -101,7 +79,6 @@ export function TestimonialsSection({ testimonials }) {
                 <span className="block font-semibold">{t.name}</span>
                 <span className="block text-sm text-ink-soft">{[t.role, t.country].filter(Boolean).join(', ')}</span>
               </span>
-              <SampleBadge show={t.isSample} />
             </figcaption>
           </Reveal>
         ))}
@@ -114,12 +91,11 @@ export function TestimonialsSection({ testimonials }) {
 export function PostCard({ p, i = 0 }) {
   return (
     <Reveal as="li" delay={(i % 3) * 110} className="group relative bg-paper rounded-2xl border border-line overflow-hidden flex flex-col hover:border-forest/40 transition-colors">
-      <div className="h-36 bg-gradient-to-br from-leaf to-[#DDEFE4] flex items-center justify-center text-6xl" aria-hidden>{p.coverEmoji || '📰'}</div>
+      <div className="h-36 bg-gradient-to-br from-leaf to-[#DDEFE4] flex items-center justify-center" aria-hidden="true"><IconTile icon={CATEGORY_ICON[p.category] || Newspaper} tone={p.category === 'news' ? 'gold' : 'forest'} size="xl" /></div>
       <div className="p-5 flex-1 flex flex-col">
         <div className="flex items-center gap-2 text-sm text-ink-soft">
           <Pill tone={p.category === 'news' ? 'amber' : 'forest'}>{CATEGORY_LABEL[p.category] || p.category}</Pill>
           <span>{p.readMinutes} min read</span>
-          <SampleBadge show={p.isSample} />
         </div>
         <h3 className="font-semibold text-lg leading-snug mt-3">
           <Link to={`/news/${p.slug}`} className="after:absolute after:inset-0 group-hover:text-forest">{p.title}</Link>
@@ -163,7 +139,6 @@ export function TeamSection({ team }) {
               {m.bio && <p className="text-ink-soft text-xs sm:text-sm mt-2 sm:mt-3">{m.bio}</p>}
               <div className="mt-3 flex items-center gap-2">
                 {m.linkedinUrl && <a href={m.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-forest font-semibold hover:underline">LinkedIn</a>}
-                <SampleBadge show={m.isSample} />
               </div>
             </Reveal>
           ))}
@@ -175,16 +150,17 @@ export function TeamSection({ team }) {
 
 /* ---------- Partners & sponsors ---------- */
 function PartnerLogo({ p }) {
-  const inner = p.logoUrl
-    ? <img src={p.logoUrl} alt={p.name} loading="lazy" className="max-h-12 max-w-[80%] object-contain" />
-    : <span className="font-display font-semibold text-ink/70 text-center leading-tight">{p.name}</span>;
-  const cls = 'relative h-24 rounded-xl border border-line bg-paper flex items-center justify-center px-4 hover:border-forest/40 transition-colors';
+  const [logoOk, setLogoOk] = useState(!!p.logoUrl);
+  const inner = logoOk
+    ? <img src={p.logoUrl} alt={p.name} loading="lazy" onError={() => setLogoOk(false)}
+        className="max-h-12 sm:max-h-14 max-w-[78%] w-auto object-contain grayscale opacity-70 transition duration-300 group-hover:grayscale-0 group-hover:opacity-100" />
+    : <span className="font-display font-semibold text-ink/55 text-center leading-tight text-[15px] transition-colors group-hover:text-forest">{p.name}</span>;
+  const cls = 'group h-24 sm:h-28 flex items-center justify-center px-4 rounded-2xl border border-line bg-white transition hover:border-forest/30 hover:shadow-[0_10px_30px_-18px_rgba(0,64,29,0.45)]';
   return (
-    <li title={p.description || p.name}>
+    <li className="w-[calc(50%-0.5rem)] sm:w-48" title={p.description || p.name}>
       {p.websiteUrl
-        ? <a href={p.websiteUrl} target="_blank" rel="noopener noreferrer" className={cls}>{inner}</a>
+        ? <a href={p.websiteUrl} target="_blank" rel="noopener noreferrer" aria-label={`${p.name} (opens their website)`} className={cls}>{inner}</a>
         : <div className={cls}>{inner}</div>}
-      {p.isSample && <div className="mt-1.5 text-center"><SampleBadge show /></div>}
     </li>
   );
 }
@@ -194,12 +170,14 @@ export function PartnersSection({ partners }) {
   const groups = [['partner', 'Partners'], ['sponsor', 'Sponsors']].map(([k, l]) => [l, list.filter((p) => p.kind === k)]).filter(([, g]) => g.length);
   return (
     <section id="partners" className="scroll-mt-16 bg-white border-t border-line py-16 md:py-20"><div className="max-w-[1200px] mx-auto px-5">
-      <Reveal><SectionHeading title="Partners & sponsors" intro="Organisations that help INUKA stay free and reach more young people." /></Reveal>
+      <Reveal><SectionHeading title="Partners & sponsors" intro="Organisations that help INUKA stay free and reach more young people." align="center" /></Reveal>
       {groups.map(([label, g]) => (
-        <div key={label} className="mb-8">
-          <h3 className="text-sm font-semibold text-ink-soft mb-3">{label}</h3>
-          <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">{g.map((p) => <PartnerLogo key={p.id} p={p} />)}</ul>
-        </div>
+        <Reveal key={label} className="mb-10">
+          <h3 className="text-center text-sm font-semibold text-ink-soft mb-4">{label}</h3>
+          <ul className="flex flex-wrap justify-center gap-4">
+            {g.map((p) => <PartnerLogo key={p.id} p={p} />)}
+          </ul>
+        </Reveal>
       ))}
       <Reveal className="rounded-2xl bg-ink text-white p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-5">
         <div className="flex-1">
@@ -217,17 +195,17 @@ export function FaqSection({ faq }) {
   if (faq && !faq.length) return null;
   return (
     <section id="faq" className="scroll-mt-16 bg-leaf py-16 md:py-20">
-      <div className="max-w-3xl mx-auto px-5">
+      <div className="max-w-[1200px] mx-auto px-5">
         <Reveal><SectionHeading title="Questions students ask" align="center" /></Reveal>
         <div className="space-y-3">
           {(faq || [null, null, null]).map((f, i) => f ? (
             <Reveal key={f.id} delay={Math.min(i, 4) * 60}>
               <details className="faq group bg-white rounded-xl border border-forest/10 open:border-forest/30">
-                <summary className="flex items-center justify-between gap-4 cursor-pointer list-none px-5 min-h-14 py-3 font-semibold">
+                <summary className="flex items-center justify-between gap-4 cursor-pointer list-none px-5 sm:px-6 min-h-16 py-3 font-semibold text-lg">
                   {f.question}
                   <span className="faq-icon shrink-0 w-8 h-8 rounded-full bg-leaf text-forest flex items-center justify-center text-xl transition-transform group-open:rotate-45" aria-hidden>+</span>
                 </summary>
-                <p className="px-5 pb-5 text-ink-soft">{f.answer}</p>
+                <p className="px-5 sm:px-6 pb-5 text-ink-soft max-w-4xl">{f.answer}</p>
               </details>
             </Reveal>
           ) : <Skeleton key={i} height={56} />)}

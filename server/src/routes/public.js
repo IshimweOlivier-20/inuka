@@ -4,6 +4,7 @@ import { z } from 'zod';
 import rateLimit from 'express-rate-limit';
 import { prisma } from '../lib/prisma.js';
 import { HttpError } from '../middleware/errorHandler.js';
+import { scholarshipQuery } from './scholarships.js';
 
 const router = Router();
 const isProd = () => process.env.NODE_ENV === 'production';
@@ -16,9 +17,8 @@ router.get('/landing', async (req, res) => {
   // Cache for 1 hour in production (spec 21.2). No cache in development, so edits show immediately.
   if (isProd() && cache.data && Date.now() - cache.at < 3600_000) return res.json(cache.data);
 
-  const [providers, scholarshipCount, courseCount, lessonCount, studentCount, testimonials, team, partners, faq] =
+  const [scholarshipCount, courseCount, lessonCount, studentCount, testimonials, team, partners, faq] =
     await Promise.all([
-      prisma.scholarship.findMany({ where: { isActive: true }, select: { orgName: true }, distinct: ['orgName'] }),
       prisma.scholarship.count({ where: { isActive: true } }),
       prisma.course.count({ where: { isPublished: true } }),
       prisma.lesson.count({ where: { isPublished: true } }),
@@ -32,7 +32,6 @@ router.get('/landing', async (req, res) => {
   cache = {
     at: Date.now(),
     data: {
-      providers: providers.map((p) => p.orgName),
       stats: { scholarshipCount, courseCount, lessonCount, studentCount },
       testimonials, team, partners, faq,
     },
@@ -61,6 +60,36 @@ router.get('/posts/:slug', async (req, res) => {
     select: { slug: true, title: true, category: true, coverEmoji: true, readMinutes: true },
   });
   res.json({ post, more });
+});
+
+// ---------- Public course catalogue (/learn) ----------
+router.get('/courses', async (req, res) => {
+  const courses = await prisma.course.findMany({
+    where: { isPublished: true },
+    orderBy: { orderIndex: 'asc' },
+    select: {
+      id: true, slug: true, title: true, category: true, track: true, level: true, description: true,
+      lessons: { where: { isPublished: true }, orderBy: { orderIndex: 'asc' }, select: { id: true, title: true, summary: true } },
+    },
+  });
+  res.json({ courses });
+});
+
+// ---------- Public scholarship search (/opportunities) ----------
+router.get('/scholarships', async (req, res) => {
+  const { where, orderBy, arrange } = scholarshipQuery(req.query);
+  const list = await prisma.scholarship.findMany({ where, orderBy });
+  res.json({ scholarships: arrange(list) });
+});
+
+router.get('/scholarships/:id', async (req, res) => {
+  const s = await prisma.scholarship.findFirst({ where: { isActive: true, OR: [{ id: req.params.id }, { slug: req.params.id }] } });
+  if (!s) throw new HttpError(404, 'We could not find that scholarship.');
+  const related = await prisma.scholarship.findMany({
+    where: { id: { not: s.id }, isActive: true, OR: [{ region: s.region }, { level: s.level }, { fundingType: s.fundingType }] },
+    take: 3, orderBy: { isFeatured: 'desc' },
+  });
+  res.json({ scholarship: s, related });
 });
 
 // Email alerts sign-up

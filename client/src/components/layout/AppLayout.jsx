@@ -4,16 +4,17 @@ import Logo from './Logo';
 import NotificationBell from './NotificationBell';
 import { useAuth } from '../../context/AuthContext';
 import { PageSkeleton } from '../ui/Skeletons';
+import { BookOpen, ChartLine, GraduationCap, HeartHandshake, LayoutDashboard, LogOut, Menu, Sparkles, UserRound, Wrench } from 'lucide-react';
 
 // Sidebar navigation (spec 6.1)
 export const NAV = [
-  { to: '/dashboard', label: 'Dashboard', icon: '🏠' },
-  { to: '/courses', label: 'Courses', icon: '📚' },
-  { to: '/scholarships', label: 'Scholarships', icon: '🎓' },
-  { to: '/my-learning', label: 'My Learning', icon: '📖' },
-  { to: '/mentorship', label: 'Mentorship', icon: '🤝' },
-  { to: '/ai', label: 'INUKA AI', icon: '🤖' },
-  { to: '/profile', label: 'Profile', icon: '👤' },
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/courses', label: 'Courses', icon: BookOpen },
+  { to: '/scholarships', label: 'Scholarships', icon: GraduationCap },
+  { to: '/my-learning', label: 'My Learning', icon: ChartLine },
+  { to: '/mentorship', label: 'Mentorship', icon: HeartHandshake },
+  { to: '/ai', label: 'INUKA AI', icon: Sparkles },
+  { to: '/profile', label: 'Profile', icon: UserRound },
 ];
 const MOBILE_TABS = ['/dashboard', '/courses', '/scholarships', '/my-learning', '/profile'];
 
@@ -36,14 +37,14 @@ export default function AppLayout() {
         <nav className="flex-1 px-3 space-y-1" aria-label="Main">
           {NAV.map((n) => (
             <NavLink key={n.to} to={n.to} className={linkCls} onClick={() => setMenuOpen(false)}>
-              <span aria-hidden>{n.icon}</span>{n.label}
+              <n.icon size={20} strokeWidth={2} aria-hidden="true" />{n.label}
             </NavLink>
           ))}
-          {user?.role === 'admin' && <NavLink to="/admin" className={linkCls} onClick={() => setMenuOpen(false)}><span aria-hidden>🛠️</span>Admin</NavLink>}
+          {user?.role === 'admin' && <NavLink to="/admin" className={linkCls} onClick={() => setMenuOpen(false)}><Wrench size={20} aria-hidden="true" />Admin</NavLink>}
         </nav>
         <div className="p-3 border-t border-white/10">
           <button onClick={signOut} className="w-full flex items-center gap-3 min-h-11 px-4 rounded-lg text-white/80 hover:bg-white/10 hover:text-white font-medium">
-            <span aria-hidden>🚪</span>Log out
+            <LogOut size={20} aria-hidden="true" />Log out
           </button>
         </div>
       </aside>
@@ -51,7 +52,7 @@ export default function AppLayout() {
 
       <header className="sticky top-0 z-20 bg-paper/95 backdrop-blur border-b border-line">
         <div className="flex items-center justify-between h-16 px-4 md:px-8 max-w-[1200px] mx-auto">
-          <button className="md:hidden min-w-11 min-h-11 text-2xl" onClick={() => setMenuOpen(true)} aria-label="Open menu">☰</button>
+          <button className="md:hidden min-w-11 min-h-11 inline-flex items-center justify-center" onClick={() => setMenuOpen(true)} aria-label="Open menu"><Menu size={24} /></button>
           <span className="hidden md:block" />
           <div className="flex items-center gap-2">
             <NotificationBell />
@@ -73,7 +74,7 @@ export default function AppLayout() {
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-20 bg-white border-t border-line grid grid-cols-5" aria-label="Quick">
         {NAV.filter((n) => MOBILE_TABS.includes(n.to)).map((n) => (
           <NavLink key={n.to} to={n.to} className={({ isActive }) => `flex flex-col items-center justify-center min-h-14 text-[11px] ${isActive ? 'text-forest font-semibold' : 'text-ink-soft'}`}>
-            <span className="text-lg" aria-hidden>{n.icon}</span>{n.label.replace('My ', '')}
+            <n.icon size={22} strokeWidth={2} aria-hidden="true" />{n.label.replace('My ', '')}
           </NavLink>
         ))}
       </nav>

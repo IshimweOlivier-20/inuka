@@ -1,14 +1,15 @@
 import Reveal from '../ui/Reveal';
 import { Button } from '../ui';
+import { Check, FileCheck, GraduationCap, Languages, Laptop, Moon, PenLine } from 'lucide-react';
 
 // Capability pills that orbit the INUKA AI core. Positions are % of the orbit box.
 const PILLS = [
-  { label: 'Available 24/7', icon: '🌙', style: { top: '6%', left: '4%' }, d: '0s' },
-  { label: 'Scholarship guidance', icon: '🎓', style: { top: '10%', right: '0%' }, d: '0.6s' },
-  { label: 'Essay feedback', icon: '✍️', style: { top: '44%', left: '-2%' }, d: '1.2s' },
-  { label: 'Document checklist', icon: '📄', style: { top: '52%', right: '-4%' }, d: '0.3s' },
-  { label: 'English help', icon: '🗣️', style: { bottom: '6%', left: '12%' }, d: '0.9s' },
-  { label: 'Computer help', icon: '💻', style: { bottom: '10%', right: '8%' }, d: '1.5s' },
+  { label: 'Available 24/7', icon: Moon, style: { top: '6%', left: '4%' }, d: '0s' },
+  { label: 'Scholarship guidance', icon: GraduationCap, style: { top: '10%', right: '0%' }, d: '0.6s' },
+  { label: 'Essay feedback', icon: PenLine, style: { top: '44%', left: '-2%' }, d: '1.2s' },
+  { label: 'Document checklist', icon: FileCheck, style: { top: '52%', right: '-4%' }, d: '0.3s' },
+  { label: 'English help', icon: Languages, style: { bottom: '6%', left: '12%' }, d: '0.9s' },
+  { label: 'Computer help', icon: Laptop, style: { bottom: '10%', right: '8%' }, d: '1.5s' },
 ];
 
 const CAN_DO = [
@@ -58,7 +59,7 @@ function AiOrbit() {
       {PILLS.map((p) => (
         <span key={p.label} style={{ ...p.style, animationDelay: p.d }}
           className="ai-pill absolute inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-white/85 backdrop-blur border border-white shadow-[0_8px_24px_-8px_rgba(0,64,29,0.25)] px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-sm font-semibold text-forest">
-          <span>{p.icon}</span>{p.label}
+          <p.icon size={16} strokeWidth={2.2} className="text-sprout" aria-hidden="true" />{p.label}
         </span>
       ))}
     </div>
@@ -80,7 +81,6 @@ function ChatPreview() {
           <p className="font-semibold leading-tight">INUKA AI</p>
           <p className="text-xs text-ink-soft">Your learning guide</p>
         </div>
-        <span className="rounded-full bg-amber-100 text-amber-900 px-2.5 py-0.5 text-xs font-semibold">Preview</span>
       </div>
       <div className="px-5 py-5 space-y-3 bg-paper text-[15px]">
         <p className="max-w-[85%] rounded-2xl rounded-tl-sm bg-white border border-line px-4 py-2.5">Hi! I'm INUKA AI. I can help you find scholarships, improve your English, or prepare your application. What do you need?</p>
@@ -89,7 +89,7 @@ function ChatPreview() {
           <p>Good question! Most applications ask for:</p>
           <ul className="mt-2 space-y-1">
             {['Your S4, S5 and S6 reports', 'National ID or passport', 'Your diploma', 'A personal statement', 'Your UNHCR card, if you are a refugee'].map((d) => (
-              <li key={d} className="flex gap-2"><span className="text-sprout font-bold" aria-hidden="true">✓</span>{d}</li>
+              <li key={d} className="flex items-start gap-2"><Check size={16} strokeWidth={3} className="text-sprout mt-1 shrink-0" aria-hidden="true" />{d}</li>
             ))}
           </ul>
           <p className="mt-2 text-ink-soft text-sm">Always check the official website of each scholarship.</p>
@@ -111,8 +111,7 @@ export default function AiSection() {
         <Reveal><AiOrbit /></Reveal>
 
         <Reveal className="mt-10 text-center max-w-3xl mx-auto">
-          <span className="inline-flex items-center gap-2 rounded-full bg-gold/15 text-gold-dark border border-gold/30 px-3 py-1 text-sm font-semibold">Coming soon</span>
-          <h2 className="mt-4 text-4xl md:text-[3.25rem] font-bold leading-[1.08] tracking-tight">
+          <h2 className="text-4xl md:text-[3.25rem] font-bold leading-[1.08] tracking-tight">
             Meet INUKA AI, <span className="text-forest">your guide that never sleeps</span>
           </h2>
           <p className="mt-5 text-lg text-ink-soft">
@@ -126,7 +125,7 @@ export default function AiSection() {
             <ul className="space-y-4">
               {CAN_DO.map((c) => (
                 <li key={c} className="flex gap-3 text-lg">
-                  <span className="mt-0.5 w-7 h-7 shrink-0 rounded-lg bg-forest text-white flex items-center justify-center text-sm font-bold" aria-hidden="true">✓</span>
+                  <span className="mt-0.5 w-7 h-7 shrink-0 rounded-lg bg-forest text-white flex items-center justify-center" aria-hidden="true"><Check size={16} strokeWidth={3} /></span>
                   {c}
                 </li>
               ))}

@@ -7,6 +7,7 @@ import DocumentChecklist from '../components/scholarships/DocumentChecklist';
 import ApplicationsTable from '../components/scholarships/ApplicationsTable';
 import { api, errorMessage } from '../services/api';
 import { ScholarshipGridSkeleton } from '../components/ui/Skeletons';
+import { Bookmark, SearchX } from 'lucide-react';
 
 const EMPTY = { q: '', region: '', level: '', funding: '', refugees: '', language: '', deadline: '', sort: 'deadline' };
 const TABS = [['discover', 'Discover'], ['saved', 'Saved'], ['applications', 'My applications']];
@@ -122,8 +123,8 @@ export default function Scholarships() {
           <div>
             {!list ? <ScholarshipGridSkeleton /> : list.length === 0 ? (
               tab === 'saved'
-                ? <EmptyState icon="🔖" title="No saved scholarships yet" action={<Button onClick={() => setParams({ tab: 'discover' })}>Discover scholarships</Button>}>Tap “Save” on any scholarship to keep it here, sorted by deadline.</EmptyState>
-                : <EmptyState icon="🔍" title="No scholarships match these filters" action={<Button variant="outline" onClick={() => setFilters(EMPTY)}>Clear all filters</Button>}>Try removing a filter or searching for a different word.</EmptyState>
+                ? <EmptyState icon={Bookmark} title="No saved scholarships yet" action={<Button onClick={() => setParams({ tab: 'discover' })}>Discover scholarships</Button>}>Tap “Save” on any scholarship to keep it here, sorted by deadline.</EmptyState>
+                : <EmptyState icon={SearchX} title="No scholarships match these filters" action={<Button variant="outline" onClick={() => setFilters(EMPTY)}>Clear all filters</Button>}>Try removing a filter or searching for a different word.</EmptyState>
             ) : (
               <>
                 <p className="text-sm text-ink-soft mb-3" aria-live="polite">{list.length} scholarship{list.length === 1 ? '' : 's'}</p>

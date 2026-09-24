@@ -90,9 +90,13 @@ Refresh the home page to see the change. You can also use pgAdmin.
 - **Testimonials:** only publish real words from real students or mentors, **with their written permission**
   to use their name (and photo). If there are none yet, leave the table empty and the section disappears.
 - **Team:** add real team members and delete the samples.
-- **Partners & sponsors:** only list organisations that have actually agreed to partner with INUKA.
-  Showing a logo without permission can suggest an endorsement that does not exist. The "Become a partner"
-  invitation always shows, even when the list is empty.
+- **Partners & sponsors:** the database already lists ALU, MINEMA, MINEDUC, REMA, Mastercard Foundation,
+  Rwanda Red Cross, Alight, UNICEF, Save the Children, Inkomoko and World Vision, all **unpublished**.
+  To show one: (1) make sure that organisation has agreed to be shown as an INUKA partner or sponsor,
+  (2) put the logo file they give you in `client/public/partners/` (names listed in the README there),
+  (3) in Prisma Studio, open `partners`, check `kind` (partner or sponsor) and `websiteUrl`, and set `isPublished` to `true`.
+  Showing an organisation's logo without its agreement suggests an endorsement that does not exist and can break
+  its brand rules. The "Become a partner" invitation always shows.
 
 **News & guides** are in the `posts` table. `contentHtml` holds the article text as simple HTML
 (`<p>`, `<h3>`, `<ul><li>`, `<strong>`). `category` is `news`, `guide` or `story`. Setting `publishedAt`
@@ -144,6 +148,7 @@ inuka/
 |---|---|
 | §4 Auth (student + mentor registration, login, email verification, password reset, rate limiting, refresh tokens) | ✅ Done (Google sign-in: Phase 2) |
 | §5 Landing page | ✅ Hero slideshow, programme strip, mission, who it's for, how it works, **our impact** (goals + live numbers), **INUKA AI** preview, testimonials, team, partners, FAQ, email alerts. Tips and news have their own data ready for their future pages (`/news` already works). |
+| Public pages for visitors | ✅ `/learn` (course catalogue with every lesson), `/opportunities` (scholarship search; saving and applying ask the visitor to sign in, then open that scholarship), `/news`. Navbar: Courses, Opportunities, INUKA AI, News, About ▾ (edit in `NAV_ITEMS` in `client/src/config/site.js`). |
 | §6 Student dashboard | ✅ Done |
 | §7–8 Courses, lessons, quizzes (60% pass mark), lesson locking, listen-aloud audio | ✅ Done — 5 lessons have full content; the other 67 have titles and need content |
 | §9 My Learning (tracks, streak heatmap, badges, certificates) | ✅ Done (weekly bar chart and quiz history table: Phase 2) |

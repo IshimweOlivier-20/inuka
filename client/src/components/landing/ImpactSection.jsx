@@ -43,14 +43,7 @@ function CountUp({ value, suffix = '+' }) {
   );
 }
 
-export default function ImpactSection({ stats }) {
-  const live = stats && [
-    [stats.scholarshipCount, 'scholarships listed'],
-    [stats.courseCount, 'free courses'],
-    [stats.lessonCount, 'lessons'],
-    // Student numbers appear once they are meaningful
-    ...(stats.studentCount >= 50 ? [[stats.studentCount, 'students learning']] : []),
-  ];
+export default function ImpactSection() {
   return (
     <section id="impact" className="impact-band scroll-mt-16 relative overflow-hidden text-white py-16 md:py-24">
       <div className="relative max-w-[1200px] mx-auto px-5">
@@ -70,20 +63,6 @@ export default function ImpactSection({ stats }) {
           ))}
         </dl>
 
-        {live && (
-          <Reveal delay={200} className="mt-12 rounded-2xl bg-white/10 border border-white/15 px-5 py-4 flex flex-wrap items-center gap-x-6 gap-y-2">
-            <span className="inline-flex items-center gap-2 font-semibold">
-              <span className="relative flex w-2.5 h-2.5" aria-hidden="true">
-                <span className="live-ping absolute inset-0 rounded-full bg-sprout" />
-                <span className="relative w-2.5 h-2.5 rounded-full bg-sprout" />
-              </span>
-              Today on INUKA
-            </span>
-            {live.map(([n, label]) => (
-              <span key={label} className="text-white/85"><strong className="text-white font-display">{n.toLocaleString('en-US')}</strong> {label}</span>
-            ))}
-          </Reveal>
-        )}
       </div>
     </section>
   );

@@ -8,7 +8,7 @@ async function award(userId, key) {
   const existing = await prisma.userBadge.findUnique({ where: { userId_badgeId: { userId, badgeId: badge.id } } });
   if (existing) return null;
   await prisma.userBadge.create({ data: { userId, badgeId: badge.id } });
-  await notify(userId, 'badge', `You earned the ${badge.name} badge! ${badge.icon}`, '/my-learning');
+  await notify(userId, 'badge', `You earned the ${badge.name} badge!`, '/my-learning');
   return badge;
 }
 

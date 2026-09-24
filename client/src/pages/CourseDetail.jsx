@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { Alert, Button, ProgressBar } from '../components/ui';
 import { api, errorMessage } from '../services/api';
 import { CourseDetailSkeleton } from '../components/ui/Skeletons';
+import { Check, Lock, PartyPopper } from 'lucide-react';
 
 export default function CourseDetail() {
   const { slug } = useParams();
@@ -21,7 +22,7 @@ export default function CourseDetail() {
       <h1 className="text-3xl font-bold mt-2">{course.title}</h1>
       <p className="text-ink-soft mt-2">{course.description}</p>
       <div className="mt-5"><ProgressBar value={Math.round((done / course.lessons.length) * 100)} label={`${done} of ${course.lessons.length} lessons completed`} /></div>
-      {certificate && <div className="mt-5"><Alert tone="success">🎉 You finished this course. Your certificate is in <Link to="/my-learning" className="underline font-semibold">My Learning</Link>.</Alert></div>}
+      {certificate && <div className="mt-5"><Alert tone="success"><PartyPopper size={18} className="inline -mt-1 mr-1" aria-hidden="true" />You finished this course. Your certificate is in <Link to="/my-learning" className="underline font-semibold">My Learning</Link>.</Alert></div>}
       {next && <Button to={`/lessons/${next.id}`} className="mt-5">{done ? 'Continue' : 'Start the first lesson'}</Button>}
 
       <ol className="mt-8 bg-white rounded-xl border border-line divide-y divide-line">
@@ -47,7 +48,7 @@ export default function CourseDetail() {
 }
 
 function Marker({ state, n }) {
-  if (state === 'done') return <span className="w-9 h-9 shrink-0 rounded-full bg-success text-white flex items-center justify-center font-bold" aria-label="Completed">✓</span>;
-  if (state === 'locked') return <span className="w-9 h-9 shrink-0 rounded-full bg-line flex items-center justify-center" aria-label="Locked">🔒</span>;
+  if (state === 'done') return <span className="w-9 h-9 shrink-0 rounded-full bg-success text-white flex items-center justify-center font-bold" aria-label="Completed"><Check size={18} strokeWidth={3} /></span>;
+  if (state === 'locked') return <span className="w-9 h-9 shrink-0 rounded-full bg-line flex items-center justify-center" aria-label="Locked"><Lock size={16} className="text-ink-soft" /></span>;
   return <span className="w-9 h-9 shrink-0 rounded-full border-2 border-forest text-forest flex items-center justify-center font-semibold">{n}</span>;
 }

@@ -1,5 +1,6 @@
 import { Button, Modal, Pill } from '../ui';
 import { FUNDING_LABEL, LEVEL_LABEL, deadlineTone, formatDate } from '../../utils/format';
+import { Bookmark, BookmarkCheck, Check, ExternalLink } from 'lucide-react';
 
 export default function ScholarshipDetail({ data, onClose, onSave, onApply, onOpenRelated }) {
   if (!data) return null;
@@ -8,13 +9,13 @@ export default function ScholarshipDetail({ data, onClose, onSave, onApply, onOp
   return (
     <Modal open onClose={onClose} wide title={s.name}
       footer={<>
-        <Button variant="ghost" onClick={() => onSave(s)}>{s.saved ? '🔖 Saved' : '🔖 Save'}</Button>
+        <Button variant="ghost" onClick={() => onSave(s)}>{s.saved ? <BookmarkCheck size={18} aria-hidden="true" /> : <Bookmark size={18} aria-hidden="true" />}{s.saved ? 'Saved' : 'Save'}</Button>
         <Button onClick={() => onApply(s)}>Apply now</Button>
       </>}>
       <p className="text-ink-soft">{s.orgName}, {s.hostCountry}</p>
       <div className="flex flex-wrap gap-2 mt-3">
         <Pill tone={s.fundingType === 'fully_funded' ? 'green' : 'amber'}>{FUNDING_LABEL[s.fundingType]}</Pill>
-        {s.openToRefugees && <Pill tone="teal">{s.refugeesOnly ? 'For refugees only' : 'Open to refugees ✓'}</Pill>}
+        {s.openToRefugees && <Pill tone="teal"><Check size={13} strokeWidth={3} aria-hidden="true" />{s.refugeesOnly ? 'For refugees only' : 'Open to refugees'}</Pill>}
         <Pill tone="grey">{LEVEL_LABEL[s.level]}</Pill>
         <Pill tone="grey">Study in {s.languageOfStudy === 'Both' ? 'English or French' : s.languageOfStudy}</Pill>
       </div>
@@ -28,7 +29,7 @@ export default function ScholarshipDetail({ data, onClose, onSave, onApply, onOp
       <Section title="Who can apply" items={s.eligibility} />
       <Section title="What it covers" items={s.coverage} />
       <Section title="How to apply" items={s.applicationSteps} ordered />
-      <p className="mt-5"><a href={s.applyUrl} target="_blank" rel="noopener noreferrer" className="text-forest font-semibold underline">Official website ↗</a></p>
+      <p className="mt-5"><a href={s.applyUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-forest font-semibold underline">Official website <ExternalLink size={16} aria-hidden="true" /></a></p>
 
       {related?.length > 0 && (
         <section className="mt-6 pt-5 border-t border-line">

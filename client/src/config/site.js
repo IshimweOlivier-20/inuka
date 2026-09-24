@@ -27,13 +27,23 @@ export const SITE = {
   },
 };
 
-// Navbar links: `id` scrolls to a section of the home page, `to` opens another page.
-export const NAV_SECTIONS = [
-  { id: 'how-it-works', label: 'How it works' },
+// Navbar links. `to` opens a page, `id` scrolls to a section of the home page, `children` makes a dropdown.
+export const NAV_ITEMS = [
+  { to: '/learn', label: 'Courses' },
+  { to: '/opportunities', label: 'Opportunities' },
   { id: 'inuka-ai', label: 'INUKA AI' },
-  { id: 'impact', label: 'Our impact' },
   { to: '/news', label: 'News' },
-  { id: 'faq', label: 'FAQ' },
+  {
+    label: 'About',
+    children: [
+      { id: 'mission', label: 'Our mission' },
+      { id: 'how-it-works', label: 'How it works' },
+      { id: 'impact', label: 'Our impact' },
+      { id: 'team', label: 'Our team' },
+      { id: 'partners', label: 'Partners & sponsors' },
+      { id: 'faq', label: 'FAQ' },
+    ],
+  },
 ];
 
 // "Our impact" section on the home page.

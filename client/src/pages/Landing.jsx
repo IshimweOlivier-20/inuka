@@ -10,9 +10,12 @@ import ImpactSection from '../components/landing/ImpactSection';
 import AiSection from '../components/landing/AiSection';
 import {
   AudienceSection, FaqSection, JoinSection, PartnersSection,
-  ProviderStrip, TeamSection, TestimonialsSection,
+  TeamSection, TestimonialsSection,
 } from '../components/landing/Sections';
 import { api } from '../services/api';
+import { BadgeCheck, BookOpen, GraduationCap, ListChecks } from 'lucide-react';
+import IconTile from '../components/ui/IconTile';
+import { Skeleton } from '../components/ui/Skeletons';
 
 const STEPS = [
   { title: 'Learn', text: 'Take free English and computer courses made for beginners. Short lessons, simple words, audio support.' },
@@ -54,7 +57,29 @@ export default function Landing() {
         </div>
       </section>
 
-      <ProviderStrip providers={data?.providers} />
+      {/* Numbers bar under the hero (live from the database) */}
+      <section className="bg-white border-b border-line" aria-label="INUKA in numbers">
+        <dl className="max-w-[1200px] mx-auto px-5 py-7 grid grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            [GraduationCap, 'forest', data?.stats?.scholarshipCount, 'Scholarships listed'],
+            [BookOpen, 'gold', data?.stats?.courseCount, 'Free courses'],
+            [ListChecks, 'sprout', data?.stats?.lessonCount, 'Lessons'],
+            [BadgeCheck, 'sky', 'Free', 'For every student, forever'],
+          ].map(([icon, tone, value, label], i) => (
+            <Reveal key={label} delay={i * 80} className="flex items-center gap-4">
+              <IconTile icon={icon} tone={tone} size="md" />
+              <div>
+                <dt className="sr-only">{label}</dt>
+                <dd className="font-display text-2xl sm:text-3xl font-bold text-ink leading-none">
+                  {value ?? (failed ? '—' : <Skeleton width={48} height={28} />)}
+                </dd>
+                <dd className="text-sm text-ink-soft mt-1">{label}</dd>
+              </div>
+            </Reveal>
+          ))}
+        </dl>
+      </section>
+
       <MissionSection />
       <AudienceSection />
 
@@ -74,7 +99,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <ImpactSection stats={data?.stats} />
+      <ImpactSection />
       <AiSection />
       <TestimonialsSection testimonials={data?.testimonials} />
       <TeamSection team={data?.team} />

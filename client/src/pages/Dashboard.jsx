@@ -5,6 +5,9 @@ import { useAuth } from '../context/AuthContext';
 import { api, errorMessage } from '../services/api';
 import { formatDate, quoteOfTheDay } from '../utils/format';
 import { DashboardSkeleton } from '../components/ui/Skeletons';
+import { BookOpen, Flame, GraduationCap, HeartHandshake, Laptop, Sparkles, Sprout } from 'lucide-react';
+import IconTile from '../components/ui/IconTile';
+import { BadgeMedal } from '../utils/badgeIcons';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -32,8 +35,8 @@ export default function Dashboard() {
           <h2 className="text-lg font-semibold mb-4">Your learning</h2>
           <ProgressBar value={d.overall.percent} label={`${d.overall.completed} of ${d.overall.total} lessons completed`} />
           <div className="grid sm:grid-cols-2 gap-4 mt-5">
-            <Level icon="📖" name="English level" level={d.levels.english.level} pct={d.levels.english.percent} />
-            <Level icon="💻" name="Computer skills" level={d.levels.computer.level} pct={d.levels.computer.percent} />
+            <Level icon={BookOpen} tone="forest" name="English level" level={d.levels.english.level} pct={d.levels.english.percent} />
+            <Level icon={Laptop} tone="sky" name="Computer skills" level={d.levels.computer.level} pct={d.levels.computer.percent} />
           </div>
           {d.continueLearning ? (
             <div className="mt-5 rounded-xl bg-leaf p-4 flex flex-col sm:flex-row sm:items-center gap-4">
@@ -54,13 +57,13 @@ export default function Dashboard() {
 
         <Card>
           <h2 className="text-lg font-semibold mb-3">Your streak</h2>
-          <p className="text-4xl font-display font-bold text-forest">{d.streak.current} <span className="text-2xl" aria-hidden>🔥</span></p>
+          <p className="text-4xl font-display font-bold text-forest">{d.streak.current} <Flame className="inline -mt-2 text-gold" size={32} fill="currentColor" aria-hidden="true" /></p>
           <p className="text-ink-soft">{d.streak.current === 1 ? 'day in a row' : 'days in a row'}</p>
           {d.streak.atRisk && <p className="mt-3 text-sm font-medium text-amber-800 bg-amber-50 rounded-lg px-3 py-2">Your streak is at risk! Study today to keep it going.</p>}
           <div className="mt-5 pt-4 border-t border-line">
             {d.latestBadge ? (
-              <p className="flex items-center gap-3"><span className="text-3xl" aria-hidden>{d.latestBadge.icon}</span><span><span className="block text-sm text-ink-soft">Latest badge</span><span className="font-semibold">{d.latestBadge.name}</span></span></p>
-            ) : <p className="text-sm text-ink-soft">Finish your first lesson to earn the 🌱 First Step badge.</p>}
+              <p className="flex items-center gap-3"><BadgeMedal badgeKey={d.latestBadge.key} size={48} /><span><span className="block text-sm text-ink-soft">Latest badge</span><span className="font-semibold">{d.latestBadge.name}</span></span></p>
+            ) : <p className="text-sm text-ink-soft">Finish your first lesson to earn the <Sprout size={16} className="inline text-sprout -mt-0.5" aria-hidden="true" /> First Step badge.</p>}
             <Link to="/my-learning" className="inline-block mt-3 text-sm text-forest font-semibold hover:underline">View all badges</Link>
           </div>
         </Card>
@@ -86,8 +89,8 @@ export default function Dashboard() {
         <Card>
           <h2 className="text-lg font-semibold mb-3">Quick actions</h2>
           <div className="grid grid-cols-2 gap-2">
-            {[['📚', 'Start a lesson', '/courses'], ['🎓', 'Find a scholarship', '/scholarships'], ['🤝', 'Book a mentor', '/mentorship'], ['🤖', 'Ask INUKA AI', '/ai']].map(([i, l, to]) => (
-              <Link key={l} to={to} className="rounded-lg bg-paper hover:bg-leaf p-3 text-sm font-medium flex flex-col gap-1 min-h-11"><span className="text-xl" aria-hidden>{i}</span>{l}</Link>
+            {[[BookOpen, 'forest', 'Start a lesson', '/courses'], [GraduationCap, 'gold', 'Find a scholarship', '/scholarships'], [HeartHandshake, 'sprout', 'Book a mentor', '/mentorship'], [Sparkles, 'sky', 'Ask INUKA AI', '/ai']].map(([i, tone, l, to]) => (
+              <Link key={l} to={to} className="rounded-lg bg-paper hover:bg-leaf p-3 text-sm font-medium flex flex-col gap-2 min-h-11"><IconTile icon={i} tone={tone} size="sm" />{l}</Link>
             ))}
           </div>
         </Card>
@@ -96,10 +99,10 @@ export default function Dashboard() {
   );
 }
 
-function Level({ icon, name, level, pct }) {
+function Level({ icon, tone, name, level, pct }) {
   return (
     <div className="rounded-lg border border-line p-3 flex items-center gap-3">
-      <span className="text-2xl" aria-hidden>{icon}</span>
+      <IconTile icon={icon} tone={tone} size="sm" />
       <div><p className="text-sm text-ink-soft">{name}</p><p className="font-semibold">{level} <span className="text-sm font-normal text-ink-soft">({pct}%)</span></p></div>
     </div>
   );

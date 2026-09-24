@@ -1,3 +1,4 @@
+import IconTile from './IconTile';
 import { useEffect, useId, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -113,7 +114,7 @@ export function Modal({ open, onClose, title, children, footer, wide }) {
 export function EmptyState({ icon, title, children, action }) {
   return (
     <div className="text-center py-12 px-4">
-      <div className="text-4xl mb-3" aria-hidden>{icon}</div>
+      {icon && <IconTile icon={icon} tone="soft" size="xl" className="mb-4" />}
       <h3 className="text-lg font-semibold mb-1">{title}</h3>
       <p className="text-ink-soft max-w-md mx-auto mb-5">{children}</p>
       {action}

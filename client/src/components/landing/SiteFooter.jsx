@@ -53,20 +53,21 @@ export default function SiteFooter() {
             <p className="mt-4 text-sm text-white/65 max-w-xs">Free learning, scholarships and guidance for African high school graduates and refugee youth.</p>
           </div>
           <FooterCol title="Platform">
-            <Link to="/register" className={col}>Create an account</Link>
-            <SectionLink id="how-it-works" className={col}>How it works</SectionLink>
+            <Link to="/learn" className={col}>Free courses</Link>
+            <Link to="/opportunities" className={col}>Scholarships & opportunities</Link>
             <SectionLink id="inuka-ai" className={col}>INUKA AI</SectionLink>
-            <Link to="/scholarships" className={col}>Scholarships</Link>
+            <Link to="/register" className={col}>Create an account</Link>
           </FooterCol>
           <FooterCol title="Resources">
             <Link to="/news" className={col}>News & guides</Link>
-            <SectionLink id="impact" className={col}>Our impact</SectionLink>
+            <SectionLink id="how-it-works" className={col}>How it works</SectionLink>
             <SectionLink id="faq" className={col}>FAQ</SectionLink>
           </FooterCol>
           <FooterCol title="Organisation">
+            <SectionLink id="mission" className={col}>Our mission</SectionLink>
+            <SectionLink id="impact" className={col}>Our impact</SectionLink>
             <SectionLink id="team" className={col}>Our team</SectionLink>
             <SectionLink id="partners" className={col}>Partners & sponsors</SectionLink>
-            <SectionLink id="partners" className={col}>Become a partner</SectionLink>
           </FooterCol>
           <div>
             <h3 className="text-white font-semibold mb-3">Contact</h3>

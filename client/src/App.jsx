@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import AppLayout from './components/layout/AppLayout';
 import { PageLoader } from './components/ui';
+import { HeartHandshake, Sparkles, Wrench } from 'lucide-react';
 
 // Each page is its own chunk (spec 19.4: code splitting for slow connections)
 const Landing = lazy(() => import('./pages/Landing'));
@@ -22,6 +23,8 @@ const Profile = lazy(() => import('./pages/Profile'));
 const ComingSoon = lazy(() => import('./pages/Misc').then((m) => ({ default: m.ComingSoon })));
 const NewsList = lazy(() => import('./pages/News').then((m) => ({ default: m.NewsList })));
 const Article = lazy(() => import('./pages/News').then((m) => ({ default: m.Article })));
+const Learn = lazy(() => import('./pages/Learn'));
+const Opportunities = lazy(() => import('./pages/Opportunities'));
 const NotFound = lazy(() => import('./pages/Misc').then((m) => ({ default: m.NotFound })));
 
 function RequireAuth({ children, role }) {
@@ -35,8 +38,12 @@ function RequireAuth({ children, role }) {
 
 function GuestOnly({ children }) {
   const { user, loading } = useAuth();
+  const location = useLocation();
   if (loading) return <PageLoader />;
-  return user ? <Navigate to="/dashboard" replace /> : children;
+  if (!user) return children;
+  // Just signed in: go where the person was heading (e.g. a scholarship they clicked), not always the dashboard.
+  const home = user.role === 'admin' ? '/admin' : '/dashboard';
+  return <Navigate to={location.state?.from || home} replace />;
 }
 
 export default function App() {
@@ -49,6 +56,8 @@ export default function App() {
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/learn" element={<Learn />} />
+        <Route path="/opportunities" element={<Opportunities />} />
         <Route path="/news" element={<NewsList />} />
         <Route path="/news/:slug" element={<Article />} />
 
@@ -61,9 +70,9 @@ export default function App() {
           <Route path="/my-learning" element={<MyLearning />} />
           <Route path="/certificates/:id" element={<Certificate />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/mentorship" element={<ComingSoon icon="🤝" title="Mentorship is coming next" text="Soon you will be able to book a session with a mentor who can review your personal statement and guide your applications." />} />
-          <Route path="/ai" element={<ComingSoon icon="🤖" title="INUKA AI is coming soon" text="Your 24/7 learning guide for scholarships, English and computer questions is being built." />} />
-          <Route path="/admin" element={<RequireAuth role="admin"><ComingSoon icon="🛠️" title="Admin dashboard" text="Coming in a later phase. For now, use Prisma Studio (npm run db:studio in the server folder) to manage data." /></RequireAuth>} />
+          <Route path="/mentorship" element={<ComingSoon icon={HeartHandshake} title="Mentorship is coming next" text="Soon you will be able to book a session with a mentor who can review your personal statement and guide your applications." />} />
+          <Route path="/ai" element={<ComingSoon icon={Sparkles} title="INUKA AI is coming soon" text="Your 24/7 learning guide for scholarships, English and computer questions is being built." />} />
+          <Route path="/admin" element={<RequireAuth role="admin"><ComingSoon icon={Wrench} title="Admin dashboard" text="Coming in a later phase. For now, use Prisma Studio (npm run db:studio in the server folder) to manage data." /></RequireAuth>} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

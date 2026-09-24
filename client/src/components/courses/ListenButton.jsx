@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Square, Volume2 } from 'lucide-react';
 
 // Reads the lesson aloud with the browser's built-in text-to-speech (no download needed).
 export default function ListenButton({ getText }) {
@@ -19,7 +20,7 @@ export default function ListenButton({ getText }) {
   };
   return (
     <button onClick={toggle} className="inline-flex items-center gap-2 min-h-11 px-4 rounded-full bg-leaf text-forest font-medium hover:bg-forest hover:text-white transition-colors" aria-pressed={speaking}>
-      <span aria-hidden>{speaking ? '⏹' : '🔊'}</span>{speaking ? 'Stop listening' : 'Listen to this lesson'}
+      {speaking ? <Square size={16} fill="currentColor" aria-hidden="true" /> : <Volume2 size={18} aria-hidden="true" />}{speaking ? 'Stop listening' : 'Listen to this lesson'}
     </button>
   );
 }

@@ -23,17 +23,6 @@ export function SectionHeading({ title, intro, align = 'left', light }) {
   );
 }
 
-// Shown only in development, on placeholder content that must be replaced before launch.
-export function SampleBadge({ show }) {
-  if (!show) return null;
-  return (
-    <span className="inline-flex items-center rounded-full bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 text-[11px] font-semibold"
-      title="Placeholder content. It is hidden automatically in production.">
-      Sample
-    </span>
-  );
-}
-
 const AVATAR_TONES = ['bg-forest text-white', 'bg-gold text-ink', 'bg-teal text-white', 'bg-[#7C3AED] text-white', 'bg-[#DB2777] text-white'];
 export function Avatar({ name, photoUrl, size = 'w-14 h-14 text-lg', index = 0 }) {
   if (photoUrl) return <img src={photoUrl} alt="" loading="lazy" className={`${size} rounded-full object-cover`} />;

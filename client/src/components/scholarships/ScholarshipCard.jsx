@@ -1,5 +1,6 @@
 import { Button, Pill } from '../ui';
 import { FUNDING_LABEL, LEVEL_LABEL, deadlineTone, formatDate } from '../../utils/format';
+import { Bookmark, BookmarkCheck, Check } from 'lucide-react';
 
 export default function ScholarshipCard({ s, onOpen, onSave, onApply }) {
   const d = deadlineTone(s.deadline);
@@ -16,7 +17,7 @@ export default function ScholarshipCard({ s, onOpen, onSave, onApply }) {
       </div>
       <div className="flex flex-wrap gap-2 mt-3">
         <Pill tone={s.fundingType === 'fully_funded' ? 'green' : 'amber'}>{FUNDING_LABEL[s.fundingType]}</Pill>
-        {s.openToRefugees && <Pill tone="teal">{s.refugeesOnly ? 'For refugees ✓' : 'Open to refugees ✓'}</Pill>}
+        {s.openToRefugees && <Pill tone="teal"><Check size={13} strokeWidth={3} aria-hidden="true" />{s.refugeesOnly ? 'For refugees' : 'Open to refugees'}</Pill>}
         <Pill tone="grey">{LEVEL_LABEL[s.level]}</Pill>
       </div>
       <p className="text-sm text-ink-soft mt-3 line-clamp-3 flex-1">{s.description}</p>
@@ -25,7 +26,7 @@ export default function ScholarshipCard({ s, onOpen, onSave, onApply }) {
         {s.deadline && <span className="ml-2 text-ink-soft">{formatDate(s.deadline)}</span>}
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
-        <Button variant="ghost" onClick={() => onSave(s)} aria-pressed={s.saved} className="px-3">{s.saved ? '🔖 Saved' : '🔖 Save'}</Button>
+        <Button variant="ghost" onClick={() => onSave(s)} aria-pressed={s.saved} className="px-3">{s.saved ? <BookmarkCheck size={18} className="text-forest" fill="currentColor" fillOpacity={0.15} aria-hidden="true" /> : <Bookmark size={18} aria-hidden="true" />}{s.saved ? 'Saved' : 'Save'}</Button>
         <Button variant="outline" onClick={() => onOpen(s)} className="px-4">Learn more</Button>
         <Button onClick={() => onApply(s)} className="px-4 flex-1">Apply now</Button>
       </div>

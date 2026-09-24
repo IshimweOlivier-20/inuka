@@ -38,8 +38,9 @@ export function buildChecklist(scholarship, user, docs) {
   return { always, conditional };
 }
 
-router.get('/', async (req, res) => {
-  const f = filtersSchema.parse(req.query);
+// Shared by the signed-in page and the public /opportunities page.
+export function scholarshipQuery(query) {
+  const f = filtersSchema.parse(query);
   const now = new Date();
   const where = { isActive: true, AND: [] };
   if (f.q) {
@@ -56,25 +57,26 @@ router.get('/', async (req, res) => {
     where.deadline = { gte: now, lte: new Date(now.getTime() + days * 864e5) };
   }
   if (!where.AND.length) delete where.AND;
-
   const orderBy = f.sort === 'newest' ? [{ createdAt: 'desc' }]
     : f.sort === 'relevant' ? [{ isFeatured: 'desc' }, { deadline: { sort: 'asc', nulls: 'last' } }]
     : [{ deadline: { sort: 'asc', nulls: 'last' } }, { name: 'asc' }];
+  // Deadline-sorted lists put passed deadlines at the end.
+  const arrange = (list) => (f.sort === 'deadline'
+    ? [...list.filter((s) => !s.deadline || s.deadline >= now), ...list.filter((s) => s.deadline && s.deadline < now)]
+    : list);
+  return { where, orderBy, arrange };
+}
 
+router.get('/', async (req, res) => {
+  const { where, orderBy, arrange } = scholarshipQuery(req.query);
   const [list, saved] = await Promise.all([
     prisma.scholarship.findMany({ where, orderBy }),
     prisma.savedScholarship.findMany({ where: { userId: req.user.id }, select: { scholarshipId: true } }),
   ]);
   const savedIds = new Set(saved.map((s) => s.scholarshipId));
-
   // Refugee users see refugee-only programmes; others don't (they cannot apply).
   const visible = list.filter((s) => !s.refugeesOnly || req.user.refugeeStatus !== 'no');
-  // Deadline-sorted lists put passed deadlines at the end.
-  const sorted = f.sort === 'deadline'
-    ? [...visible.filter((s) => !s.deadline || s.deadline >= now), ...visible.filter((s) => s.deadline && s.deadline < now)]
-    : visible;
-
-  res.json({ scholarships: sorted.map((s) => ({ ...s, saved: savedIds.has(s.id) })) });
+  res.json({ scholarships: arrange(visible).map((s) => ({ ...s, saved: savedIds.has(s.id) })) });
 });
 
 router.get('/saved', async (req, res) => {

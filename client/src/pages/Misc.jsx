@@ -1,9 +1,10 @@
 import { Button, Card } from '../components/ui';
+import IconTile from '../components/ui/IconTile';
 
 export function ComingSoon({ icon, title, text }) {
   return (
     <Card className="max-w-xl mx-auto text-center py-12">
-      <div className="text-5xl" aria-hidden>{icon}</div>
+      <IconTile icon={icon} tone="soft" size="xl" />
       <h1 className="text-2xl font-bold mt-3">{title}</h1>
       <p className="text-ink-soft mt-2">{text}</p>
       <Button to="/courses" variant="outline" className="mt-6">Keep learning meanwhile</Button>

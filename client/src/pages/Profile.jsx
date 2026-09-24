@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import { api, errorMessage } from '../services/api';
 import { formatDate, formatSize } from '../utils/format';
 import { ListRowsSkeleton } from '../components/ui/Skeletons';
+import { CircleCheck, TriangleAlert } from 'lucide-react';
 
 const TABS = [['personal', 'Personal information'], ['documents', 'Documents vault'], ['applications', 'My applications'], ['certificates', 'Certificates']];
 
@@ -168,7 +169,7 @@ function DocumentVault({ highlight }) {
                   <p className="text-sm text-ink-soft">{t.formats.map((f) => f.toUpperCase()).join(', ')}, up to 5 MB</p>
                 </div>
                 <Pill tone={statusTone}>{statusLabel}</Pill>
-                {docs.length ? <Pill tone="green">Uploaded ✅</Pill> : <Pill tone={t.status === 'required' ? 'amber' : 'grey'}>Missing ⚠️</Pill>}
+                {docs.length ? <Pill tone="green"><CircleCheck size={14} aria-hidden="true" />Uploaded</Pill> : <Pill tone={t.status === 'required' ? 'amber' : 'grey'}><TriangleAlert size={14} aria-hidden="true" />Missing</Pill>}
                 <input ref={(el) => { inputs.current[t.key] = el; }} type="file" accept={accept} className="sr-only" aria-label={`Upload ${t.label}`}
                   onChange={(e) => { upload(t.key, e.target.files[0]); e.target.value = ''; }} />
                 <Button variant={docs.length ? 'ghost' : 'outline'} loading={uploading === t.key} onClick={() => inputs.current[t.key].click()}>
