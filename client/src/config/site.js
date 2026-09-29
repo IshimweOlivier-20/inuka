@@ -31,7 +31,6 @@ export const SITE = {
 export const NAV_ITEMS = [
   { to: '/learn', label: 'Courses' },
   { to: '/opportunities', label: 'Opportunities' },
-  { id: 'inuka-ai', label: 'INUKA AI' },
   { to: '/news', label: 'News' },
   {
     label: 'About',

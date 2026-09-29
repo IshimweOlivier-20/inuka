@@ -14,8 +14,8 @@ export default function ScholarshipDetail({ data, onClose, onSave, onApply, onOp
       </>}>
       <p className="text-ink-soft">{s.orgName}, {s.hostCountry}</p>
       <div className="flex flex-wrap gap-2 mt-3">
-        <Pill tone={s.fundingType === 'fully_funded' ? 'green' : 'amber'}>{FUNDING_LABEL[s.fundingType]}</Pill>
-        {s.openToRefugees && <Pill tone="teal"><Check size={13} strokeWidth={3} aria-hidden="true" />{s.refugeesOnly ? 'For refugees only' : 'Open to refugees'}</Pill>}
+        <Pill tone={s.fundingType === 'fully_funded' ? 'sky' : 'brand'}>{FUNDING_LABEL[s.fundingType]}</Pill>
+        {s.openToRefugees && <Pill tone="cyan"><Check size={13} strokeWidth={3} aria-hidden="true" />{s.refugeesOnly ? 'For refugees only' : 'Open to refugees'}</Pill>}
         <Pill tone="grey">{LEVEL_LABEL[s.level]}</Pill>
         <Pill tone="grey">Study in {s.languageOfStudy === 'Both' ? 'English or French' : s.languageOfStudy}</Pill>
       </div>
@@ -29,13 +29,13 @@ export default function ScholarshipDetail({ data, onClose, onSave, onApply, onOp
       <Section title="Who can apply" items={s.eligibility} />
       <Section title="What it covers" items={s.coverage} />
       <Section title="How to apply" items={s.applicationSteps} ordered />
-      <p className="mt-5"><a href={s.applyUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-forest font-semibold underline">Official website <ExternalLink size={16} aria-hidden="true" /></a></p>
+      <p className="mt-5"><a href={s.applyUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-brand font-semibold underline">Official website <ExternalLink size={16} aria-hidden="true" /></a></p>
 
       {related?.length > 0 && (
         <section className="mt-6 pt-5 border-t border-line">
           <h3 className="font-semibold mb-2">Related scholarships</h3>
           <ul className="space-y-1">
-            {related.map((r) => <li key={r.id}><button onClick={() => onOpenRelated(r)} className="text-forest hover:underline text-left">{r.name}</button></li>)}
+            {related.map((r) => <li key={r.id}><button onClick={() => onOpenRelated(r)} className="text-brand hover:underline text-left">{r.name}</button></li>)}
           </ul>
         </section>
       )}

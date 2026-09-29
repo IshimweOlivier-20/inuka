@@ -4,7 +4,7 @@ import { z } from 'zod';
 import rateLimit from 'express-rate-limit';
 import { prisma } from '../lib/prisma.js';
 import { HttpError } from '../middleware/errorHandler.js';
-import { scholarshipQuery } from './scholarships.js';
+import { searchScholarships } from '../services/scholarshipSearch.js';
 
 const router = Router();
 const isProd = () => process.env.NODE_ENV === 'production';
@@ -68,7 +68,7 @@ router.get('/courses', async (req, res) => {
     where: { isPublished: true },
     orderBy: { orderIndex: 'asc' },
     select: {
-      id: true, slug: true, title: true, category: true, track: true, level: true, description: true,
+      id: true, slug: true, title: true, category: true, track: true, level: true, description: true, skills: true,
       lessons: { where: { isPublished: true }, orderBy: { orderIndex: 'asc' }, select: { id: true, title: true, summary: true } },
     },
   });
@@ -77,9 +77,7 @@ router.get('/courses', async (req, res) => {
 
 // ---------- Public scholarship search (/opportunities) ----------
 router.get('/scholarships', async (req, res) => {
-  const { where, orderBy, arrange } = scholarshipQuery(req.query);
-  const list = await prisma.scholarship.findMany({ where, orderBy });
-  res.json({ scholarships: arrange(list) });
+  res.json(await searchScholarships(req.query));
 });
 
 router.get('/scholarships/:id', async (req, res) => {

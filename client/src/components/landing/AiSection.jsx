@@ -25,10 +25,10 @@ function AiOrbit() {
   return (
     <div className="ai-orbit relative w-full max-w-[34rem] mx-auto aspect-square" aria-hidden="true">
       {/* rings */}
-      <div className="absolute inset-0 rounded-full border border-forest/10" />
-      <div className="absolute inset-[9%] rounded-full border border-forest/10 bg-white/40" />
-      <div className="absolute inset-[20%] rounded-full bg-white/70 shadow-[0_20px_60px_-25px_rgba(0,101,47,0.35)]" />
-      <div className="absolute inset-[29%] rounded-full bg-white shadow-[inset_0_2px_12px_rgba(0,101,47,0.08)]" />
+      <div className="absolute inset-0 rounded-full border border-brand/10" />
+      <div className="absolute inset-[9%] rounded-full border border-brand/10 bg-white/40" />
+      <div className="absolute inset-[20%] rounded-full bg-white/70 shadow-[0_20px_60px_-25px_rgba(10, 108, 240,0.35)]" />
+      <div className="absolute inset-[29%] rounded-full bg-white shadow-[inset_0_2px_12px_rgba(10, 108, 240,0.08)]" />
 
       {/* light sweep turning around the core */}
       <div className="ai-sweep absolute inset-[9%] rounded-full" />
@@ -36,30 +36,30 @@ function AiOrbit() {
       {/* two thin arcs travelling in opposite directions */}
       <svg className="ai-spin absolute inset-[3%] w-[94%] h-[94%]" viewBox="0 0 100 100">
         <defs>
-          <linearGradient id="arcA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#03A01F" stopOpacity="0" /><stop offset="1" stopColor="#03A01F" /></linearGradient>
+          <linearGradient id="arcA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#00B4F0" stopOpacity="0" /><stop offset="1" stopColor="#00B4F0" /></linearGradient>
         </defs>
         <path d="M50 1 A49 49 0 0 1 99 50" fill="none" stroke="url(#arcA)" strokeWidth="0.7" strokeLinecap="round" />
       </svg>
       <svg className="ai-spin-reverse absolute inset-[14%] w-[72%] h-[72%]" viewBox="0 0 100 100">
-        <path d="M50 99 A49 49 0 0 1 1 50" fill="none" stroke="#FAAC00" strokeWidth="0.9" strokeLinecap="round" />
-        <circle cx="1" cy="50" r="1.6" fill="#FAAC00" />
+        <path d="M50 99 A49 49 0 0 1 1 50" fill="none" stroke="#10B981" strokeWidth="0.9" strokeLinecap="round" />
+        <circle cx="1" cy="50" r="1.6" fill="#10B981" />
       </svg>
 
       {/* glowing core */}
-      <div className="ai-core absolute inset-[34%] rounded-full bg-gradient-to-br from-sprout via-forest to-[#00401D] flex items-center justify-center">
+      <div className="ai-core absolute inset-[34%] rounded-full bg-gradient-to-br from-[#38BDF8] via-brand to-brand-deep flex items-center justify-center">
         <svg viewBox="0 0 64 64" className="w-1/2 h-1/2">
           <path d="M32 50 C32 38 33 28 34 20" stroke="#fff" strokeWidth="4" strokeLinecap="round" fill="none" />
           <path d="M34 24 c8 -9 18 -9 21 -4 -8 8 -15 8 -21 4z" fill="#fff" />
           <path d="M33 33 c-8 -7 -16 -6 -18 -1 7 6 13 6 18 1z" fill="#fff" opacity=".85" />
-          <path d="M50 8 l1.6 4.4 4.4 1.6 -4.4 1.6 -1.6 4.4 -1.6 -4.4 -4.4 -1.6 4.4 -1.6z" fill="#FAAC00" />
+          <path d="M50 8 l1.6 4.4 4.4 1.6 -4.4 1.6 -1.6 4.4 -1.6 -4.4 -4.4 -1.6 4.4 -1.6z" fill="#10B981" />
         </svg>
       </div>
 
       {/* capability pills */}
       {PILLS.map((p) => (
         <span key={p.label} style={{ ...p.style, animationDelay: p.d }}
-          className="ai-pill absolute inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-white/85 backdrop-blur border border-white shadow-[0_8px_24px_-8px_rgba(0,64,29,0.25)] px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-sm font-semibold text-forest">
-          <p.icon size={16} strokeWidth={2.2} className="text-sprout" aria-hidden="true" />{p.label}
+          className="ai-pill absolute inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-white/85 backdrop-blur border border-white shadow-[0_8px_24px_-8px_rgba(7, 44, 107,0.25)] px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-sm font-semibold text-brand">
+          <p.icon size={16} strokeWidth={2.2} className="text-cyan" aria-hidden="true" />{p.label}
         </span>
       ))}
     </div>
@@ -68,9 +68,9 @@ function AiOrbit() {
 
 function ChatPreview() {
   return (
-    <div className="rounded-2xl bg-white border border-line shadow-[0_24px_60px_-30px_rgba(0,64,29,0.45)] overflow-hidden">
+    <div className="rounded-2xl bg-white border border-line shadow-[0_24px_60px_-30px_rgba(7, 44, 107,0.45)] overflow-hidden">
       <div className="flex items-center gap-3 px-5 py-4 border-b border-line">
-        <span className="relative w-10 h-10 rounded-full bg-gradient-to-br from-sprout to-forest flex items-center justify-center" aria-hidden="true">
+        <span className="relative w-10 h-10 rounded-full bg-gradient-to-br from-[#38BDF8] to-brand flex items-center justify-center" aria-hidden="true">
           <svg viewBox="0 0 64 64" className="w-7 h-7">
             <path d="M32 50 C32 38 33 28 34 20" stroke="#fff" strokeWidth="4" strokeLinecap="round" fill="none" />
             <path d="M34 24 c8 -9 18 -9 21 -4 -8 8 -15 8 -21 4z" fill="#fff" />
@@ -84,12 +84,12 @@ function ChatPreview() {
       </div>
       <div className="px-5 py-5 space-y-3 bg-paper text-[15px]">
         <p className="max-w-[85%] rounded-2xl rounded-tl-sm bg-white border border-line px-4 py-2.5">Hi! I'm INUKA AI. I can help you find scholarships, improve your English, or prepare your application. What do you need?</p>
-        <p className="max-w-[80%] ml-auto rounded-2xl rounded-tr-sm bg-forest text-white px-4 py-2.5">Which documents do I need for a scholarship?</p>
+        <p className="max-w-[80%] ml-auto rounded-2xl rounded-tr-sm bg-brand text-white px-4 py-2.5">Which documents do I need for a scholarship?</p>
         <div className="max-w-[90%] rounded-2xl rounded-tl-sm bg-white border border-line px-4 py-3">
           <p>Good question! Most applications ask for:</p>
           <ul className="mt-2 space-y-1">
             {['Your S4, S5 and S6 reports', 'National ID or passport', 'Your diploma', 'A personal statement', 'Your UNHCR card, if you are a refugee'].map((d) => (
-              <li key={d} className="flex items-start gap-2"><Check size={16} strokeWidth={3} className="text-sprout mt-1 shrink-0" aria-hidden="true" />{d}</li>
+              <li key={d} className="flex items-start gap-2"><Check size={16} strokeWidth={3} className="text-cyan mt-1 shrink-0" aria-hidden="true" />{d}</li>
             ))}
           </ul>
           <p className="mt-2 text-ink-soft text-sm">Always check the official website of each scholarship.</p>
@@ -97,7 +97,7 @@ function ChatPreview() {
       </div>
       <div className="px-5 py-3 border-t border-line flex flex-wrap gap-2">
         {['Find a scholarship', 'Help with my essay', 'English question'].map((q) => (
-          <span key={q} className="rounded-full border border-forest/25 text-forest px-3 py-1 text-sm font-medium">{q}</span>
+          <span key={q} className="rounded-full border border-brand/25 text-brand px-3 py-1 text-sm font-medium">{q}</span>
         ))}
       </div>
     </div>
@@ -112,7 +112,7 @@ export default function AiSection() {
 
         <Reveal className="mt-10 text-center max-w-3xl mx-auto">
           <h2 className="text-4xl md:text-[3.25rem] font-bold leading-[1.08] tracking-tight">
-            Meet INUKA AI, <span className="text-forest">your guide that never sleeps</span>
+            Meet INUKA AI, <span className="text-brand">your guide that never sleeps</span>
           </h2>
           <p className="mt-5 text-lg text-ink-soft">
             Ask anything about scholarships, English, computers or university applications.
@@ -125,7 +125,7 @@ export default function AiSection() {
             <ul className="space-y-4">
               {CAN_DO.map((c) => (
                 <li key={c} className="flex gap-3 text-lg">
-                  <span className="mt-0.5 w-7 h-7 shrink-0 rounded-lg bg-forest text-white flex items-center justify-center" aria-hidden="true"><Check size={16} strokeWidth={3} /></span>
+                  <span className="mt-0.5 w-7 h-7 shrink-0 rounded-lg bg-brand text-white flex items-center justify-center" aria-hidden="true"><Check size={16} strokeWidth={3} /></span>
                   {c}
                 </li>
               ))}

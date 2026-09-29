@@ -7,8 +7,8 @@ import { BookOpen, Check, Laptop } from 'lucide-react';
 import IconTile from '../components/ui/IconTile';
 
 const TRACKS = [
-  { key: 'english', title: 'English Language', icon: BookOpen, tone: 'forest', text: 'From the alphabet to a strong scholarship essay.' },
-  { key: 'computer', title: 'Basic Computer Skills', icon: Laptop, tone: 'sky', text: 'From your first click to a full online application.' },
+  { key: 'english', title: 'English Language', icon: BookOpen, tone: 'brand', text: 'From the alphabet to a strong scholarship essay.' },
+  { key: 'computer', title: 'Basic Computer Skills', icon: Laptop, tone: 'cyan', text: 'From your first click to a full online application.' },
 ];
 
 export default function Courses() {
@@ -43,10 +43,10 @@ function CourseCard({ c }) {
   const action = c.status === 'completed' ? 'Review' : c.status === 'in_progress' ? 'Resume' : 'Start';
   return (
     <li className="bg-white rounded-xl border border-line overflow-hidden flex flex-col">
-      <div className={`px-5 pt-5 pb-4 ${c.category === 'english' ? 'bg-leaf' : 'bg-amber-50'}`}>
+      <div className={`px-5 pt-5 pb-4 ${c.category === 'english' ? 'bg-brand-soft' : 'bg-[#E0F7FD]'}`}>
         <div className="flex items-center justify-between">
-          <span className="font-display font-bold text-3xl text-forest/80" aria-label={`Sub-course ${c.track}`}>{c.track}</span>
-          {c.status === 'completed' ? <Pill tone="green"><Check size={14} strokeWidth={3} aria-hidden="true" />Completed</Pill> : <Pill tone="grey">{c.level}</Pill>}
+          <span className="font-display font-bold text-3xl text-brand/80" aria-label={`Sub-course ${c.track}`}>{c.track}</span>
+          {c.status === 'completed' ? <Pill tone="sky"><Check size={14} strokeWidth={3} aria-hidden="true" />Completed</Pill> : <Pill tone="grey">{c.level}</Pill>}
         </div>
         <h3 className="font-semibold text-lg mt-2 leading-snug"><Link to={`/courses/${c.slug}`} className="hover:underline">{c.title}</Link></h3>
       </div>

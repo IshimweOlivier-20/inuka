@@ -25,14 +25,14 @@ export default function AppLayout() {
   const signOut = async () => { await logout(); navigate('/'); };
 
   const linkCls = ({ isActive }) =>
-    `flex items-center gap-3 min-h-11 px-4 rounded-lg font-medium transition-colors ${isActive ? 'bg-white/15 text-white shadow-[inset_3px_0_0_var(--color-gold)]' : 'text-white/80 hover:bg-white/10 hover:text-white'}`;
+    `flex items-center gap-3 min-h-11 px-4 rounded-lg font-medium transition-colors ${isActive ? 'bg-white/15 text-white shadow-[inset_3px_0_0_var(--color-accent)]' : 'text-white/80 hover:bg-white/10 hover:text-white'}`;
 
   return (
     <div className="min-h-screen md:pl-60">
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-2 focus:p-3 focus:bg-white">Skip to content</a>
 
       {/* Desktop sidebar / mobile drawer */}
-      <aside className={`fixed inset-y-0 left-0 z-40 w-60 bg-forest flex flex-col transition-transform md:translate-x-0 ${menuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed inset-y-0 left-0 z-40 w-60 bg-brand-deep flex flex-col transition-transform md:translate-x-0 ${menuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="px-5 py-5"><Logo light /></div>
         <nav className="flex-1 px-3 space-y-1" aria-label="Main">
           {NAV.map((n) => (
@@ -56,8 +56,8 @@ export default function AppLayout() {
           <span className="hidden md:block" />
           <div className="flex items-center gap-2">
             <NotificationBell />
-            <NavLink to="/profile" className="flex items-center gap-2 min-h-11 pl-1 pr-3 rounded-full hover:bg-leaf">
-              <span className="w-9 h-9 rounded-full bg-gold text-ink font-display font-semibold flex items-center justify-center">
+            <NavLink to="/profile" className="flex items-center gap-2 min-h-11 pl-1 pr-3 rounded-full hover:bg-brand-soft">
+              <span className="w-9 h-9 rounded-full bg-[#0284C7] text-white font-display font-semibold flex items-center justify-center">
                 {user?.firstName?.[0]}{user?.lastName?.[0]}
               </span>
               <span className="hidden sm:block font-medium">{user?.firstName}</span>
@@ -73,7 +73,7 @@ export default function AppLayout() {
       {/* Mobile bottom tab bar */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-20 bg-white border-t border-line grid grid-cols-5" aria-label="Quick">
         {NAV.filter((n) => MOBILE_TABS.includes(n.to)).map((n) => (
-          <NavLink key={n.to} to={n.to} className={({ isActive }) => `flex flex-col items-center justify-center min-h-14 text-[11px] ${isActive ? 'text-forest font-semibold' : 'text-ink-soft'}`}>
+          <NavLink key={n.to} to={n.to} className={({ isActive }) => `flex flex-col items-center justify-center min-h-14 text-[11px] ${isActive ? 'text-brand font-semibold' : 'text-ink-soft'}`}>
             <n.icon size={22} strokeWidth={2} aria-hidden="true" />{n.label.replace('My ', '')}
           </NavLink>
         ))}

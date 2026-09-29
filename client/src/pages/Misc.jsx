@@ -15,7 +15,7 @@ export function ComingSoon({ icon, title, text }) {
 export function NotFound() {
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
-      <p className="font-display text-6xl font-bold text-forest">404</p>
+      <p className="font-display text-6xl font-bold text-brand">404</p>
       <h1 className="text-2xl font-semibold mt-2">We could not find this page</h1>
       <p className="text-ink-soft mt-1">The link may be old or mistyped.</p>
       <Button to="/" className="mt-6">Go to the home page</Button>

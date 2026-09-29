@@ -38,7 +38,7 @@ function Group({ title, items }) {
             </span>
             <span className="flex-1 text-[15px]">{d.label}</span>
             {!d.uploaded && (
-              <Link to={`/profile?tab=documents&type=${d.vaultType}`} className="text-sm text-forest font-semibold hover:underline whitespace-nowrap">Upload to vault</Link>
+              <Link to={`/profile?tab=documents&type=${d.vaultType}`} className="text-sm text-brand font-semibold hover:underline whitespace-nowrap">Upload to vault</Link>
             )}
           </li>
         ))}

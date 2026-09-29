@@ -144,6 +144,7 @@ model Course {
   level        String
   description  String
   thumbnailUrl String?        @map("thumbnail_url")
+  skills       Json           @default("[]") // skill tags for filtering, e.g. ["Writing", "Grammar"]
   orderIndex   Int            @map("order_index")
   isPublished  Boolean        @default(true) @map("is_published")
   createdAt    DateTime       @default(now()) @map("created_at")

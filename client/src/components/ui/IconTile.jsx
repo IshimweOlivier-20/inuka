@@ -1,13 +1,13 @@
 // A real icon (Lucide) on a coloured tile, in INUKA colours.
 const TONES = {
-  forest: 'bg-forest text-white',
-  gold: 'bg-gold text-ink',
-  sprout: 'bg-sprout text-white',
-  sky: 'bg-[#3B82C4] text-white',
+  brand: 'bg-brand text-white',
+  accent: 'bg-[#0284C7] text-white',
+  cyan: 'bg-cyan text-white',
+  deep: 'bg-brand-deep text-white',
   ink: 'bg-ink text-white',
-  leaf: 'bg-leaf text-forest',
-  soft: 'bg-leaf text-forest ring-1 ring-forest/10',
-  amber: 'bg-amber-50 text-gold-dark ring-1 ring-gold/30',
+  tint: 'bg-brand-soft text-brand',
+  soft: 'bg-brand-soft text-brand ring-1 ring-brand/10',
+  warm: 'bg-sky-50 text-accent-dark ring-1 ring-accent/30',
   glass: 'bg-white/15 text-white ring-1 ring-white/20',
 };
 const SIZES = {
@@ -17,7 +17,7 @@ const SIZES = {
   xl: { box: 'w-16 h-16 rounded-2xl', icon: 32 },
 };
 
-export default function IconTile({ icon: Icon, tone = 'forest', size = 'md', className = '' }) {
+export default function IconTile({ icon: Icon, tone = 'brand', size = 'md', className = '' }) {
   const s = SIZES[size];
   return (
     <span className={`inline-flex shrink-0 items-center justify-center ${s.box} ${TONES[tone]} ${className}`} aria-hidden="true">

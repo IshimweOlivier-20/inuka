@@ -111,6 +111,10 @@
         "title": "Practice Passage + Final Quiz",
         "summary": "Put all your reading skills together"
       }
+    ],
+    "skills": [
+      "Reading",
+      "Grammar & vocabulary"
     ]
   },
   {
@@ -153,6 +157,10 @@
         "title": "Final Writing Task + AI Feedback",
         "summary": "Paste your text and get INUKA AI feedback"
       }
+    ],
+    "skills": [
+      "Writing",
+      "Grammar & vocabulary"
     ]
   },
   {
@@ -203,6 +211,10 @@
         "title": "Full Essay Practice",
         "summary": "Write a 400-word essay with INUKA AI feedback"
       }
+    ],
+    "skills": [
+      "Writing",
+      "Essays"
     ]
   },
   {
@@ -245,6 +257,10 @@
         "title": "Scholarship Interview Preparation",
         "summary": "Mock questions and model answers"
       }
+    ],
+    "skills": [
+      "Speaking",
+      "Interviews"
     ]
   },
   {
@@ -287,6 +303,10 @@
         "title": "Full Draft Review",
         "summary": "Submit your draft for detailed INUKA AI feedback"
       }
+    ],
+    "skills": [
+      "Writing",
+      "Scholarship applications"
     ]
   },
   {
@@ -363,6 +383,9 @@
         "title": "Quiz + Practical Task",
         "summary": "Complete a simulated computer task"
       }
+    ],
+    "skills": [
+      "Computer basics"
     ]
   },
   {
@@ -405,6 +428,10 @@
         "title": "Staying Safe Online",
         "summary": "Passwords, phishing, privacy settings"
       }
+    ],
+    "skills": [
+      "Internet & email",
+      "Online safety"
     ]
   },
   {
@@ -447,6 +474,10 @@
         "title": "Uploading Documents Online",
         "summary": "Practice on a simulated form"
       }
+    ],
+    "skills": [
+      "Digital tools",
+      "Video calls"
     ]
   },
   {
@@ -481,6 +512,10 @@
         "title": "Final Practice",
         "summary": "Complete a full simulated online application"
       }
+    ],
+    "skills": [
+      "Online applications",
+      "Interviews"
     ]
   }
 ]

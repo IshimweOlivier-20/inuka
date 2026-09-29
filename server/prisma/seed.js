@@ -21,8 +21,8 @@ async function seedCourses() {
   for (const [ci, c] of courses.entries()) {
     const course = await prisma.course.upsert({
       where: { slug: c.slug },
-      update: { title: c.title, description: c.description, level: c.level, track: c.track, category: c.category, orderIndex: ci },
-      create: { slug: c.slug, title: c.title, description: c.description, level: c.level, track: c.track, category: c.category, orderIndex: ci },
+      update: { title: c.title, description: c.description, level: c.level, track: c.track, category: c.category, skills: c.skills ?? [], orderIndex: ci },
+      create: { slug: c.slug, title: c.title, description: c.description, level: c.level, track: c.track, category: c.category, skills: c.skills ?? [], orderIndex: ci },
     });
     for (const [li, l] of c.lessons.entries()) {
       const data = { title: l.title, summary: l.summary, contentHtml: l.content ?? placeholderContent(l.title, l.summary) };

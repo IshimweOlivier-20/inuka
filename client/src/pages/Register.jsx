@@ -88,7 +88,7 @@ export default function Register() {
         <div className="grid grid-cols-2 gap-2 p-1 bg-paper rounded-lg mb-5" role="radiogroup" aria-label="Account type">
           {['student', 'mentor'].map((r) => (
             <button key={r} type="button" role="radio" aria-checked={role === r} onClick={() => setRole(r)}
-              className={`min-h-11 rounded-md font-medium ${role === r ? 'bg-white shadow-sm text-forest' : 'text-ink-soft'}`}>
+              className={`min-h-11 rounded-md font-medium ${role === r ? 'bg-white shadow-sm text-brand' : 'text-ink-soft'}`}>
               {r === 'student' ? 'I am a student' : 'I am a mentor'}
             </button>
           ))}
@@ -143,8 +143,8 @@ export default function Register() {
           )}
           <div>
             <label className="flex items-start gap-3 cursor-pointer">
-              <input type="checkbox" className="mt-1 w-5 h-5 accent-forest" checked={f.acceptTerms} onChange={set('acceptTerms')} />
-              <span className="text-sm">I agree to the INUKA <a href="/terms" className="text-forest underline">Terms of Use</a> and <a href="/privacy" className="text-forest underline">Privacy Policy</a>.</span>
+              <input type="checkbox" className="mt-1 w-5 h-5 accent-brand" checked={f.acceptTerms} onChange={set('acceptTerms')} />
+              <span className="text-sm">I agree to the INUKA <a href="/terms" className="text-brand underline">Terms of Use</a> and <a href="/privacy" className="text-brand underline">Privacy Policy</a>.</span>
             </label>
             {errors.acceptTerms && <p className="mt-1 text-sm text-danger">{errors.acceptTerms}</p>}
           </div>
@@ -154,7 +154,7 @@ export default function Register() {
           </div>
         </form>
       )}
-      <p className="mt-6 text-center text-ink-soft">Already have an account? <Link to="/login" className="text-forest font-semibold hover:underline">Sign in</Link></p>
+      <p className="mt-6 text-center text-ink-soft">Already have an account? <Link to="/login" className="text-brand font-semibold hover:underline">Sign in</Link></p>
     </AuthShell>
   );
 }
@@ -166,7 +166,7 @@ function Chips({ label, options, value, onToggle, error }) {
       <div className="flex flex-wrap gap-2">
         {options.map((o) => (
           <button key={o} type="button" aria-pressed={value.includes(o)} onClick={() => onToggle(o)}
-            className={`min-h-10 px-3 rounded-full border text-sm ${value.includes(o) ? 'bg-forest text-white border-forest' : 'bg-white border-line hover:border-forest'}`}>{o}</button>
+            className={`min-h-10 px-3 rounded-full border text-sm ${value.includes(o) ? 'bg-brand text-white border-brand' : 'bg-white border-line hover:border-brand'}`}>{o}</button>
         ))}
       </div>
       {error && <p className="mt-1 text-sm text-danger">{error}</p>}

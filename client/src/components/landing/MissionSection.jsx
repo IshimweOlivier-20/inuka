@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import Reveal from '../ui/Reveal';
 import { Button } from '../ui';
-import { Person, Sparkle } from './HeroSlides';
+import { Person } from './HeroSlides';
 
-const GOLD = '#FAAC00';
-const FOREST = '#00652F';
-const SPROUT = '#03A01F';
+const GOLD = '#00B4F0';
+const FOREST = '#0A6CF0';
+const SPROUT = '#06B6D4';
 const PAPER = '#F9FAFB';
 const INK = '#1A1A2E';
 const SKY = '#3B82C4';
@@ -16,7 +16,7 @@ function HappyYouthArt() {
     <svg viewBox="0 96 480 296" className="mission-art w-full" role="img"
       aria-label="Three happy young people on a hill: one celebrating with arms raised, one holding an open book, one holding a phone showing a green tick">
       {/* warm glow and sun arc, like the INUKA logo */}
-      <circle cx="240" cy="235" r="135" fill="#FFF4D6" />
+      <circle cx="240" cy="235" r="135" fill="#E0F2FE" />
       <path d="M52 340 A190 190 0 0 1 428 340" fill="none" stroke={GOLD} strokeWidth="14" strokeLinecap="round" />
 
       {/* centre: arms raised in celebration (drawn behind the body) */}
@@ -32,7 +32,7 @@ function HappyYouthArt() {
       {/* rounded hill they stand on */}
       <ellipse cx="240" cy="378" rx="200" ry="9" fill="#000" opacity=".08" />
       <path d="M16 352 C40 300 150 266 240 266 C330 266 440 300 464 352 C380 384 100 384 16 352 Z" fill={FOREST} />
-      <path d="M44 360 C130 326 350 326 436 360 C360 382 120 382 44 360 Z" fill="#004D23" />
+      <path d="M44 360 C130 326 350 326 436 360 C360 382 120 382 44 360 Z" fill="#0A3D91" />
 
       {/* forearms reaching to the book and the phone */}
       <path d="M60 282 L72 314" stroke={SKY} strokeWidth="17" strokeLinecap="round" />
@@ -48,7 +48,7 @@ function HappyYouthArt() {
 
       {/* phone held by the right student */}
       <rect x="352" y="282" width="40" height="64" rx="8" fill={INK} />
-      <rect x="356" y="290" width="32" height="46" rx="4" fill="#E8F6EC" />
+      <rect x="356" y="290" width="32" height="46" rx="4" fill="#E3EFFE" />
       <circle cx="372" cy="312" r="10" fill={SPROUT} />
       <path d="M367 312 l4 4 l7 -8" stroke={PAPER} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
       <ellipse cx="360" cy="342" rx="10" ry="7" fill="#8D5A3B" />
@@ -56,11 +56,6 @@ function HappyYouthArt() {
       {/* sprout growing on the hill */}
       <path d="M240 330 c0 -14 2 -24 2 -24" stroke={GOLD} strokeWidth="4" strokeLinecap="round" fill="none" />
       <path d="M242 310 c10 -8 20 -6 22 0 -9 7 -16 6 -22 0z M241 318 c-10 -7 -18 -5 -20 1 8 5 14 4 20 -1z" fill={GOLD} />
-
-      <Sparkle x={190} y={112} r={6} />
-      <Sparkle x={310} y={112} r={5} color={SPROUT} />
-      <Sparkle x={42} y={170} r={5} />
-      <Sparkle x={444} y={160} r={6} color={SPROUT} />
     </svg>
   );
 }
@@ -75,9 +70,9 @@ export default function MissionSection() {
         </Reveal>
 
         <Reveal delay={150}>
-          <span className="block w-14 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+          <span className="block w-14 h-1.5 rounded-full bg-accent" aria-hidden="true" />
           <h2 className="mt-5 text-3xl sm:text-4xl md:text-[2.9rem] font-bold leading-[1.1] tracking-tight">
-            Talent is everywhere. <span className="text-forest">Opportunity should be too.</span>
+            Talent is everywhere. <span className="text-brand">Opportunity should be too.</span>
           </h2>
           <p className="mt-6 text-lg text-ink-soft">
             Every year, thousands of young people finish secondary school across Africa, including young refugees,
@@ -89,7 +84,7 @@ export default function MissionSection() {
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Button to="/register" className="min-h-12 px-6">Start learning for free</Button>
-            <Link to="/news" className="font-semibold text-forest hover:underline">Read our guides →</Link>
+            <Link to="/news" className="font-semibold text-brand hover:underline">Read our guides →</Link>
           </div>
         </Reveal>
       </div>

@@ -57,8 +57,8 @@ export default function LessonPage() {
 
   return (
     <article className="max-w-3xl">
-      <Link to={`/courses/${course.slug}`} className="text-sm text-forest hover:underline">← {course.title}</Link>
-      <div className="mt-3"><ProgressBar value={position.percent} label={`Lesson ${position.index + 1} of ${position.total}`} tone="forest" /></div>
+      <Link to={`/courses/${course.slug}`} className="text-sm text-brand hover:underline">← {course.title}</Link>
+      <div className="mt-3"><ProgressBar value={position.percent} label={`Lesson ${position.index + 1} of ${position.total}`} tone="brand" /></div>
       <h1 className="text-3xl font-bold mt-6">{lesson.title}</h1>
       {lesson.summary && <p className="text-ink-soft mt-1 text-lg">{lesson.summary}</p>}
       <div className="mt-4"><ListenButton getText={() => contentRef.current?.innerText || ''} /></div>
@@ -83,7 +83,7 @@ export default function LessonPage() {
           {celebrate?.newBadges?.map((b) => (
             <div key={b.id} className="mb-4 flex flex-col items-center"><BadgeMedal badgeKey={b.key} size={88} /><p className="font-display font-semibold text-xl mt-3">{b.name}</p><p className="text-ink-soft">{b.description}</p></div>
           ))}
-          {celebrate?.certificate && <p className="mt-2">Your certificate is ready in <Link to="/my-learning" className="text-forest underline font-semibold">My Learning</Link>.</p>}
+          {celebrate?.certificate && <p className="mt-2">Your certificate is ready in <Link to="/my-learning" className="text-brand underline font-semibold">My Learning</Link>.</p>}
         </div>
       </Modal>
     </article>

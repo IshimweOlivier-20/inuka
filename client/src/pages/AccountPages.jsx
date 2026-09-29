@@ -45,7 +45,7 @@ export function ForgotPassword() {
           <Button type="submit" loading={busy} className="w-full">Send reset link</Button>
         </form>
       )}
-      <p className="mt-6 text-center"><Link to="/login" className="text-forest hover:underline">Back to sign in</Link></p>
+      <p className="mt-6 text-center"><Link to="/login" className="text-brand hover:underline">Back to sign in</Link></p>
     </AuthShell>
   );
 }

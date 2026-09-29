@@ -21,7 +21,7 @@ export default function Profile() {
       <div role="tablist" className="flex gap-1 mt-6 border-b border-line overflow-x-auto">
         {TABS.map(([k, l]) => (
           <button key={k} role="tab" aria-selected={tab === k} onClick={() => setParams({ tab: k })}
-            className={`min-h-11 px-4 font-medium whitespace-nowrap border-b-2 -mb-px ${tab === k ? 'border-forest text-forest' : 'border-transparent text-ink-soft hover:text-ink'}`}>{l}</button>
+            className={`min-h-11 px-4 font-medium whitespace-nowrap border-b-2 -mb-px ${tab === k ? 'border-brand text-brand' : 'border-transparent text-ink-soft hover:text-ink'}`}>{l}</button>
         ))}
       </div>
       <div className="mt-6">
@@ -119,7 +119,7 @@ function PersonalInfo() {
   );
 }
 
-const STATUS = { required: ['Required', 'red'], if_applicable: ['If applicable', 'grey'], recommended: ['Recommended', 'amber'], if_required: ['If required', 'grey'], optional: ['Optional', 'grey'] };
+const STATUS = { required: ['Required', 'red'], if_applicable: ['If applicable', 'grey'], recommended: ['Recommended', 'brand'], if_required: ['If required', 'grey'], optional: ['Optional', 'grey'] };
 
 function DocumentVault({ highlight }) {
   const [data, setData] = useState(null);
@@ -162,14 +162,14 @@ function DocumentVault({ highlight }) {
           const [statusLabel, statusTone] = STATUS[t.status];
           const accept = t.formats.map((f) => `.${f}`).join(',');
           return (
-            <li key={t.key} id={`doc-${t.key}`} className={`bg-white rounded-xl border p-4 ${highlight === t.key ? 'border-gold ring-2 ring-gold/40' : 'border-line'}`}>
+            <li key={t.key} id={`doc-${t.key}`} className={`bg-white rounded-xl border p-4 ${highlight === t.key ? 'border-accent ring-2 ring-accent/40' : 'border-line'}`}>
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex-1 min-w-48">
                   <p className="font-semibold">{t.label}</p>
                   <p className="text-sm text-ink-soft">{t.formats.map((f) => f.toUpperCase()).join(', ')}, up to 5 MB</p>
                 </div>
                 <Pill tone={statusTone}>{statusLabel}</Pill>
-                {docs.length ? <Pill tone="green"><CircleCheck size={14} aria-hidden="true" />Uploaded</Pill> : <Pill tone={t.status === 'required' ? 'amber' : 'grey'}><TriangleAlert size={14} aria-hidden="true" />Missing</Pill>}
+                {docs.length ? <Pill tone="sky"><CircleCheck size={14} aria-hidden="true" />Uploaded</Pill> : <Pill tone={t.status === 'required' ? 'red' : 'grey'}><TriangleAlert size={14} aria-hidden="true" />Missing</Pill>}
                 <input ref={(el) => { inputs.current[t.key] = el; }} type="file" accept={accept} className="sr-only" aria-label={`Upload ${t.label}`}
                   onChange={(e) => { upload(t.key, e.target.files[0]); e.target.value = ''; }} />
                 <Button variant={docs.length ? 'ghost' : 'outline'} loading={uploading === t.key} onClick={() => inputs.current[t.key].click()}>
@@ -180,7 +180,7 @@ function DocumentVault({ highlight }) {
                 <div key={d.id} className="mt-3 flex flex-wrap items-center gap-3 rounded-lg bg-paper px-3 py-2 text-sm">
                   <span className="flex-1 min-w-40 truncate font-medium">{d.fileName}</span>
                   <span className="text-ink-soft">{formatSize(d.fileSize)}, {formatDate(d.uploadedAt)}</span>
-                  <button onClick={() => view(d)} className="text-forest font-semibold hover:underline min-h-11 px-2">View</button>
+                  <button onClick={() => view(d)} className="text-brand font-semibold hover:underline min-h-11 px-2">View</button>
                   <button onClick={() => remove(d)} className="text-danger font-semibold hover:underline min-h-11 px-2">Delete</button>
                 </div>
               ))}

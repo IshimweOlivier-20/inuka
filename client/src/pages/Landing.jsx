@@ -7,7 +7,6 @@ import SiteFooter from '../components/landing/SiteFooter';
 import HeroSlider from '../components/landing/HeroSlider';
 import MissionSection from '../components/landing/MissionSection';
 import ImpactSection from '../components/landing/ImpactSection';
-import AiSection from '../components/landing/AiSection';
 import {
   AudienceSection, FaqSection, JoinSection, PartnersSection,
   TeamSection, TestimonialsSection,
@@ -40,31 +39,31 @@ export default function Landing() {
       <LandingNav />
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-forest to-[#0F4424] text-white pt-32 pb-16 md:pt-40 md:pb-24">
-        <div className="max-w-[1200px] mx-auto px-5 grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
+      <section className="bg-white pt-28 pb-16 md:pt-36 md:pb-24">
+        <div className="max-w-[1200px] mx-auto px-5 grid md:grid-cols-[1.05fr_1fr] gap-10 md:gap-14 items-center">
           <div className="hero-copy">
-            <h1 className="text-white text-[2.6rem] sm:text-6xl font-bold leading-[1.05] tracking-tight">Your future<br />starts here.</h1>
-            <p className="mt-6 text-lg sm:text-xl text-white/85 max-w-[34ch]">
+            <h1 className="text-ink text-[2.6rem] sm:text-6xl font-bold leading-[1.05] tracking-tight">Your future<br />starts here.</h1>
+            <p className="mt-6 text-lg sm:text-xl text-ink-soft max-w-[36ch]">
               Learn English, build computer skills, find scholarships and meet mentors. Made for African high school graduates and refugees. Always free.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button to="/register" variant="gold" className="text-base px-6 min-h-12">Get started — it's free</Button>
-              <Button to="/login" variant="ghost" className="text-white hover:bg-white/10 min-h-12 border-2 border-white/40">Sign in</Button>
+              <Button to="/register" className="text-base px-6 min-h-12 shadow-[0_12px_24px_-12px_rgba(10,108,240,0.7)]">Get started — it's free</Button>
+              <Button to="/login" variant="outline" className="min-h-12">Sign in</Button>
             </div>
-            <p className="mt-6 text-sm text-white/70">“Inuka” means <em>rise up</em> in Kiswahili.</p>
+            <p className="mt-6 text-sm text-ink-soft">“Inuka” means <em>rise up</em> in Kiswahili.</p>
           </div>
-          <div className="flex justify-center"><HeroSlider /></div>
+          <div className="flex justify-center"><HeroSlider onLight /></div>
         </div>
       </section>
 
       {/* Numbers bar under the hero (live from the database) */}
-      <section className="bg-white border-b border-line" aria-label="INUKA in numbers">
+      <section className="bg-paper border-y border-line" aria-label="INUKA in numbers">
         <dl className="max-w-[1200px] mx-auto px-5 py-7 grid grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            [GraduationCap, 'forest', data?.stats?.scholarshipCount, 'Scholarships listed'],
-            [BookOpen, 'gold', data?.stats?.courseCount, 'Free courses'],
-            [ListChecks, 'sprout', data?.stats?.lessonCount, 'Lessons'],
-            [BadgeCheck, 'sky', 'Free', 'For every student, forever'],
+            [GraduationCap, 'brand', data?.stats?.scholarshipCount, 'Scholarships listed'],
+            [BookOpen, 'accent', data?.stats?.courseCount, 'Free courses'],
+            [ListChecks, 'cyan', data?.stats?.lessonCount, 'Lessons'],
+            [BadgeCheck, 'deep', 'Free', 'For every student, forever'],
           ].map(([icon, tone, value, label], i) => (
             <Reveal key={label} delay={i * 80} className="flex items-center gap-4">
               <IconTile icon={icon} tone={tone} size="md" />
@@ -90,7 +89,7 @@ export default function Landing() {
           <ol className="grid md:grid-cols-3 gap-8">
             {STEPS.map((s, i) => (
               <Reveal as="li" key={s.title} delay={i * 120} className="relative pl-16">
-                <span className="absolute left-0 top-0 w-12 h-12 rounded-full bg-gold text-ink font-display font-bold text-xl flex items-center justify-center">{i + 1}</span>
+                <span className="absolute left-0 top-0 w-12 h-12 rounded-full bg-brand text-white font-display font-bold text-xl flex items-center justify-center">{i + 1}</span>
                 <h3 className="text-xl font-semibold mb-2">{s.title}</h3>
                 <p className="text-ink-soft">{s.text}</p>
               </Reveal>
@@ -100,7 +99,6 @@ export default function Landing() {
       </section>
 
       <ImpactSection />
-      <AiSection />
       <TestimonialsSection testimonials={data?.testimonials} />
       <TeamSection team={data?.team} />
       <PartnersSection partners={data?.partners} />

@@ -23,7 +23,7 @@ export function SectionHeading({ title, intro, align = 'left', light }) {
   );
 }
 
-const AVATAR_TONES = ['bg-forest text-white', 'bg-gold text-ink', 'bg-teal text-white', 'bg-[#7C3AED] text-white', 'bg-[#DB2777] text-white'];
+const AVATAR_TONES = ['bg-brand text-white', 'bg-[#0284C7] text-white', 'bg-cyan text-white', 'bg-[#0891B2] text-white', 'bg-[#0284C7] text-white'];
 export function Avatar({ name, photoUrl, size = 'w-14 h-14 text-lg', index = 0 }) {
   if (photoUrl) return <img src={photoUrl} alt="" loading="lazy" className={`${size} rounded-full object-cover`} />;
   const initials = name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('');

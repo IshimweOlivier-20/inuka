@@ -89,7 +89,7 @@ export default function Scholarships() {
       <div role="tablist" className="flex gap-1 mt-6 border-b border-line overflow-x-auto">
         {TABS.map(([k, l]) => (
           <button key={k} role="tab" aria-selected={tab === k} onClick={() => { setList(null); setParams({ tab: k }); }}
-            className={`min-h-11 px-4 font-medium whitespace-nowrap border-b-2 -mb-px ${tab === k ? 'border-forest text-forest' : 'border-transparent text-ink-soft hover:text-ink'}`}>{l}</button>
+            className={`min-h-11 px-4 font-medium whitespace-nowrap border-b-2 -mb-px ${tab === k ? 'border-brand text-brand' : 'border-transparent text-ink-soft hover:text-ink'}`}>{l}</button>
         ))}
       </div>
 
@@ -115,7 +115,7 @@ export default function Scholarships() {
                 <Select label="Language of study" value={filters.language} onChange={set('language')} options={[['', 'Any language'], ['English', 'English'], ['French', 'French']]} />
                 <Select label="Deadline" value={filters.deadline} onChange={set('deadline')} options={[['', 'Any time'], ['month', 'This month'], ['3months', 'Next 3 months']]} />
                 <Select label="Sort by" value={filters.sort} onChange={set('sort')} options={[['deadline', 'Deadline (soonest first)'], ['relevant', 'Most relevant'], ['newest', 'Newest added']]} />
-                {activeCount > 0 && <button onClick={() => setFilters({ ...EMPTY, q: filters.q })} className="text-sm text-forest font-semibold hover:underline">Clear filters</button>}
+                {activeCount > 0 && <button onClick={() => setFilters({ ...EMPTY, q: filters.q })} className="text-sm text-brand font-semibold hover:underline">Clear filters</button>}
               </div>
             </aside>
           )}

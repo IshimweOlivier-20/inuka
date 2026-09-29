@@ -3,10 +3,10 @@ import { useEffect, useId, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 const variants = {
-  primary: 'bg-forest text-white hover:bg-forest-dark',
-  gold: 'bg-gold text-ink hover:bg-[#E8961A]',
-  outline: 'border-2 border-forest text-forest hover:bg-leaf',
-  ghost: 'text-forest hover:bg-leaf',
+  primary: 'bg-brand text-white hover:bg-brand-dark',
+  accent: 'bg-white text-brand-deep hover:bg-brand-soft',
+  outline: 'border-2 border-brand text-brand hover:bg-brand-soft',
+  ghost: 'text-brand hover:bg-brand-soft',
   danger: 'bg-danger text-white hover:bg-red-600',
 };
 
@@ -25,7 +25,7 @@ export function Button({ variant = 'primary', to, href, className = '', loading,
 export function Spinner({ small, label = 'Loading' }) {
   return (
     <span role="status" aria-label={label}
-      className={`inline-block animate-spin rounded-full border-2 border-current border-t-transparent ${small ? 'w-4 h-4' : 'w-8 h-8 text-forest'}`} />
+      className={`inline-block animate-spin rounded-full border-2 border-current border-t-transparent ${small ? 'w-4 h-4' : 'w-8 h-8 text-brand'}`} />
   );
 }
 
@@ -36,7 +36,7 @@ export function PageLoader() {
 export function Field({ label, error, hint, as = 'input', children, className = '', ...props }) {
   const id = useId();
   const Tag = as;
-  const base = `w-full min-h-11 rounded-lg border bg-white px-3 py-2 text-base text-ink focus:outline-none focus:ring-2 focus:ring-forest/40 ${error ? 'border-danger' : 'border-line'}`;
+  const base = `w-full min-h-11 rounded-lg border bg-white px-3 py-2 text-base text-ink focus:outline-none focus:ring-2 focus:ring-brand/40 ${error ? 'border-danger' : 'border-line'}`;
   return (
     <div className={className}>
       <label htmlFor={id} className="block mb-1.5 text-sm font-medium text-ink">{label}</label>
@@ -52,8 +52,8 @@ export function Field({ label, error, hint, as = 'input', children, className = 
 export function Alert({ tone = 'error', children }) {
   const tones = {
     error: 'bg-red-50 text-red-800 border-red-200',
-    success: 'bg-leaf text-forest border-forest/20',
-    info: 'bg-amber-50 text-amber-900 border-amber-200',
+    success: 'bg-brand-soft text-brand border-brand/20',
+    info: 'bg-brand-soft text-brand-deep border-brand/20',
   };
   return <div role={tone === 'error' ? 'alert' : 'status'} className={`rounded-lg border px-4 py-3 text-sm ${tones[tone]}`}>{children}</div>;
 }
@@ -62,13 +62,13 @@ export function Card({ className = '', children, ...props }) {
   return <div className={`bg-white rounded-xl border border-line p-5 ${className}`} {...props}>{children}</div>;
 }
 
-export function ProgressBar({ value, label, tone = 'gold' }) {
+export function ProgressBar({ value, label, tone = 'accent' }) {
   const v = Math.max(0, Math.min(100, value || 0));
   return (
     <div>
       {label && <div className="flex justify-between text-sm mb-1"><span className="text-ink-soft">{label}</span><span className="font-semibold">{v}%</span></div>}
       <div className="h-2.5 bg-line rounded-full overflow-hidden" role="progressbar" aria-valuenow={v} aria-valuemin={0} aria-valuemax={100} aria-label={label || 'Progress'}>
-        <div className={`h-full rounded-full transition-[width] duration-500 ${tone === 'gold' ? 'bg-gold' : 'bg-forest'}`} style={{ width: `${v}%` }} />
+        <div className={`h-full rounded-full transition-[width] duration-500 ${tone === 'accent' ? 'bg-accent' : 'bg-brand'}`} style={{ width: `${v}%` }} />
       </div>
     </div>
   );
@@ -76,12 +76,11 @@ export function ProgressBar({ value, label, tone = 'gold' }) {
 
 export function Pill({ tone = 'grey', children }) {
   const tones = {
-    green: 'bg-green-100 text-green-800',
-    amber: 'bg-amber-100 text-amber-900',
+    sky: 'bg-sky-100 text-sky-800',
     red: 'bg-red-100 text-red-800',
-    teal: 'bg-teal-50 text-teal border border-teal/30',
+    cyan: 'bg-cyan-50 text-cyan border border-cyan/30',
     grey: 'bg-gray-100 text-ink-soft',
-    forest: 'bg-leaf text-forest',
+    brand: 'bg-brand-soft text-brand',
   };
   return <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap ${tones[tone]}`}>{children}</span>;
 }

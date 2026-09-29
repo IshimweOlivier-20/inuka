@@ -1,11 +1,11 @@
-// Hero illustrations, all in the same flat INUKA style (forest, gold, off-white), drawn as inline SVG
+// Hero illustrations, all in the same flat INUKA style (blue, sky-green, off-white), drawn as inline SVG
 // so they cost nothing to download. Elements with class "pop" animate in each time their slide appears.
 
 const INK = '#1A1A2E';
-const GOLD = '#FAAC00';
+const GOLD = '#00B4F0';
 const PAPER = '#F9FAFB';
-const LEAF = '#F1F8F4';
-const MINT = '#DDEFE4';
+const LEAF = '#E8F1FE';
+const MINT = '#D6E8FD';
 
 const d = (s) => ({ '--d': `${s}s` }); // animation delay helper
 
@@ -39,7 +39,7 @@ export function Person({ x, y, s = 1, skin = '#8D5A3B', hair = 'short', hairColo
       {hair === 'wrap' && (
         <>
           <path d="M-36 -2 C-42 -52 42 -52 36 -2 C28 -16 -28 -16 -36 -2 Z" fill={GOLD} />
-          <path d="M-20 -30 C-6 -40 10 -40 24 -28" stroke="#D98E0B" strokeWidth="4" fill="none" strokeLinecap="round" />
+          <path d="M-20 -30 C-6 -40 10 -40 24 -28" stroke="#0284C7" strokeWidth="4" fill="none" strokeLinecap="round" />
           <circle cx="22" cy="-40" r="11" fill={GOLD} />
         </>
       )}
@@ -60,9 +60,6 @@ function Shadow() {
   return <ellipse cx="210" cy="318" rx="170" ry="18" fill="#000" opacity=".15" />;
 }
 
-export function Sparkle({ x, y, r = 7, delay = 0, color = GOLD }) {
-  return <path className="pop" style={d(delay)} d={`M${x} ${y - r}L${x + r * 0.3} ${y - r * 0.3}L${x + r} ${y}L${x + r * 0.3} ${y + r * 0.3}L${x} ${y + r}L${x - r * 0.3} ${y + r * 0.3}L${x - r} ${y}L${x - r * 0.3} ${y - r * 0.3}Z`} fill={color} />;
-}
 
 /* 1. Rise: the INUKA mark, a sprout growing out of an open book */
 export function ArtRise() {
@@ -72,14 +69,14 @@ export function ArtRise() {
       <path d="M40 300c55-24 110-24 170 6 60-30 115-30 170-6V150c-55-24-110-24-170 6-60-30-115-30-170-6z" fill={PAPER} />
       <path d="M40 300c55-24 110-24 170 6V156c-60-30-115-30-170-6z" fill={LEAF} />
       {[0, 1, 2, 3, 4].map((i) => (
-        <g key={i} fill="none" stroke="#00652F" strokeOpacity=".25" strokeWidth="3" strokeLinecap="round">
+        <g key={i} fill="none" stroke="#0A6CF0" strokeOpacity=".25" strokeWidth="3" strokeLinecap="round">
           <path d={`M70 ${190 + i * 20}c35-12 70-12 110 2`} />
           <path d={`M240 ${192 + i * 20}c40-14 75-14 110-2`} />
         </g>
       ))}
-      <path d="M210 156v150" stroke="#00652F" strokeWidth="3" />
+      <path d="M210 156v150" stroke="#0A6CF0" strokeWidth="3" />
       <path className="sprout-stem" pathLength="1" d="M210 170C210 110 222 60 222 40" stroke={GOLD} strokeWidth="7" strokeLinecap="round" fill="none" />
-      <path className="sprout-leaf leaf-1" d="M216 132c26-18 50-12 56 2-22 16-42 14-56-2z" fill="#FBC565" />
+      <path className="sprout-leaf leaf-1" d="M216 132c26-18 50-12 56 2-22 16-42 14-56-2z" fill="#7DD3FC" />
       <path className="sprout-leaf leaf-2" d="M214 96c-36-22-68-12-74 6 30 16 56 12 74-6z" fill={GOLD} />
       <path className="sprout-leaf leaf-3" d="M220 58c34-30 72-22 80-4-32 24-60 22-80 4z" fill={GOLD} />
     </svg>
@@ -106,12 +103,12 @@ export function ArtLearn() {
       <path d="M210 216c0-14 3-24 3-24" stroke={GOLD} strokeWidth="3.5" strokeLinecap="round" fill="none" />
       <path d="M212 196c8-6 15-4 17 0-7 5-12 4-17 0z M211 204c-8-5-14-3-15 1 6 4 11 3 15-1z" fill={GOLD} />
       {/* notebook */}
-      <path d="M296 238 l40 -6 l6 10 l-40 6z" fill="#FBC565" />
+      <path d="M296 238 l40 -6 l6 10 l-40 6z" fill="#7DD3FC" />
       {/* floating learning cues */}
       <g className="pop float" style={d(0.35)}>
         <rect x="42" y="58" width="104" height="44" rx="14" fill={PAPER} />
         <path d="M74 100 l-6 16 l20 -14z" fill={PAPER} />
-        <text x="94" y="87" textAnchor="middle" fontFamily="Poppins, sans-serif" fontWeight="700" fontSize="19" fill="#00652F">Hello!</text>
+        <text x="94" y="87" textAnchor="middle" fontFamily="Poppins, sans-serif" fontWeight="700" fontSize="19" fill="#0A6CF0">Hello!</text>
       </g>
       <g className="pop float-slow" style={d(0.55)}>
         <rect x="296" y="46" width="76" height="40" rx="12" fill={GOLD} />
@@ -119,10 +116,8 @@ export function ArtLearn() {
       </g>
       <g className="pop float" style={d(0.75)}>
         <rect x="318" y="118" width="64" height="38" rx="12" fill={LEAF} />
-        <text x="350" y="143" textAnchor="middle" fontFamily="'Fira Code', monospace" fontWeight="700" fontSize="17" fill="#00652F">&lt;/&gt;</text>
+        <text x="350" y="143" textAnchor="middle" fontFamily="'Fira Code', monospace" fontWeight="700" fontSize="17" fill="#0A6CF0">&lt;/&gt;</text>
       </g>
-      <Sparkle x={70} y={160} delay={0.9} />
-      <Sparkle x={372} y={200} r={5} delay={1} color={PAPER} />
     </svg>
   );
 }
@@ -134,14 +129,14 @@ export function ArtDiscover() {
       <Shadow />
       <g className="pop" style={d(0.2)}><ellipse cx="180" cy="172" rx="136" ry="42" fill="none" stroke={GOLD} strokeWidth="3" strokeDasharray="4 10" strokeLinecap="round" transform="rotate(-14 180 172)" /></g>
       <circle cx="180" cy="172" r="104" fill={LEAF} />
-      <g fill="none" stroke="#00652F" strokeOpacity=".18" strokeWidth="2.5">
+      <g fill="none" stroke="#0A6CF0" strokeOpacity=".18" strokeWidth="2.5">
         <ellipse cx="180" cy="172" rx="46" ry="104" />
         <ellipse cx="180" cy="172" rx="86" ry="104" />
         <path d="M76 172h208M88 122h184M88 222h184" />
       </g>
       {/* land shapes, with Africa in the centre */}
-      <path d="M160 108c14-8 34-6 44 4 6 8 20 8 24 20 4 12-6 18-4 30 2 14 12 22 8 38-4 14-14 22-22 36-6 10-16 12-20 2-4-12-2-24-8-34-6-12-18-16-20-30-2-12 4-20 0-30-2-12-10-24-2-36z" fill="#A7D7B8" />
-      <path d="M96 116c10-10 26-10 34-2 6 8-2 16-10 18-12 2-30-4-24-16z M244 104c16-6 32 2 34 14 2 10-12 12-22 8-10-4-20-16-12-22z" fill="#A7D7B8" />
+      <path d="M160 108c14-8 34-6 44 4 6 8 20 8 24 20 4 12-6 18-4 30 2 14 12 22 8 38-4 14-14 22-22 36-6 10-16 12-20 2-4-12-2-24-8-34-6-12-18-16-20-30-2-12 4-20 0-30-2-12-10-24-2-36z" fill="#84D8F0" />
+      <path d="M96 116c10-10 26-10 34-2 6 8-2 16-10 18-12 2-30-4-24-16z M244 104c16-6 32 2 34 14 2 10-12 12-22 8-10-4-20-16-12-22z" fill="#84D8F0" />
       {/* pins */}
       {[[196, 168, 0.4], [150, 128, 0.55], [262, 116, 0.7], [206, 232, 0.85]].map(([x, y, t]) => (
         <g key={`${x}`} className="pop" style={d(t)}>
@@ -152,10 +147,10 @@ export function ArtDiscover() {
       {/* scholarship certificate */}
       <g className="pop float-slow" style={d(0.6)}><g transform="rotate(8 320 238)">
         <rect x="262" y="196" width="128" height="94" rx="8" fill={PAPER} />
-        <rect x="278" y="214" width="70" height="7" rx="3.5" fill="#00652F" opacity=".7" />
-        <rect x="278" y="230" width="92" height="5" rx="2.5" fill="#00652F" opacity=".25" />
-        <rect x="278" y="242" width="80" height="5" rx="2.5" fill="#00652F" opacity=".25" />
-        <path d="M356 262 l-6 26 l10 -6 l8 8 l2 -26z" fill="#D98E0B" />
+        <rect x="278" y="214" width="70" height="7" rx="3.5" fill="#0A6CF0" opacity=".7" />
+        <rect x="278" y="230" width="92" height="5" rx="2.5" fill="#0A6CF0" opacity=".25" />
+        <rect x="278" y="242" width="80" height="5" rx="2.5" fill="#0A6CF0" opacity=".25" />
+        <path d="M356 262 l-6 26 l10 -6 l8 8 l2 -26z" fill="#0284C7" />
         <circle cx="362" cy="262" r="14" fill={GOLD} />
         <path d="M356 262 l4 4 l8 -8" stroke={PAPER} strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
       </g></g>
@@ -164,8 +159,6 @@ export function ArtDiscover() {
         <path d="M100 262 L62 300" stroke={INK} strokeWidth="12" strokeLinecap="round" />
         <circle cx="116" cy="246" r="26" fill={PAPER} fillOpacity=".35" stroke={GOLD} strokeWidth="8" />
       </g>
-      <Sparkle x={330} y={70} delay={1} />
-      <Sparkle x={52} y={92} r={5} delay={1.1} color={PAPER} />
     </svg>
   );
 }
@@ -182,16 +175,16 @@ export function ArtGuide() {
       <rect x="64" y="264" width="292" height="40" rx="4" fill={MINT} />
       <g transform="rotate(-6 210 238)">
         <rect x="178" y="214" width="66" height="36" rx="4" fill={PAPER} stroke="#E5E7EB" strokeWidth="2" />
-        <rect x="186" y="222" width="42" height="4" rx="2" fill="#00652F" opacity=".5" />
-        <rect x="186" y="231" width="50" height="4" rx="2" fill="#00652F" opacity=".25" />
-        <rect x="186" y="240" width="34" height="4" rx="2" fill="#00652F" opacity=".25" />
+        <rect x="186" y="222" width="42" height="4" rx="2" fill="#0A6CF0" opacity=".5" />
+        <rect x="186" y="231" width="50" height="4" rx="2" fill="#0A6CF0" opacity=".25" />
+        <rect x="186" y="240" width="34" height="4" rx="2" fill="#0A6CF0" opacity=".25" />
       </g>
       <path d="M252 232 l26 -8" stroke={GOLD} strokeWidth="5" strokeLinecap="round" />
       {/* speech bubbles */}
       <g className="pop float" style={d(0.35)}>
         <rect x="40" y="36" width="72" height="54" rx="16" fill={PAPER} />
         <path d="M84 88 l6 16 l8 -18z" fill={PAPER} />
-        <text x="76" y="75" textAnchor="middle" fontFamily="Poppins, sans-serif" fontWeight="700" fontSize="30" fill="#00652F">?</text>
+        <text x="76" y="75" textAnchor="middle" fontFamily="Poppins, sans-serif" fontWeight="700" fontSize="30" fill="#0A6CF0">?</text>
       </g>
       <g className="pop float-slow" style={d(0.7)}>
         <rect x="300" y="28" width="82" height="56" rx="16" fill={GOLD} />
@@ -200,15 +193,13 @@ export function ArtGuide() {
         <rect x="335" y="64" width="12" height="8" rx="2" fill={PAPER} />
         <path d="M341 28 v-2 M322 40 l-3 -2 M360 40 l3 -2" stroke={PAPER} strokeWidth="3" strokeLinecap="round" />
       </g>
-      <Sparkle x={210} y={72} delay={0.95} />
-      <Sparkle x={196} y={112} r={5} delay={1.05} color={PAPER} />
     </svg>
   );
 }
 
 /* 5. Succeed: a graduate celebrating */
 const CONFETTI = [
-  [70, 70, GOLD, 20], [110, 40, PAPER, -30], [320, 60, '#A7D7B8', 40], [356, 110, GOLD, -15], [92, 150, '#A7D7B8', 60],
+  [70, 70, GOLD, 20], [110, 40, PAPER, -30], [320, 60, '#84D8F0', 40], [356, 110, GOLD, -15], [92, 150, '#84D8F0', 60],
   [340, 180, PAPER, 25], [140, 96, GOLD, 10], [60, 210, PAPER, -40], [372, 240, GOLD, 70], [290, 30, PAPER, 15],
 ];
 export function ArtSucceed() {
@@ -234,8 +225,6 @@ export function ArtSucceed() {
         <path d="M210 90 L162 100 L162 126" stroke={GOLD} strokeWidth="3" fill="none" />
         <circle cx="162" cy="130" r="6" fill={GOLD} />
       </g>
-      <Sparkle x={112} y={250} delay={1} />
-      <Sparkle x={316} y={260} r={5} delay={1.1} color={PAPER} />
     </svg>
   );
 }

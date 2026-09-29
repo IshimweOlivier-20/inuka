@@ -57,7 +57,7 @@ export default function ImpactSection() {
             <Reveal key={g.label} delay={i * 110}
               className={`py-6 lg:py-2 pr-4 border-white/15 ${i % 2 === 0 ? 'pl-0' : 'pl-5 border-l'} ${i === 0 ? 'lg:pl-0' : 'lg:pl-7 lg:border-l'} ${i >= 2 ? 'border-t lg:border-t-0' : ''}`}>
               <dt className="sr-only">{g.label}</dt>
-              <dd className="font-display font-bold text-gold text-5xl sm:text-6xl tracking-tight leading-none"><CountUp value={g.value} /></dd>
+              <dd className="font-display font-bold text-accent text-5xl sm:text-6xl tracking-tight leading-none"><CountUp value={g.value} /></dd>
               <dd className="mt-3 text-white/80 text-base sm:text-lg leading-snug">{g.label}</dd>
             </Reveal>
           ))}

@@ -7,8 +7,8 @@ import { NAV_ITEMS } from '../../config/site';
 import { useAuth } from '../../context/AuthContext';
 
 const linkBase = 'min-h-11 px-3.5 inline-flex items-center gap-1 rounded-lg font-medium transition-colors';
-const linkIdle = 'text-ink hover:text-forest hover:bg-leaf';
-const linkActive = 'text-forest bg-leaf';
+const linkIdle = 'text-ink hover:text-brand hover:bg-brand-soft';
+const linkActive = 'text-brand bg-brand-soft';
 
 function NavItem({ item, onNavigate }) {
   if (item.to) {
@@ -38,7 +38,7 @@ function Dropdown({ item }) {
         <div className="nav-pop absolute right-0 mt-2 w-60 rounded-xl bg-white border border-line shadow-[0_16px_40px_-16px_rgba(26,26,46,0.3)] p-2">
           {item.children.map((c) => (
             <SectionLink key={c.id} id={c.id} onClick={() => setOpen(false)}
-              className="flex items-center min-h-11 px-3 rounded-lg text-ink hover:bg-leaf hover:text-forest font-medium">{c.label}</SectionLink>
+              className="flex items-center min-h-11 px-3 rounded-lg text-ink hover:bg-brand-soft hover:text-brand font-medium">{c.label}</SectionLink>
           ))}
         </div>
       )}
@@ -73,7 +73,7 @@ export default function LandingNav({ solid = false }) {
       scrolled ? 'bg-white/95 backdrop-blur shadow-[0_2px_16px_rgba(26,26,46,0.08)] border-line' : 'bg-transparent border-transparent'}`}>
       <div className={`max-w-[1200px] mx-auto flex items-center justify-between gap-4 px-5 transition-[height] duration-300 ${scrolled ? 'h-16' : 'h-20'}`}>
         <Link to="/" onClick={() => pathname === '/' && window.scrollTo({ top: 0, behavior: 'smooth' })} aria-label="INUKA home">
-          <Logo light={!scrolled} size={scrolled ? 'md' : 'lg'} />
+          <Logo size={scrolled ? 'md' : 'lg'} />
         </Link>
 
         {scrolled && (
@@ -83,13 +83,13 @@ export default function LandingNav({ solid = false }) {
         )}
 
         <div className="flex items-center gap-2">
-          <Link to={account.to} className={`min-h-11 px-4 inline-flex items-center rounded-lg font-medium ${scrolled ? 'text-forest hover:bg-leaf' : 'text-white hover:bg-white/10'}`}>{account.label}</Link>
+          <Link to={account.to} className={`min-h-11 px-4 inline-flex items-center rounded-lg font-medium text-brand hover:bg-brand-soft`}>{account.label}</Link>
           {scrolled && !user && (
-            <Link to="/register" className="nav-pop hidden sm:inline-flex min-h-11 px-5 items-center rounded-lg bg-gold text-ink font-display font-semibold text-[15px] hover:bg-[#E8961A]">Get started</Link>
+            <Link to="/register" className="nav-pop hidden sm:inline-flex min-h-11 px-5 items-center rounded-lg bg-brand text-white font-display font-semibold text-[15px] hover:bg-brand-dark">Get started</Link>
           )}
           {scrolled && (
             <button onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="site-menu" aria-label="Menu"
-              className="lg:hidden min-w-11 min-h-11 rounded-lg text-ink hover:bg-leaf inline-flex items-center justify-center">{menuOpen ? <X size={24} /> : <Menu size={24} />}</button>
+              className="lg:hidden min-w-11 min-h-11 rounded-lg text-ink hover:bg-brand-soft inline-flex items-center justify-center">{menuOpen ? <X size={24} /> : <Menu size={24} />}</button>
           )}
         </div>
       </div>
@@ -111,7 +111,7 @@ export default function LandingNav({ solid = false }) {
           ) : (
             <SectionLink key={item.label} id={item.id} onClick={close} className="flex items-center min-h-12 font-medium border-b border-line">{item.label}</SectionLink>
           )))}
-          {!user && <Link to="/register" onClick={close} className="mt-5 flex items-center justify-center min-h-12 rounded-lg bg-gold text-ink font-display font-semibold">Get started — it's free</Link>}
+          {!user && <Link to="/register" onClick={close} className="mt-5 flex items-center justify-center min-h-12 rounded-lg bg-brand text-white font-display font-semibold">Get started — it's free</Link>}
         </nav>
       )}
     </header>

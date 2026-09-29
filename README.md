@@ -105,6 +105,8 @@ to a future date schedules the article.
 **Email sign-ups** from the "Get scholarship alerts" box are saved in the `subscribers` table.
 Sending the alert emails comes in a later phase.
 
+**Course skill tags** (used by the "Skills you will build" filter on `/learn`) are in the `skills` column of the `courses` table. Edit them in Prisma Studio.
+
 **Contact email and social media links** are in `client/src/config/site.js`.
 
 **Impact goals** (the big numbers such as 20K+) are in `IMPACT` in `client/src/config/site.js`. The page presents them as goals for the year you set. The live numbers underneath come from the database automatically. Social icons appear in the
@@ -147,8 +149,8 @@ inuka/
 | Spec section | Status |
 |---|---|
 | §4 Auth (student + mentor registration, login, email verification, password reset, rate limiting, refresh tokens) | ✅ Done (Google sign-in: Phase 2) |
-| §5 Landing page | ✅ Hero slideshow, programme strip, mission, who it's for, how it works, **our impact** (goals + live numbers), **INUKA AI** preview, testimonials, team, partners, FAQ, email alerts. Tips and news have their own data ready for their future pages (`/news` already works). |
-| Public pages for visitors | ✅ `/learn` (course catalogue with every lesson), `/opportunities` (scholarship search; saving and applying ask the visitor to sign in, then open that scholarship), `/news`. Navbar: Courses, Opportunities, INUKA AI, News, About ▾ (edit in `NAV_ITEMS` in `client/src/config/site.js`). |
+| §5 Landing page | ✅ Hero slideshow, mission, who it's for, how it works, **our impact** (goals + live numbers), testimonials, team, partners, FAQ, email alerts. Tips and news have their own data ready for their future pages (`/news` already works). |
+| Public pages for visitors | ✅ `/learn` and `/opportunities` each have a blue hero (search box and a slider of real courses or featured scholarships) and professional filters: a sidebar with counts next to every option, removable filter chips, sorting, a slide-up filter sheet on phones, and filters saved in the page address so a search can be shared. Scholarship filters: refugee eligibility, funding, study level, deadline, what it covers, region, study destination, language. Course filters: subject, level, skills, length, and (when signed in) my progress. `/news` also public. Navbar: Courses, Opportunities, News, About ▾ (edit `NAV_ITEMS` in `client/src/config/site.js`). |
 | §6 Student dashboard | ✅ Done |
 | §7–8 Courses, lessons, quizzes (60% pass mark), lesson locking, listen-aloud audio | ✅ Done — 5 lessons have full content; the other 67 have titles and need content |
 | §9 My Learning (tracks, streak heatmap, badges, certificates) | ✅ Done (weekly bar chart and quiz history table: Phase 2) |
@@ -183,12 +185,31 @@ INUKA, check each entry in `server/seed/scholarships.json` against the official 
   with no server library). A server-generated PDF can come later if you need one.
 - The vault adds a **Passport-size Photograph** slot, because the Apply checklist (spec §10.2) asks for it.
 
-## 10. Brand files
+## 10. Logo
 
-- `brand/inuka-logo-original.png`: the official logo as supplied.
-- `brand/inuka-logo-transparent-master.png`: the same logo, trimmed, with a transparent background (for print, social media and documents).
-- `client/public/brand/`: web versions used by the site (colour and white versions, with and without the tagline, plus the icon), in WebP with PNG fallback.
-- `client/public/favicon-*.png`, `apple-touch-icon.png`: browser tab and phone home-screen icons.
+The site currently shows a text wordmark ("INUKA") while a new logo is being designed. It lives in one component,
+`client/src/components/layout/Logo.jsx`, used by the navbar, app sidebar, sign-in pages, footer and certificates.
+When the new logo is ready, put the files in `client/public/` and replace the text in that component with an image.
+The browser tab icon is `client/public/favicon.svg` (and `apple-touch-icon.png` for phone home screens).
 
-Contact details, address and social media links are in `client/src/config/site.js`.
+## 11. Colours
 
+INUKA uses an all-blue palette: azure primary, deep blue backgrounds and sky-blue highlights. There is no green
+and no yellow anywhere on the site. All colours are defined once, in the `@theme` block at the top of
+`client/src/index.css`. Change a value there and the whole site follows.
+
+| Token | Colour | Used for |
+|---|---|---|
+| `brand` | `#0A6CF0` azure | Main buttons, links, headings, active states |
+| `brand-dark` | `#0056CC` | Hover and pressed states |
+| `brand-deep` | `#0A3D91` deep blue | Page heroes, app sidebar, impact band |
+| `brand-soft` | `#E8F1FE` pale blue | Card and chip backgrounds, info boxes |
+| `cyan` / `sky` | `#0891B2` / `#00B4F0` | Secondary accents (icons, Computer Skills track, glows) |
+| `accent` | `#00B4F0` sky blue | Highlights, goal numbers, progress bars |
+| `accent-dark` | `#0369A1` | Sky-blue text on light backgrounds |
+| `paper` / `ink` | `#F5F9FF` / `#0F1E3D` | Page background / body text |
+| `success` | `#0284C7` | Completed lessons and ticks |
+
+The home page hero is pure white. Buttons on blue backgrounds are white.
+Deadline badges: red under 30 days, blue 30 to 90 days, light blue over 90 days.
+The illustrations use the same colours, set at the top of `HeroSlides.jsx`, `PageSlides.jsx` and `MissionSection.jsx`.

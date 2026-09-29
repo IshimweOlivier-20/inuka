@@ -14,7 +14,7 @@ export default function Certificate() {
   const [cert, setCert] = useState(undefined);
   useEffect(() => { api.get('/certificates').then((r) => setCert(r.data.certificates.find((c) => c.id === id) || null)); }, [id]);
   if (cert === undefined) return <Skeleton height={480} className="max-w-4xl" />;
-  if (!cert) return <p>We could not find that certificate. <Link to="/my-learning" className="text-forest underline">Back to My Learning</Link></p>;
+  if (!cert) return <p>We could not find that certificate. <Link to="/my-learning" className="text-brand underline">Back to My Learning</Link></p>;
 
   return (
     <div>
@@ -24,11 +24,11 @@ export default function Certificate() {
         <Button variant="ghost" to="/my-learning">Back to My Learning</Button>
         <p className="text-sm text-ink-soft self-center">In the print window, choose “Save as PDF”.</p>
       </div>
-      <div id="certificate" className="bg-white aspect-[1.414] max-w-4xl border-[10px] border-forest rounded-sm p-8 sm:p-14 flex flex-col items-center justify-center text-center">
-        <Logo tagline className="!h-16" />
+      <div id="certificate" className="bg-white aspect-[1.414] max-w-4xl border-[10px] border-brand rounded-sm p-8 sm:p-14 flex flex-col items-center justify-center text-center">
+        <Logo tagline size="xl" />
         <h1 className="mt-4 text-2xl sm:text-4xl font-bold">Certificate of Completion</h1>
         <p className="mt-6 text-ink-soft">This certifies that</p>
-        <p className="mt-2 font-display text-3xl sm:text-5xl font-semibold text-forest">{user.firstName} {user.lastName}</p>
+        <p className="mt-2 font-display text-3xl sm:text-5xl font-semibold text-brand">{user.firstName} {user.lastName}</p>
         <p className="mt-6 text-ink-soft">has successfully completed the course</p>
         <p className="mt-2 text-xl sm:text-2xl font-semibold">{cert.course.title}</p>
         <p className="mt-8 text-ink-soft">{formatDate(cert.issuedAt)}</p>

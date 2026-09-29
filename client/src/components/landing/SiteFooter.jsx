@@ -18,7 +18,7 @@ function SocialIcon({ name, url }) {
   const svg = <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">{ICONS[name]}</svg>;
   if (url) {
     return (
-      <a href={url} target="_blank" rel="noopener noreferrer" aria-label={`INUKA on ${LABELS[name]}`} className={`${cls} hover:bg-gold hover:text-ink`}>{svg}</a>
+      <a href={url} target="_blank" rel="noopener noreferrer" aria-label={`INUKA on ${LABELS[name]}`} className={`${cls} hover:bg-accent hover:text-ink`}>{svg}</a>
     );
   }
   // No link yet: show the icon, but don't pretend it is a working link.
@@ -31,7 +31,7 @@ function SocialIcon({ name, url }) {
 function ContactLine({ icon, children }) {
   return (
     <li className="flex gap-3">
-      <span className="mt-0.5 w-5 shrink-0 text-gold" aria-hidden="true">{icon}</span>
+      <span className="mt-0.5 w-5 shrink-0 text-accent" aria-hidden="true">{icon}</span>
       <span>{children}</span>
     </li>
   );
@@ -55,7 +55,6 @@ export default function SiteFooter() {
           <FooterCol title="Platform">
             <Link to="/learn" className={col}>Free courses</Link>
             <Link to="/opportunities" className={col}>Scholarships & opportunities</Link>
-            <SectionLink id="inuka-ai" className={col}>INUKA AI</SectionLink>
             <Link to="/register" className={col}>Create an account</Link>
           </FooterCol>
           <FooterCol title="Resources">

@@ -20,13 +20,13 @@ export const APP_STATUS = {
   awaiting_response: 'Awaiting Response', accepted: 'Accepted', rejected: 'Rejected',
 };
 
-// Deadline colour rule (spec 10.1): red < 30 days, amber 30–90, green > 90
+// Deadline colour rule: red < 30 days, blue 30–90 days, light blue > 90 days
 export function deadlineTone(deadline) {
   const d = daysUntil(deadline);
   if (d === null) return { tone: 'grey', text: 'Deadline varies' };
   if (d < 0) return { tone: 'grey', text: 'Deadline passed' };
   const text = d === 0 ? 'Closes today' : d === 1 ? '1 day left' : `${d} days left`;
-  return { tone: d < 30 ? 'red' : d <= 90 ? 'amber' : 'green', text };
+  return { tone: d < 30 ? 'red' : d <= 90 ? 'brand' : 'sky', text };
 }
 
 export const QUOTES = [

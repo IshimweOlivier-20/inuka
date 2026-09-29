@@ -40,10 +40,10 @@ export default function Login() {
         {info && <Alert tone="success">{info}</Alert>}
         <Field label="Email address" type="email" autoComplete="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
         <Field label="Password" type="password" autoComplete="current-password" required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
-        <div className="text-right -mt-2"><Link to="/forgot-password" className="text-sm text-forest hover:underline">Forgot password?</Link></div>
+        <div className="text-right -mt-2"><Link to="/forgot-password" className="text-sm text-brand hover:underline">Forgot password?</Link></div>
         <Button type="submit" loading={busy} className="w-full">Sign in</Button>
       </form>
-      <p className="mt-6 text-center text-ink-soft">New to INUKA? <Link to="/register" className="text-forest font-semibold hover:underline">Create a free account</Link></p>
+      <p className="mt-6 text-center text-ink-soft">New to INUKA? <Link to="/register" className="text-brand font-semibold hover:underline">Create a free account</Link></p>
     </AuthShell>
   );
 }

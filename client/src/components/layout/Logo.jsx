@@ -1,33 +1,19 @@
-// The official INUKA logo (files in client/public/brand).
-// - light: white lettering, for dark backgrounds (green hero, sidebar, footer)
-// - tagline: include "Rise. Learn. Succeed."
-// WebP for modern browsers, PNG fallback. Width/height are set so the page does not jump while loading.
+// Temporary text wordmark ("INUKA") while the new logo is being designed.
+// When the new logo is ready, replace the <span> below with an <img> — every page uses this one component.
+//   light:   white text, for dark backgrounds (hero, sidebar, footer)
+//   tagline: adds "Rise. Learn. Succeed." underneath
+//   size:    'md' (default) | 'lg' | 'xl'
+const SIZES = { md: 'text-2xl', lg: 'text-[1.7rem]', xl: 'text-4xl' };
 
-const SIZES = {
-  plain: { w: 274, h: 96 },     // logo.png / logo-light.png
-  tagline: { w: 343, h: 120 },  // logo-tagline.png / logo-tagline-light.png
-};
-
-export default function Logo({ light = false, tagline = false, size, className = '' }) {
-  const base = `/brand/logo${tagline ? '-tagline' : ''}${light ? '-light' : ''}`;
-  const { w, h } = SIZES[tagline ? 'tagline' : 'plain'];
-  // size: 'md' (40px, default) | 'lg' (48px); tagline versions are 56px
-  const height = tagline ? 'h-14' : size === 'lg' ? 'h-12' : 'h-10';
+export default function Logo({ light = false, tagline = false, size = 'md', className = '' }) {
   return (
-    <picture>
-      <source srcSet={`${base}.webp`} type="image/webp" />
-      <img src={`${base}.png`} width={w} height={h} alt="INUKA" decoding="async"
-        className={`${height} w-auto select-none transition-[height] duration-300 ${className}`} draggable="false" />
-    </picture>
-  );
-}
-
-// The icon only (book, sprout and sun), e.g. for certificates.
-export function LogoMark({ size = 40, className = '' }) {
-  return (
-    <picture>
-      <source srcSet="/brand/logo-icon.webp" type="image/webp" />
-      <img src="/brand/logo-icon.png" width={size} height={size} alt="" aria-hidden="true" className={className} draggable="false" />
-    </picture>
+    <span className={`inline-flex flex-col leading-none select-none ${className}`} translate="no">
+      <span className={`font-display font-extrabold tracking-[0.06em] transition-[font-size] duration-300 ${SIZES[size] || SIZES.md} ${light ? 'text-white' : 'text-brand-deep'}`}>
+        INUKA
+      </span>
+      {tagline && (
+        <span className={`mt-1.5 text-xs font-medium tracking-wide ${light ? 'text-white/70' : 'text-ink-soft'}`}>Rise. Learn. Succeed.</span>
+      )}
+    </span>
   );
 }

@@ -19,7 +19,7 @@ export default function ListenButton({ getText }) {
     setSpeaking(true);
   };
   return (
-    <button onClick={toggle} className="inline-flex items-center gap-2 min-h-11 px-4 rounded-full bg-leaf text-forest font-medium hover:bg-forest hover:text-white transition-colors" aria-pressed={speaking}>
+    <button onClick={toggle} className="inline-flex items-center gap-2 min-h-11 px-4 rounded-full bg-brand-soft text-brand font-medium hover:bg-brand hover:text-white transition-colors" aria-pressed={speaking}>
       {speaking ? <Square size={16} fill="currentColor" aria-hidden="true" /> : <Volume2 size={18} aria-hidden="true" />}{speaking ? 'Stop listening' : 'Listen to this lesson'}
     </button>
   );

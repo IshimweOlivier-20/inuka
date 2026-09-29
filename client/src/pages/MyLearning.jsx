@@ -28,9 +28,9 @@ export default function MyLearning() {
         <Card><Ring pct={d.dash.levels.computer.percent} label="Computer skills track" sub={d.dash.levels.computer.level} /></Card>
         <Card>
           <p className="text-sm text-ink-soft">Study streak</p>
-          <p className="text-4xl font-display font-bold text-forest">{d.streak.current} <Flame className="inline -mt-2 text-gold" size={32} fill="currentColor" aria-hidden="true" /></p>
+          <p className="text-4xl font-display font-bold text-brand">{d.streak.current} <Flame className="inline -mt-2 text-brand" size={32} fill="currentColor" aria-hidden="true" /></p>
           <p className="text-sm text-ink-soft mb-3">{d.dash.overall.completed} of {d.dash.overall.total} lessons completed</p>
-          {d.streak.atRisk && <p className="text-sm text-amber-800">Your streak is at risk! Study today to keep it going.</p>}
+          {d.streak.atRisk && <p className="text-sm font-medium text-brand-deep">Your streak is at risk! Study today to keep it going.</p>}
           <Heatmap days={d.streak.calendar} />
         </Card>
       </div>
@@ -54,7 +54,7 @@ export default function MyLearning() {
         <h2 className="text-lg font-semibold mb-4">Badges</h2>
         <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {d.badges.map((b) => (
-            <li key={b.id} className={`rounded-xl p-3 text-center border flex flex-col items-center ${b.earnedAt ? 'bg-leaf border-forest/20' : 'bg-paper border-line opacity-60'}`}>
+            <li key={b.id} className={`rounded-xl p-3 text-center border flex flex-col items-center ${b.earnedAt ? 'bg-brand-soft border-brand/20' : 'bg-paper border-line opacity-60'}`}>
               <BadgeMedal badgeKey={b.key} earned={!!b.earnedAt} size={52} />
               <p className="font-semibold text-sm mt-2">{b.name}</p>
               <p className="text-xs text-ink-soft">{b.earnedAt ? `Earned ${formatDate(b.earnedAt)}` : b.description}</p>
@@ -77,7 +77,7 @@ function Ring({ pct, label, sub }) {
     <div className="flex items-center gap-4">
       <svg width="104" height="104" viewBox="0 0 104 104" role="img" aria-label={`${label}: ${pct}% complete`}>
         <circle cx="52" cy="52" r={r} fill="none" stroke="#E5E7EB" strokeWidth="12" />
-        <circle cx="52" cy="52" r={r} fill="none" stroke="#00652F" strokeWidth="12" strokeLinecap="round"
+        <circle cx="52" cy="52" r={r} fill="none" stroke="#0A6CF0" strokeWidth="12" strokeLinecap="round"
           strokeDasharray={c} strokeDashoffset={c * (1 - pct / 100)} transform="rotate(-90 52 52)" />
         <text x="52" y="58" textAnchor="middle" className="font-display" fontSize="20" fontWeight="700" fill="#1A1A2E">{pct}%</text>
       </svg>
@@ -99,7 +99,7 @@ function Heatmap({ days }) {
     <div className="grid grid-cols-7 gap-1 w-max" aria-label="Study activity in the last 5 weeks">
       {cells.map((c) => (
         <span key={c.key} title={`${c.key}: ${c.n} lesson${c.n === 1 ? '' : 's'}`}
-          className={`w-4 h-4 rounded-sm ${c.n === 0 ? 'bg-line' : c.n < 3 ? 'bg-success/60' : 'bg-forest'}`} />
+          className={`w-4 h-4 rounded-sm ${c.n === 0 ? 'bg-line' : c.n < 3 ? 'bg-success/60' : 'bg-brand'}`} />
       ))}
     </div>
   );
@@ -114,9 +114,9 @@ export function CertificateList() {
     <ul className="grid sm:grid-cols-2 gap-3">
       {certs.map((c) => (
         <li key={c.id} className="rounded-xl border border-line p-4 flex items-center gap-3">
-          <IconTile icon={Award} tone="gold" size="md" />
+          <IconTile icon={Award} tone="accent" size="md" />
           <div className="flex-1"><p className="font-semibold">{c.course.title}</p><p className="text-sm text-ink-soft">Issued {formatDate(c.issuedAt)}</p></div>
-          <Link to={`/certificates/${c.id}`} className="text-forest font-semibold hover:underline">View / Download</Link>
+          <Link to={`/certificates/${c.id}`} className="text-brand font-semibold hover:underline">View / Download</Link>
         </li>
       ))}
     </ul>

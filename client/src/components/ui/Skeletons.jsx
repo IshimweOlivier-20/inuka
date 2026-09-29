@@ -5,7 +5,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 export function InukaSkeletonTheme({ children }) {
   const reduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   return (
-    <SkeletonTheme baseColor="#E6EEE9" highlightColor="#F5FAF7" borderRadius="0.5rem" duration={1.4} enableAnimation={!reduced}>
+    <SkeletonTheme baseColor="#E4EAF5" highlightColor="#F4F7FC" borderRadius="0.5rem" duration={1.4} enableAnimation={!reduced}>
       {children}
     </SkeletonTheme>
   );
@@ -53,7 +53,7 @@ export function DashboardSkeleton() {
 export function CourseCardSkeleton() {
   return (
     <li className="bg-white rounded-xl border border-line overflow-hidden list-none" aria-hidden="true">
-      <div className="bg-leaf px-5 pt-5 pb-4"><Skeleton height={32} width={32} /><Skeleton height={22} width="80%" className="mt-2" /></div>
+      <div className="bg-brand-soft px-5 pt-5 pb-4"><Skeleton height={32} width={32} /><Skeleton height={22} width="80%" className="mt-2" /></div>
       <div className="p-5"><Skeleton count={2} /><Skeleton height={10} className="mt-4" /><Skeleton height={44} className="mt-4" /></div>
     </li>
   );
