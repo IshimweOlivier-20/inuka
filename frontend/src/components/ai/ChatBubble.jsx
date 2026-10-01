@@ -11,7 +11,7 @@ export default function ChatBubble() {
     <div className="fixed right-4 bottom-20 md:bottom-6 z-30 flex flex-col items-end gap-3">
       {open && (
         <section role="dialog" aria-label="INUKA AI" className="w-[min(380px,calc(100vw-2rem))] h-[min(560px,calc(100vh-9rem))] bg-paper rounded-2xl border border-line shadow-[0_20px_50px_-20px_rgba(15,30,61,0.45)] flex flex-col overflow-hidden">
-          <header className="flex items-center gap-3 px-3 py-2.5 bg-white border-b border-line">
+          <header className="flex items-center gap-3 px-3 py-2.5 bg-surface border-b border-line">
             <AiAvatar size={34} />
             <p className="font-semibold text-sm leading-tight flex-1">INUKA AI<span className="block text-xs font-normal text-ink-soft">Your Learning Guide</span></p>
             <Link to="/ai" onClick={() => setOpen(false)} className="w-10 h-10 rounded-lg hover:bg-brand-soft flex items-center justify-center" aria-label="Open full page"><Maximize2 size={17} /></Link>

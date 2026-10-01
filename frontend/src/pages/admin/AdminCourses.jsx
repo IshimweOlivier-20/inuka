@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowDown, ArrowLeft, ArrowUp, BookOpen, Laptop, Plus } from 'lucide-react';
+import { ArrowDown, ArrowLeft, ArrowUp, BookOpen, Laptop, Plus, Trash2 } from 'lucide-react';
 import { Alert, Button, Card, Field, Modal, Pill } from '../../components/ui';
 import IconTile from '../../components/ui/IconTile';
 import { ListRowsSkeleton } from '../../components/ui/Skeletons';
@@ -10,6 +10,7 @@ import { api, errorMessage } from '../../services/api';
 // Course management (spec 16.2): list of courses.
 export function AdminCourses() {
   const [courses, setCourses] = useState(null);
+  const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
   useEffect(() => {
     document.title = 'Courses — INUKA admin';
@@ -17,13 +18,15 @@ export function AdminCourses() {
   }, []);
   return (
     <div className="space-y-5">
-      <PageTitle title="Courses" intro="Open a course to edit its details, add or reorder lessons, and write quiz questions. Changes appear on the website straight away." />
+      <PageTitle title="Courses" intro="Open a course to edit its details, add or reorder lessons, and write quiz questions. Changes appear on the website straight away."
+        action={<Button onClick={() => setCreating(true)}><Plus size={18} aria-hidden="true" />New course</Button>} />
+      {creating && <NewCourse onClose={() => setCreating(false)} />}
       {error && <Alert>{error}</Alert>}
       {!courses ? <ListRowsSkeleton rows={6} /> : (
         <ul className="grid md:grid-cols-2 gap-4">
           {courses.map((c) => (
             <li key={c.id}>
-              <Link to={`/admin/courses/${c.id}`} className="block bg-white rounded-xl border border-line p-4 hover:border-brand/40 hover:shadow-sm">
+              <Link to={`/admin/courses/${c.id}`} className="block bg-surface rounded-xl border border-line p-4 hover:border-brand/40 hover:shadow-sm">
                 <div className="flex items-start gap-3">
                   <IconTile icon={c.category === 'english' ? BookOpen : Laptop} tone={c.category === 'english' ? 'brand' : 'cyan'} size="sm" />
                   <div className="min-w-0 flex-1">
@@ -65,12 +68,17 @@ export function AdminCourse() {
       setMsg({ tone: 'success', text: 'Course saved.' }); load();
     } catch (err) { setMsg({ tone: 'error', text: errorMessage(err) }); }
   };
+  const removeCourse = async () => {
+    if (!window.confirm(`Delete "${c.title}" with all its lessons and quizzes? Students lose their progress and certificates for it. To keep it, untick "Show this course on the website" instead.`)) return;
+    try { await api.delete(`/admin/courses/${id}`); navigate('/admin/courses'); } catch (err) { setMsg({ tone: 'error', text: errorMessage(err) }); }
+  };
   const move = async (lessonId, direction) => { await api.post(`/admin/lessons/${lessonId}/move`, { direction }); load(); };
 
   return (
     <div className="space-y-6">
       <Link to="/admin/courses" className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline min-h-11"><ArrowLeft size={16} aria-hidden="true" />All courses</Link>
-      <PageTitle title={c.title} intro={`${c.category === 'english' ? 'English' : 'Computer skills'}, course ${c.track}`} />
+      <PageTitle title={c.title} intro={`${c.category === 'english' ? 'English' : 'Computer skills'}, course ${c.track}`}
+        action={<Button variant="ghost" className="text-danger" onClick={removeCourse}><Trash2 size={18} aria-hidden="true" />Delete course</Button>} />
       {msg && <Alert tone={msg.tone}>{msg.text}</Alert>}
       <div className="grid lg:grid-cols-[1fr_1.2fr] gap-6 items-start">
         <Card>
@@ -124,6 +132,33 @@ function AddLesson({ courseId, onClose, onAdded }) {
     <Modal open onClose={onClose} title="Add a lesson" footer={<><Button variant="ghost" onClick={onClose}>Cancel</Button><Button onClick={add}>Add and edit</Button></>}>
       {error && <div className="mb-3"><Alert>{error}</Alert></div>}
       <Field label="Lesson title" value={title} onChange={(e) => setTitle(e.target.value)} hint="It is added at the end and stays hidden until you publish it." />
+    </Modal>
+  );
+}
+
+function NewCourse({ onClose }) {
+  const navigate = useNavigate();
+  const [f, setF] = useState({ title: '', category: 'english', level: 'Beginner', description: '', skills: '' });
+  const [error, setError] = useState('');
+  const create = async () => {
+    try {
+      const { data } = await api.post('/admin/courses', { ...f, skills: f.skills.split(',').map((s) => s.trim()).filter(Boolean) });
+      navigate(`/admin/courses/${data.course.id}`);
+    } catch (e) { setError(errorMessage(e)); }
+  };
+  return (
+    <Modal open onClose={onClose} title="New course" footer={<><Button variant="ghost" onClick={onClose}>Cancel</Button><Button onClick={create}>Create and add lessons</Button></>}>
+      <div className="space-y-4">
+        {error && <Alert>{error}</Alert>}
+        <Field label="Title" value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} />
+        <div className="grid sm:grid-cols-2 gap-4">
+          <Field as="select" label="Subject" value={f.category} onChange={(e) => setF({ ...f, category: e.target.value })}><option value="english">English</option><option value="computer">Computer skills</option></Field>
+          <Field label="Level" value={f.level} onChange={(e) => setF({ ...f, level: e.target.value })} />
+        </div>
+        <Field as="textarea" rows={3} label="Description" value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} />
+        <Field label="Skills (separated by commas, optional)" value={f.skills} onChange={(e) => setF({ ...f, skills: e.target.value })} />
+        <p className="text-sm text-ink-soft">The course gets the next letter (A, B, C…) and stays hidden until you add lessons and tick "Show this course on the website".</p>
+      </div>
     </Modal>
   );
 }

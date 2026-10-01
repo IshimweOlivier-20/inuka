@@ -47,11 +47,12 @@ export default function ChatPanel({ conversationId, onConversation, compact = fa
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [enabled, setEnabled] = useState(true);
+  const [providerName, setProviderName] = useState(null);
   const [convId, setConvId] = useState(conversationId || null);
   const endRef = useRef(null);
   const inputRef = useRef(null);
 
-  useEffect(() => { api.get('/ai/status').then((r) => setEnabled(r.data.enabled)).catch(() => {}); }, []);
+  useEffect(() => { api.get('/ai/status').then((r) => { setEnabled(r.data.enabled); setProviderName(r.data.provider); }).catch(() => {}); }, []);
   useEffect(() => {
     setConvId(conversationId || null);
     setError('');
@@ -94,7 +95,7 @@ export default function ChatPanel({ conversationId, onConversation, compact = fa
           <div className="flex flex-wrap gap-2 pl-12">
             {QUICK_STARTS.map(([label, prompt]) => (
               <button key={label} type="button" onClick={() => send(prompt)} disabled={busy}
-                className="min-h-10 px-3 rounded-full border border-brand/40 bg-white text-sm font-medium text-brand hover:bg-brand-soft">{label}</button>
+                className="min-h-10 px-3 rounded-full border border-brand/40 bg-surface text-sm font-medium text-brand hover:bg-brand-soft">{label}</button>
             ))}
           </div>
         )}
@@ -105,13 +106,13 @@ export default function ChatPanel({ conversationId, onConversation, compact = fa
         ) : (
           <div key={m.id} className="flex items-start gap-3">
             <AiAvatar />
-            <div className="rounded-2xl rounded-tl-sm bg-white border border-line px-4 py-3 text-[15px] max-w-[85%] break-words"><Rich text={m.content} /></div>
+            <div className="rounded-2xl rounded-tl-sm bg-surface border border-line px-4 py-3 text-[15px] max-w-[85%] break-words"><Rich text={m.content} /></div>
           </div>
         )))}
         {busy && (
           <div className="flex items-center gap-3" role="status">
             <AiAvatar />
-            <span className="rounded-2xl bg-white border border-line px-4 py-3 inline-flex gap-1" aria-label="INUKA AI is typing">
+            <span className="rounded-2xl bg-surface border border-line px-4 py-3 inline-flex gap-1" aria-label="INUKA AI is typing">
               {[0, 1, 2].map((i) => <span key={i} className="typing-dot w-2 h-2 rounded-full bg-brand" style={{ animationDelay: `${i * 0.2}s` }} />)}
             </span>
           </div>
@@ -124,7 +125,7 @@ export default function ChatPanel({ conversationId, onConversation, compact = fa
         {error && <p className="text-sm text-danger" role="alert">{error}</p>}
         <div ref={endRef} />
       </div>
-      <form onSubmit={(e) => { e.preventDefault(); send(); }} className="border-t border-line p-3 flex items-end gap-2 bg-white">
+      <form onSubmit={(e) => { e.preventDefault(); send(); }} className="border-t border-line p-3 flex items-end gap-2 bg-surface">
         <label className="flex-1">
           <span className="sr-only">Message INUKA AI</span>
           <textarea ref={inputRef} rows={compact ? 1 : 2} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={onKey} disabled={!enabled}
@@ -136,7 +137,9 @@ export default function ChatPanel({ conversationId, onConversation, compact = fa
           <SendHorizontal size={20} aria-hidden="true" />
         </button>
       </form>
-      {!compact && <p className="px-3 pb-2 text-xs text-ink-soft text-center bg-white">INUKA AI can make mistakes. Always check deadlines and rules on the official scholarship website.</p>}
+      <p className="px-3 pb-2 text-xs text-ink-soft text-center bg-surface">
+        {compact ? 'Never share passwords or ID numbers.' : <>INUKA AI can make mistakes. Check deadlines on the official website. Never share passwords or ID numbers.{providerName && ` Answers by ${providerName}.`} <Link to="/privacy#ai" className="underline">Privacy</Link></>}
+      </p>
     </div>
   );
 }

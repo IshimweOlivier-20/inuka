@@ -11,6 +11,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <title>INUKA — Rise. Learn. Succeed.</title>
+    <script>
+      // Light or dark mode before the page draws (no white flash). Saved choice first, otherwise the device setting.
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem('inuka-theme'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

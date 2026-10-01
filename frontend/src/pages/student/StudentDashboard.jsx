@@ -37,7 +37,7 @@ export default function StudentDashboard() {
       </section>
 
       {profileIncomplete && (
-        <div className="rounded-xl bg-white border border-brand/30 p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="rounded-xl bg-surface border border-brand/30 p-4 flex flex-col sm:flex-row sm:items-center gap-3">
           <IconTile icon={UserRound} tone="tint" size="sm" />
           <p className="flex-1"><strong>Finish your profile.</strong> Add your countries, education level and language so we can show you the right scholarships.</p>
           <Button to="/profile" variant="outline">Complete my profile</Button>

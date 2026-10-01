@@ -1,5 +1,5 @@
 import {
-  BookOpen, CalendarDays, ChartLine, Globe, GraduationCap, HeartHandshake, LayoutDashboard, Megaphone, Sparkles, UserRound, UsersRound,
+  BookOpen, CalendarDays, ChartLine, Globe, GraduationCap, HeartHandshake, LayoutDashboard, Megaphone, Newspaper, Sparkles, UserRound, UsersRound,
 } from 'lucide-react';
 
 // INUKA has three dashboards, one per role. Each role has its own home page and sidebar.
@@ -31,6 +31,7 @@ export const ROLE_NAV = {
     { to: '/admin/mentors', label: 'Mentors', icon: HeartHandshake },
     { to: '/admin/courses', label: 'Courses', icon: BookOpen },
     { to: '/admin/scholarships', label: 'Scholarships', icon: GraduationCap },
+    { to: '/admin/content', label: 'Website content', icon: Newspaper },
     { to: '/admin/analytics', label: 'Analytics', icon: ChartLine },
     { to: '/admin/announcements', label: 'Announcements', icon: Megaphone },
   ],

@@ -164,7 +164,7 @@ function DocumentVault({ highlight }) {
           const [statusLabel, statusTone] = STATUS[t.status];
           const accept = t.formats.map((f) => `.${f}`).join(',');
           return (
-            <li key={t.key} id={`doc-${t.key}`} className={`bg-white rounded-xl border p-4 ${highlight === t.key ? 'border-accent ring-2 ring-accent/40' : 'border-line'}`}>
+            <li key={t.key} id={`doc-${t.key}`} className={`bg-surface rounded-xl border p-4 ${highlight === t.key ? 'border-accent ring-2 ring-accent/40' : 'border-line'}`}>
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex-1 min-w-48">
                   <p className="font-semibold">{t.label}</p>

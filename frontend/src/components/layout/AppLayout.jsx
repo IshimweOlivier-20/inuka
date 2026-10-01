@@ -5,6 +5,7 @@ import Logo from './Logo';
 import Avatar from '../ui/Avatar';
 import NotificationBell from './NotificationBell';
 import HeaderSearch from './HeaderSearch';
+import ThemeToggle from './ThemeToggle';
 import { useAuth } from '../../context/AuthContext';
 import { PageSkeleton } from '../ui/Skeletons';
 import { LogOut, Menu, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
@@ -33,7 +34,7 @@ export default function AppLayout() {
 
   return (
     <div className={`min-h-screen transition-[padding] ${collapsed ? 'md:pl-[76px]' : 'md:pl-60'}`}>
-      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-2 focus:p-3 focus:bg-white">Skip to content</a>
+      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-2 focus:p-3 focus:bg-surface">Skip to content</a>
 
       {/* Desktop sidebar / mobile drawer */}
       <aside className={`fixed inset-y-0 left-0 z-40 w-60 ${collapsed ? 'md:w-[76px]' : ''} bg-brand-deep flex flex-col transition-[transform,width] md:translate-x-0 ${menuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
@@ -61,13 +62,14 @@ export default function AppLayout() {
           </Link>
         </div>
       </aside>
-      {menuOpen && <div className="fixed inset-0 z-30 bg-ink/40 md:hidden" onClick={() => setMenuOpen(false)} aria-hidden />}
+      {menuOpen && <div className="fixed inset-0 z-30 bg-black/40 md:hidden" onClick={() => setMenuOpen(false)} aria-hidden />}
 
       <header className="sticky top-0 z-20 bg-paper/95 backdrop-blur border-b border-line">
         <div className="flex items-center justify-between gap-3 h-16 px-4 md:px-8 max-w-[1200px] mx-auto">
           <button className="md:hidden min-w-11 min-h-11 inline-flex items-center justify-center" onClick={() => setMenuOpen(true)} aria-label="Open menu"><Menu size={24} /></button>
           <HeaderSearch />
           <div className="flex items-center gap-2 shrink-0 ml-auto sm:ml-0">
+            <ThemeToggle />
             <NotificationBell />
             <NavLink to={isStudent ? '/profile' : homeFor(user)} className="flex items-center gap-2 min-h-11 pl-1 pr-3 rounded-full hover:bg-brand-soft">
               <Avatar user={user} />
@@ -86,7 +88,7 @@ export default function AppLayout() {
 
       {/* Mobile bottom tab bar (students) */}
       {isStudent && (
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-20 bg-white border-t border-line grid grid-cols-5" aria-label="Quick">
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-20 bg-surface border-t border-line grid grid-cols-5" aria-label="Quick">
         {NAV.filter((n) => MOBILE_TABS.includes(n.to)).map((n) => (
           <NavLink key={n.to} to={n.to} className={({ isActive }) => `flex flex-col items-center justify-center min-h-14 text-[11px] ${isActive ? 'text-brand font-semibold' : 'text-ink-soft'}`}>
             <n.icon size={22} strokeWidth={2} aria-hidden="true" />{n.label.replace('My ', '')}

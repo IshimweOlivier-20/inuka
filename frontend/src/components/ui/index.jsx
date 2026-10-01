@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const variants = {
   primary: 'bg-brand text-white hover:bg-brand-dark',
-  accent: 'bg-white text-brand-deep hover:bg-brand-soft',
+  accent: 'bg-white text-[#0A3D91] hover:bg-[#E8F1FE]', // white button on blue backgrounds, same in both themes
   outline: 'border-2 border-brand text-brand hover:bg-brand-soft',
   ghost: 'text-brand hover:bg-brand-soft',
   danger: 'bg-danger text-white hover:bg-red-600',
@@ -36,7 +36,7 @@ export function PageLoader() {
 export function Field({ label, error, hint, as = 'input', children, className = '', ...props }) {
   const id = useId();
   const Tag = as;
-  const base = `w-full min-h-11 rounded-lg border bg-white px-3 py-2 text-base text-ink focus:outline-none focus:ring-2 focus:ring-brand/40 ${error ? 'border-danger' : 'border-line'}`;
+  const base = `w-full min-h-11 rounded-lg border bg-surface px-3 py-2 text-base text-ink focus:outline-none focus:ring-2 focus:ring-brand/40 ${error ? 'border-danger' : 'border-line'}`;
   return (
     <div className={className}>
       <label htmlFor={id} className="block mb-1.5 text-sm font-medium text-ink">{label}</label>
@@ -59,7 +59,7 @@ export function Alert({ tone = 'error', children }) {
 }
 
 export function Card({ className = '', children, ...props }) {
-  return <div className={`bg-white rounded-xl border border-line p-5 ${className}`} {...props}>{children}</div>;
+  return <div className={`bg-surface rounded-xl border border-line p-5 ${className}`} {...props}>{children}</div>;
 }
 
 export function ProgressBar({ value, label, tone = 'accent' }) {
@@ -95,7 +95,7 @@ export function Modal({ open, onClose, title, children, footer, wide }) {
   }, [open]);
   return (
     <dialog ref={ref} onClose={onClose} onCancel={onClose}
-      className={`m-auto w-[calc(100%-1.5rem)] ${wide ? 'max-w-3xl' : 'max-w-xl'} rounded-2xl p-0 backdrop:bg-ink/50 max-h-[92vh]`}>
+      className={`m-auto w-[calc(100%-1.5rem)] ${wide ? 'max-w-3xl' : 'max-w-xl'} rounded-2xl p-0 bg-surface text-ink backdrop:bg-black/50 max-h-[92vh]`}>
       {open && (
         <div className="flex flex-col max-h-[92vh]">
           <div className="flex items-start justify-between gap-4 px-6 pt-5 pb-3 border-b border-line">

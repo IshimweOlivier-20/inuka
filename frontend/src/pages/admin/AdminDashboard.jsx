@@ -140,8 +140,8 @@ function Stat({ icon, tone, value, label, note, to }) {
   );
   return (
     <li>
-      {to ? <Link to={to} className="h-full bg-white rounded-xl border border-line p-5 flex items-start gap-4 hover:border-brand/40">{body}</Link>
-        : <div className="h-full bg-white rounded-xl border border-line p-5 flex items-start gap-4">{body}</div>}
+      {to ? <Link to={to} className="h-full bg-surface rounded-xl border border-line p-5 flex items-start gap-4 hover:border-brand/40">{body}</Link>
+        : <div className="h-full bg-surface rounded-xl border border-line p-5 flex items-start gap-4">{body}</div>}
     </li>
   );
 }

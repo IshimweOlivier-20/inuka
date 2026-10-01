@@ -45,7 +45,7 @@ export default function AdminMentors() {
       ) : (
         <ul className="space-y-4">
           {data.mentors.map((m) => (
-            <li key={m.id} className="bg-white rounded-xl border border-line p-5">
+            <li key={m.id} className="bg-surface rounded-xl border border-line p-5">
               <div className="flex flex-wrap items-start gap-4">
                 <Avatar user={m.user} size="xl" />
                 <div className="min-w-0 flex-1">

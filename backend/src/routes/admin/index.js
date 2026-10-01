@@ -6,6 +6,7 @@ import peopleRoutes from './people.js';
 import courseRoutes from './courses.js';
 import scholarshipRoutes from './scholarships.js';
 import insightRoutes from './insights.js';
+import contentRoutes from './content.js';
 
 const router = Router();
 router.use(requireAuth, requireRole('admin'));
@@ -92,5 +93,6 @@ router.use(peopleRoutes);
 router.use(courseRoutes);
 router.use(scholarshipRoutes);
 router.use(insightRoutes);
+router.use(contentRoutes);
 
 export default router;

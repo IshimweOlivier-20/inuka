@@ -6,7 +6,7 @@ import rateLimit from 'express-rate-limit';
 import { prisma } from '../../lib/prisma.js';
 import { HttpError } from '../../middleware/errorHandler.js';
 import { requireAuth, requireRole } from '../../middleware/auth.js';
-import { AiError, aiEnabled, askAi } from '../../services/aiService.js';
+import { AiError, aiEnabled, aiProviderName, askAi } from '../../services/aiService.js';
 
 const router = Router();
 router.use('/ai', requireAuth, requireRole('student'));
@@ -21,7 +21,7 @@ const chatLimiter = rateLimit({
 const HISTORY = 20; // messages sent to the AI for context
 
 // GET /api/ai/status — is the assistant switched on?
-router.get('/ai/status', (req, res) => res.json({ enabled: aiEnabled() }));
+router.get('/ai/status', (req, res) => res.json({ enabled: aiEnabled(), provider: aiEnabled() ? aiProviderName() : null }));
 
 // GET /api/ai/conversations — the student's conversations, newest first
 router.get('/ai/conversations', async (req, res) => {

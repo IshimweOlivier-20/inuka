@@ -137,7 +137,7 @@ export default function MentorDashboard() {
 
 function Stat({ icon, tone, value, label }) {
   return (
-    <li className="bg-white rounded-xl border border-line p-5 flex items-center gap-4">
+    <li className="bg-surface rounded-xl border border-line p-5 flex items-center gap-4">
       <IconTile icon={icon} tone={tone} />
       <div>
         <p className="font-display text-3xl font-bold leading-none">{value}</p>

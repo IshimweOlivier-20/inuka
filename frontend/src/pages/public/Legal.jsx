@@ -15,7 +15,7 @@ function LegalPage({ title, intro, sections }) {
         <p className="mt-3 text-sm text-ink-soft">Last updated: {UPDATED}</p>
       </PublicHeader>
       <div className="max-w-[760px] mx-auto px-5 py-10 md:py-14">
-        <nav aria-label="On this page" className="mb-10 rounded-xl bg-white border border-line p-5">
+        <nav aria-label="On this page" className="mb-10 rounded-xl bg-surface border border-line p-5">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-soft">On this page</h2>
           <ol className="mt-2 grid sm:grid-cols-2 gap-x-6 gap-y-1 list-decimal list-inside text-[15px]">
             {sections.map(([id, heading]) => <li key={id}><a href={`#${id}`} className="text-brand hover:underline">{heading}</a></li>)}
@@ -123,6 +123,10 @@ export function Privacy() {
         </>],
         ['sensitive', 'Refugee status', <>
           <p>Telling us whether you are a refugee or displaced person is always optional, and you can choose "Prefer not to say". We only use it to show you suitable scholarships. We never share it with anyone outside the INUKA team. You can change or remove it at any time in your Profile.</p>
+        </>],
+        ['ai', 'INUKA AI', <>
+          <p>When you chat with INUKA AI, your messages are sent to the AI service we use to write the answers (for example Google Gemini). Depending on the service and plan, that company may use the conversation to improve its products. <strong>Never type passwords, ID numbers or other private details into the chat.</strong></p>
+          <p>Your conversations are saved in your account so you can read them again, and you can delete them at any time. The INUKA team does not read your conversations; we only count which topics are asked about most.</p>
         </>],
         ['security', 'Keeping it safe', <>
           <p>Your connection to INUKA is encrypted, passwords are stored scrambled, and uploaded files are checked and kept private. No website can be completely secure, so please use a strong password and never share it.</p>

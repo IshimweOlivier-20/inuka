@@ -42,7 +42,7 @@ export default function Courses() {
 function CourseCard({ c }) {
   const action = c.status === 'completed' ? 'Review' : c.status === 'in_progress' ? 'Resume' : 'Start';
   return (
-    <li className="bg-white rounded-xl border border-line overflow-hidden flex flex-col">
+    <li className="bg-surface rounded-xl border border-line overflow-hidden flex flex-col">
       <div className={`px-5 pt-5 pb-4 ${c.category === 'english' ? 'bg-brand-soft' : 'bg-[#E0F7FD]'}`}>
         <div className="flex items-center justify-between">
           <span className="font-display font-bold text-3xl text-brand/80" aria-label={`Sub-course ${c.track}`}>{c.track}</span>

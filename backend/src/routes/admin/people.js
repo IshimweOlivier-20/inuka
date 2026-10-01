@@ -6,7 +6,9 @@ import { HttpError } from '../../middleware/errorHandler.js';
 import { notify } from '../../utils/notify.js';
 import { sendEmail } from '../../services/emailService.js';
 import { deletePhoto } from '../../services/storageService.js';
-import { publicUser } from '../../utils/tokens.js';
+import { issueAuthToken, publicUser } from '../../utils/tokens.js';
+import bcrypt from 'bcrypt';
+import { randomBytes } from 'node:crypto';
 
 const router = Router();
 const mail = (args) => sendEmail(args).catch((e) => console.error('Email failed', e.message));
@@ -41,6 +43,48 @@ router.get('/users', async (req, res) => {
     }),
   ]);
   res.json({ users, total, page: p, pageSize: PAGE });
+});
+
+const EXPERTISE = ['Scholarship Guidance', 'University Admissions', 'English Language', 'Computer Skills', 'Career Counselling', 'Refugee Rights & Education'];
+
+// POST /api/admin/users — create a student, mentor or admin account.
+// The person gets an email with a link to choose their own password (valid 3 days); nobody else knows it.
+router.post('/users', async (req, res) => {
+  const data = z.object({
+    firstName: z.string().trim().min(1, 'Please enter the first name.'),
+    lastName: z.string().trim().min(1, 'Please enter the last name.'),
+    email: z.email('Please enter a valid email address.').transform((e) => e.toLowerCase()),
+    role: z.enum(['student', 'mentor', 'admin']),
+    countryOrigin: z.string().optional(),
+    countryResidence: z.string().optional(),
+    mentor: z.object({
+      title: z.string().trim().min(2, 'Please enter the mentor\'s professional title.'),
+      org: z.string().trim().optional(),
+      bio: z.string().trim().min(20, 'Please write a short bio for the mentor (at least 20 characters).'),
+      expertise: z.array(z.enum(EXPERTISE)).min(1, 'Please choose at least one area of expertise.'),
+      languages: z.array(z.string().min(1)).min(1, 'Please choose at least one language.'),
+    }).optional(),
+  }).parse(req.body);
+  if (data.role === 'mentor' && !data.mentor) throw new HttpError(400, 'Please fill in the mentor profile.');
+  if (await prisma.user.findUnique({ where: { email: data.email } })) throw new HttpError(409, 'An account with this email already exists.');
+
+  const user = await prisma.user.create({
+    data: {
+      firstName: data.firstName, lastName: data.lastName, email: data.email, role: data.role,
+      countryOrigin: data.countryOrigin || null, countryResidence: data.countryResidence || null,
+      isVerified: true, passwordHash: await bcrypt.hash(randomBytes(24).toString('hex'), 12), // replaced when they set their password
+      ...(data.role === 'mentor' && { mentor: { create: { ...data.mentor, org: data.mentor.org || null, isApproved: true } } }),
+    },
+  });
+  const token = await issueAuthToken(user.id, 'password_reset', 72);
+  const link = `${process.env.FRONTEND_URL || process.env.CLIENT_URL}/reset-password?token=${token}`;
+  const roleName = { student: 'a student', mentor: 'a mentor', admin: 'an admin' }[data.role];
+  mail({
+    to: user.email, subject: 'Your INUKA account is ready',
+    text: `Hi ${user.firstName},\n\nThe INUKA team created an account for you as ${roleName}.\n\nChoose your password here (the link works for 3 days):\n${link}\n\nThen sign in with ${user.email}.${data.role === 'mentor' ? '\n\nAfter signing in, please add your photo and your weekly availability in your mentor dashboard.' : ''}\n\nRise. Learn. Succeed.\nThe INUKA team`,
+  });
+  const devHint = process.env.NODE_ENV !== 'production' && !process.env.SENDGRID_API_KEY ? { devSetPasswordUrl: link } : {};
+  res.status(201).json({ user: publicUser(user), ...devHint });
 });
 
 // GET /api/admin/users/:id — profile plus activity numbers

@@ -76,7 +76,7 @@ export default function MentorSessions() {
                     aria-label={`${d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}: ${count} ${count === 1 ? 'session' : 'sessions'}`}
                     className={`relative h-11 rounded-lg text-sm tabular-nums ${selected ? 'bg-brand text-white font-bold' : count ? 'bg-brand-soft text-brand-deep font-semibold hover:bg-brand/20' : 'hover:bg-paper'} ${key === todayKey && !selected ? 'ring-2 ring-brand/40' : ''}`}>
                     {d.getDate()}
-                    {count > 0 && <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full ${selected ? 'bg-white' : 'bg-brand'}`} aria-hidden="true" />}
+                    {count > 0 && <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full ${selected ? 'bg-surface' : 'bg-brand'}`} aria-hidden="true" />}
                   </button>
                 );
               })}

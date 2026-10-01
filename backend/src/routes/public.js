@@ -5,7 +5,7 @@ import rateLimit from 'express-rate-limit';
 import { prisma } from '../lib/prisma.js';
 import { HttpError } from '../middleware/errorHandler.js';
 import { searchScholarships } from '../services/scholarshipSearch.js';
-import { PHOTO_NAME, photoDir } from '../services/storageService.js';
+import { MEDIA_NAME, PHOTO_NAME, mediaDir, photoDir } from '../services/storageService.js';
 
 const router = Router();
 const isProd = () => process.env.NODE_ENV === 'production';
@@ -19,6 +19,12 @@ router.get('/photos/:name', (req, res) => {
   if (!PHOTO_NAME.test(req.params.name)) throw new HttpError(404, 'Photo not found.');
   res.set('Cache-Control', 'public, max-age=604800, immutable'); // names are random and never reused
   res.sendFile(req.params.name, { root: photoDir }, (err) => { if (err && !res.headersSent) res.status(404).json({ error: 'Photo not found.' }); });
+});
+
+router.get('/media/:name', (req, res) => {
+  if (!MEDIA_NAME.test(req.params.name)) throw new HttpError(404, 'Image not found.');
+  res.set('Cache-Control', 'public, max-age=604800, immutable');
+  res.sendFile(req.params.name, { root: mediaDir }, (err) => { if (err && !res.headersSent) res.status(404).json({ error: 'Image not found.' }); });
 });
 
 router.get('/landing', async (req, res) => {

@@ -38,3 +38,15 @@ export async function deletePhoto(url) {
   const name = url?.split('/').pop();
   if (name && PHOTO_NAME.test(name)) await deleteFile(join('photos', name));
 }
+
+// ---------- Images inside lessons and articles (uploaded by admins from the text editor) ----------
+const MEDIA_EXT = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' };
+export const MEDIA_NAME = /^[0-9a-f-]{36}\.(jpg|png|webp|gif)$/;
+export const mediaDir = join(root, 'media');
+
+export async function saveMedia(file) {
+  const name = `${randomUUID()}.${MEDIA_EXT[file.mimetype]}`;
+  await mkdir(mediaDir, { recursive: true });
+  await writeFile(join(mediaDir, name), file.buffer);
+  return `/api/public/media/${name}`;
+}

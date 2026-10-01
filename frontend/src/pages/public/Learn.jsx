@@ -108,12 +108,12 @@ function CourseCard({ c, signedIn }) {
       : c._status === 'completed' ? `/courses/${c.slug}` : `/lessons/${c._nextLessonId}`;
   const action = !signedIn ? 'Start this course' : { not_started: 'Start this course', in_progress: 'Continue', completed: 'Review course' }[c._status];
   return (
-    <li className="bg-white rounded-2xl border border-line overflow-hidden flex flex-col hover:border-brand/30 hover:shadow-[0_14px_40px_-24px_rgba(7, 44, 107,0.5)] transition">
+    <li className="bg-surface rounded-2xl border border-line overflow-hidden flex flex-col hover:border-brand/30 hover:shadow-[0_14px_40px_-24px_rgba(7, 44, 107,0.5)] transition">
       <div className={`px-5 pt-5 pb-4 ${subject.band}`}>
         <div className="flex items-center gap-3">
           <IconTile icon={subject.icon} tone={subject.tone} size="sm" />
           <span className="text-sm font-semibold text-ink-soft">{subject.short}, course {c.track}</span>
-          <span className="ml-auto rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold text-ink-soft">{c.level}</span>
+          <span className="ml-auto rounded-full bg-surface px-2.5 py-0.5 text-xs font-semibold text-ink-soft">{c.level}</span>
         </div>
         <h3 className="font-bold text-xl mt-3 leading-snug">{c.title}</h3>
         <p className="mt-1 text-sm text-ink-soft inline-flex items-center gap-1.5">

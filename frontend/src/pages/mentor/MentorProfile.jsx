@@ -94,7 +94,7 @@ function Chips({ label, options, value, onToggle }) {
       <div className="flex flex-wrap gap-2">
         {options.map((o) => (
           <button key={o} type="button" aria-pressed={value.includes(o)} onClick={() => onToggle(o)}
-            className={`min-h-10 px-3 rounded-full border text-sm ${value.includes(o) ? 'bg-brand text-white border-brand' : 'bg-white border-line hover:border-brand'}`}>{o}</button>
+            className={`min-h-10 px-3 rounded-full border text-sm ${value.includes(o) ? 'bg-brand text-white border-brand' : 'bg-surface border-line hover:border-brand'}`}>{o}</button>
         ))}
       </div>
     </fieldset>

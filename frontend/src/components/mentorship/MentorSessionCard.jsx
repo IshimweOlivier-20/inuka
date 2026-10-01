@@ -21,7 +21,7 @@ export default function MentorSessionCard({ b, onChanged, compact }) {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-line p-4">
+    <div className="bg-surface rounded-xl border border-line p-4">
       <div className="flex items-start gap-3">
         <Avatar user={s} size="md" />
         <div className="min-w-0 flex-1">

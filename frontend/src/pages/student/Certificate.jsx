@@ -24,7 +24,7 @@ export default function Certificate() {
         <Button variant="ghost" to="/my-learning">Back to My Learning</Button>
         <p className="text-sm text-ink-soft self-center">In the print window, choose “Save as PDF”.</p>
       </div>
-      <div id="certificate" className="bg-white aspect-[1.414] max-w-4xl border-[10px] border-brand rounded-sm p-8 sm:p-14 flex flex-col items-center justify-center text-center">
+      <div id="certificate" className="bg-surface aspect-[1.414] max-w-4xl border-[10px] border-brand rounded-sm p-8 sm:p-14 flex flex-col items-center justify-center text-center">
         <Logo tagline size="xl" />
         <h1 className="mt-4 text-2xl sm:text-4xl font-bold">Certificate of Completion</h1>
         <p className="mt-6 text-ink-soft">This certifies that</p>

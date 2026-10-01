@@ -77,7 +77,7 @@ export default function Showcase({ items, getKey, getLabel, renderItem, label })
 
 function ShowcaseSkeleton() {
   return (
-    <div className="w-full max-w-[440px] rounded-3xl bg-white/95 p-6 animate-pulse" aria-label="Loading" role="status">
+    <div className="w-full max-w-[440px] rounded-3xl bg-surface/95 p-6 animate-pulse" aria-label="Loading" role="status">
       <div className="flex gap-3 items-center"><div className="w-12 h-12 rounded-xl bg-brand-soft" /><div className="h-4 w-32 rounded bg-brand-soft" /></div>
       <div className="h-6 w-4/5 rounded bg-brand-soft mt-5" />
       <div className="h-4 w-1/2 rounded bg-brand-soft mt-3" />
@@ -87,7 +87,7 @@ function ShowcaseSkeleton() {
   );
 }
 
-const cardClass = 'rounded-3xl bg-white text-ink shadow-[0_12px_30px_-18px_rgba(3,20,60,0.35)] overflow-hidden';
+const cardClass = 'rounded-3xl bg-surface text-ink shadow-[0_12px_30px_-18px_rgba(3,20,60,0.35)] overflow-hidden';
 
 /* ---------- Course card ---------- */
 const SUBJECT = {

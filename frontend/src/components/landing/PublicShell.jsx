@@ -57,9 +57,9 @@ export function PageHero({ title, intro, search, facts, slides, slidesLabel, sho
                 <span className="sr-only">{search.label}</span>
                 <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-soft pointer-events-none" aria-hidden="true" />
                 <input type="search" value={value} onChange={(e) => setValue(e.target.value)} placeholder={search.placeholder}
-                  className="w-full min-h-14 rounded-xl bg-white text-ink pl-12 pr-4 text-base shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)] focus:outline-none focus:ring-4 focus:ring-accent/60" />
+                  className="w-full min-h-14 rounded-xl bg-surface text-ink pl-12 pr-4 text-base shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)] focus:outline-none focus:ring-4 focus:ring-accent/60" />
               </label>
-              <button type="submit" className="min-h-14 px-5 sm:px-7 rounded-xl bg-accent text-ink font-display font-semibold hover:bg-[#33C3F3]">Search</button>
+              <button type="submit" className="min-h-14 px-5 sm:px-7 rounded-xl bg-accent text-[#0F1E3D] font-display font-semibold hover:bg-[#33C3F3]">Search</button>
             </form>
           )}
           {facts && (

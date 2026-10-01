@@ -18,8 +18,7 @@ const Terms = lazy(() => import('./pages/public/Legal').then((m) => ({ default: 
 const Privacy = lazy(() => import('./pages/public/Legal').then((m) => ({ default: m.Privacy })));
 
 // Sign in, sign up, account emails
-const Login = lazy(() => import('./pages/auth/Login'));
-const Register = lazy(() => import('./pages/auth/Register'));
+const AuthPage = lazy(() => import('./pages/auth/AuthPage'));
 const VerifyEmail = lazy(() => import('./pages/auth/AccountPages').then((m) => ({ default: m.VerifyEmail })));
 const ForgotPassword = lazy(() => import('./pages/auth/AccountPages').then((m) => ({ default: m.ForgotPassword })));
 const ResetPassword = lazy(() => import('./pages/auth/AccountPages').then((m) => ({ default: m.ResetPassword })));
@@ -51,6 +50,7 @@ const AdminLesson = lazy(() => import('./pages/admin/AdminLesson'));
 const AdminScholarships = lazy(() => import('./pages/admin/AdminScholarships').then((m) => ({ default: m.AdminScholarships })));
 const AdminScholarshipForm = lazy(() => import('./pages/admin/AdminScholarships').then((m) => ({ default: m.AdminScholarshipForm })));
 const AdminAnalytics = lazy(() => import('./pages/admin/AdminInsights').then((m) => ({ default: m.AdminAnalytics })));
+const AdminContent = lazy(() => import('./pages/admin/AdminContent'));
 const AdminAnnouncements = lazy(() => import('./pages/admin/AdminInsights').then((m) => ({ default: m.AdminAnnouncements })));
 
 // Shared
@@ -98,8 +98,9 @@ export default function App() {
         <Route path="/logout" element={<Logout />} />
 
         {/* Sign in and account */}
-        <Route path="/login" element={<GuestOnly><Login /></GuestOnly>} />
-        <Route path="/register" element={<GuestOnly><Register /></GuestOnly>} />
+        {/* Sign in and sign up share one sliding card (same component, so it animates between them) */}
+        <Route path="/login" element={<GuestOnly><AuthPage /></GuestOnly>} />
+        <Route path="/register" element={<GuestOnly><AuthPage /></GuestOnly>} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
@@ -137,6 +138,7 @@ export default function App() {
           <Route path="/admin/scholarships/:id" element={<AdminScholarshipForm />} />
           <Route path="/admin/analytics" element={<AdminAnalytics />} />
           <Route path="/admin/announcements" element={<AdminAnnouncements />} />
+          <Route path="/admin/content" element={<AdminContent />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

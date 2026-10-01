@@ -5,14 +5,14 @@ import 'react-loading-skeleton/dist/skeleton.css';
 export function InukaSkeletonTheme({ children }) {
   const reduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   return (
-    <SkeletonTheme baseColor="#E4EAF5" highlightColor="#F4F7FC" borderRadius="0.5rem" duration={1.4} enableAnimation={!reduced}>
+    <SkeletonTheme baseColor="var(--skeleton-base)" highlightColor="var(--skeleton-shine)" borderRadius="0.5rem" duration={1.4} enableAnimation={!reduced}>
       {children}
     </SkeletonTheme>
   );
 }
 
 const Box = ({ className = '', children }) => (
-  <div className={`bg-white rounded-xl border border-line p-5 ${className}`} aria-hidden="true">{children}</div>
+  <div className={`bg-surface rounded-xl border border-line p-5 ${className}`} aria-hidden="true">{children}</div>
 );
 
 // Wrapper that tells screen readers something is loading, once.
@@ -52,7 +52,7 @@ export function DashboardSkeleton() {
 
 export function CourseCardSkeleton() {
   return (
-    <li className="bg-white rounded-xl border border-line overflow-hidden list-none" aria-hidden="true">
+    <li className="bg-surface rounded-xl border border-line overflow-hidden list-none" aria-hidden="true">
       <div className="bg-brand-soft px-5 pt-5 pb-4"><Skeleton height={32} width={32} /><Skeleton height={22} width="80%" className="mt-2" /></div>
       <div className="p-5"><Skeleton count={2} /><Skeleton height={10} className="mt-4" /><Skeleton height={44} className="mt-4" /></div>
     </li>
@@ -107,7 +107,7 @@ export function LessonSkeleton() {
 
 export function ScholarshipCardSkeleton() {
   return (
-    <li className="bg-white rounded-xl border border-line p-5 list-none" aria-hidden="true">
+    <li className="bg-surface rounded-xl border border-line p-5 list-none" aria-hidden="true">
       <div className="flex gap-3"><Skeleton height={48} width={48} /><div className="flex-1"><Skeleton height={20} /><Skeleton width="60%" /></div></div>
       <div className="flex gap-2 mt-3"><Skeleton width={90} height={22} borderRadius="999px" /><Skeleton width={120} height={22} borderRadius="999px" /></div>
       <Skeleton count={3} className="mt-3" />
@@ -129,7 +129,7 @@ export function FeaturedScholarshipsSkeleton() {
   return (
     <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4" role="status" aria-label="Loading scholarships">
       {Array.from({ length: 6 }, (_, i) => (
-        <li key={i} className="bg-white rounded-xl border border-line p-5" aria-hidden="true">
+        <li key={i} className="bg-surface rounded-xl border border-line p-5" aria-hidden="true">
           <Skeleton height={22} width="85%" /><Skeleton width="60%" />
           <div className="flex gap-2 mt-4"><Skeleton width={90} height={22} borderRadius="999px" /><Skeleton width={120} height={22} borderRadius="999px" /></div>
         </li>

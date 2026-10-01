@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import DOMPurify from 'dompurify';
+import { sanitizeRich } from '../../utils/sanitize';
 import { Alert, Button, Modal, ProgressBar } from '../../components/ui';
 import QuizWidget from '../../components/courses/QuizWidget';
 import ListenButton from '../../components/courses/ListenButton';
@@ -29,7 +29,7 @@ export default function LessonPage() {
     }).catch((e) => setError({ message: errorMessage(e), prev: e.response?.data?.details?.previousLessonId }));
   }, [id]);
 
-  const html = useMemo(() => (data ? DOMPurify.sanitize(data.lesson.contentHtml) : ''), [data]);
+  const html = useMemo(() => (data ? sanitizeRich(data.lesson.contentHtml) : ''), [data]);
 
   if (error) return (
     <div className="max-w-xl">

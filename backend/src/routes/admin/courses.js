@@ -25,6 +25,31 @@ router.get('/courses/:id', async (req, res) => {
   res.json({ course });
 });
 
+// POST /api/admin/courses — a new course (hidden until it has lessons and you publish it)
+router.post('/courses', async (req, res) => {
+  const data = z.object({
+    title: z.string().trim().min(3, 'Please enter a title.'),
+    category: z.enum(['english', 'computer'], { error: 'Please choose English or Computer skills.' }),
+    level: z.string().trim().min(2, 'Please enter the level, e.g. Beginner.'),
+    description: z.string().trim().min(10, 'Please write a short description.'),
+    skills: z.array(z.string().trim().min(1)).max(12).default([]),
+  }).parse(req.body);
+  const same = await prisma.course.findMany({ where: { category: data.category }, select: { track: true } });
+  const letters = same.map((c) => c.track.charCodeAt(0)).filter((n) => n >= 65 && n <= 90);
+  const track = String.fromCharCode(letters.length ? Math.max(...letters) + 1 : 65); // next letter: A, B, C…
+  const last = await prisma.course.findFirst({ orderBy: { orderIndex: 'desc' } });
+  const base = `${data.category}-${data.title}`.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
+  const slug = (await prisma.course.findUnique({ where: { slug: base } })) ? `${base}-${Date.now().toString(36)}` : base;
+  const course = await prisma.course.create({ data: { ...data, track, slug, orderIndex: (last?.orderIndex ?? 0) + 1, isPublished: false } });
+  res.status(201).json({ course });
+});
+
+// DELETE /api/admin/courses/:id — removes the course with its lessons, quizzes, progress and certificates
+router.delete('/courses/:id', async (req, res) => {
+  await prisma.course.delete({ where: { id: req.params.id } });
+  res.json({ ok: true });
+});
+
 // PATCH /api/admin/courses/:id
 router.patch('/courses/:id', async (req, res) => {
   const data = z.object({

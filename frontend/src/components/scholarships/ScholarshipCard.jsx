@@ -5,7 +5,7 @@ import { Bookmark, BookmarkCheck, Check } from 'lucide-react';
 export default function ScholarshipCard({ s, onOpen, onSave, onApply }) {
   const d = deadlineTone(s.deadline);
   return (
-    <li className="bg-white rounded-xl border border-line p-5 flex flex-col">
+    <li className="bg-surface rounded-xl border border-line p-5 flex flex-col">
       <div className="flex items-start gap-3">
         <span className="w-12 h-12 shrink-0 rounded-lg bg-brand-soft text-brand font-display font-bold text-lg flex items-center justify-center" aria-hidden>
           {s.orgName.replace(/[^A-Za-z ]/g, '').split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('')}

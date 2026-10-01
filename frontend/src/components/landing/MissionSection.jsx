@@ -62,7 +62,7 @@ function HappyYouthArt() {
 
 export default function MissionSection() {
   return (
-    <section id="mission" className="scroll-mt-16 bg-white py-16 md:py-24 overflow-hidden">
+    <section id="mission" className="scroll-mt-16 bg-surface py-16 md:py-24 overflow-hidden">
       <div className="max-w-[1200px] mx-auto px-5 grid lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-16 items-center">
         {/* Illustration first (left on desktop, top on phones): the opposite of the hero */}
         <Reveal className="max-w-xl mx-auto w-full lg:max-w-none">

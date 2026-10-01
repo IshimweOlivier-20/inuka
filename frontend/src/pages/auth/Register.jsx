@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import AuthShell from './AuthShell';
+import { FormPanel } from './AuthShell';
 import GoogleButton from '../../components/auth/GoogleButton';
 import PhotoPicker from '../../components/auth/PhotoPicker';
 import AvailabilityPicker from '../../components/auth/AvailabilityPicker';
@@ -26,6 +26,8 @@ function validateStep1(f) {
 export default function Register() {
   const [params] = useSearchParams();
   const [role, setRole] = useState(params.get('role') === 'mentor' ? 'mentor' : 'student');
+  // This form stays on the page while people switch between sign in and sign up, so follow ?role= changes.
+  useEffect(() => { if (params.get('role') === 'mentor') { setRole('mentor'); setStep(1); } }, [params]);
   const [photo, setPhoto] = useState(null);
   const [cells, setCells] = useState([]); // mentor availability, "day-hour" in local time
   const [step, setStep] = useState(1);
@@ -88,22 +90,22 @@ export default function Register() {
 
   if (done) {
     return (
-      <AuthShell title="Check your email" subtitle={`We sent a confirmation link to ${done.email}.`}>
+      <FormPanel title="Check your email" subtitle={`We sent a confirmation link to ${done.email}.`}>
         <p className="text-ink-soft mb-4">Open the email and click the link to activate your account. If you do not see it, check your spam folder.</p>
         {done.devVerifyUrl && <Alert tone="info">Development mode (no email service yet): <a href={done.devVerifyUrl} className="underline font-semibold">open your confirmation link</a>.</Alert>}
         {role === 'mentor' && <p className="mt-4 text-sm text-ink-soft">After you confirm, the INUKA team will review your mentor profile before students can book you.</p>}
         <Button to="/login" variant="outline" className="w-full mt-6">Go to sign in</Button>
-      </AuthShell>
+      </FormPanel>
     );
   }
 
   return (
-    <AuthShell wide title={role === 'mentor' ? 'Become an INUKA mentor' : 'Create your free account'} subtitle={`Step ${step} of 2 — ${step === 1 ? 'Account details' : role === 'mentor' ? 'Your mentor profile' : 'Your profile'}`}>
+    <FormPanel title={role === 'mentor' ? 'Become a mentor' : 'Create account'} subtitle={`Step ${step} of 2 — ${step === 1 ? 'Account details' : role === 'mentor' ? 'Your mentor profile' : 'Your profile'}`}>
       {step === 1 && (
         <div className="grid grid-cols-2 gap-2 p-1 bg-paper rounded-lg mb-5" role="radiogroup" aria-label="Account type">
           {['student', 'mentor'].map((r) => (
             <button key={r} type="button" role="radio" aria-checked={role === r} onClick={() => setRole(r)}
-              className={`min-h-11 rounded-md font-medium ${role === r ? 'bg-white shadow-sm text-brand' : 'text-ink-soft'}`}>
+              className={`min-h-11 rounded-md font-medium ${role === r ? 'bg-surface shadow-sm text-brand' : 'text-ink-soft'}`}>
               {r === 'student' ? 'I am a student' : 'I am a mentor'}
             </button>
           ))}
@@ -173,8 +175,7 @@ export default function Register() {
           </div>
         </form>
       )}
-      <p className="mt-6 text-center text-ink-soft">Already have an account? <Link to="/login" className="text-brand font-semibold hover:underline">Sign in</Link></p>
-    </AuthShell>
+    </FormPanel>
   );
 }
 
@@ -185,7 +186,7 @@ function Chips({ label, options, value, onToggle, error }) {
       <div className="flex flex-wrap gap-2">
         {options.map((o) => (
           <button key={o} type="button" aria-pressed={value.includes(o)} onClick={() => onToggle(o)}
-            className={`min-h-10 px-3 rounded-full border text-sm ${value.includes(o) ? 'bg-brand text-white border-brand' : 'bg-white border-line hover:border-brand'}`}>{o}</button>
+            className={`min-h-10 px-3 rounded-full border text-sm ${value.includes(o) ? 'bg-brand text-white border-brand' : 'bg-surface border-line hover:border-brand'}`}>{o}</button>
         ))}
       </div>
       {error && <p className="mt-1 text-sm text-danger">{error}</p>}

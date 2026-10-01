@@ -37,7 +37,7 @@ export default function NotificationBell() {
         {data.unread > 0 && <span className="absolute top-1 right-1 min-w-5 h-5 px-1 rounded-full bg-danger text-white text-xs font-bold flex items-center justify-center">{data.unread > 9 ? '9+' : data.unread}</span>}
       </button>
       {open && (
-        <div className="absolute right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-lg border border-line z-50">
+        <div className="absolute right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-surface rounded-xl shadow-lg border border-line z-50">
           <div className="flex items-center justify-between px-4 py-3 border-b border-line">
             <span className="font-display font-semibold">Notifications</span>
             {data.unread > 0 && <button onClick={markAll} className="text-sm text-brand hover:underline">Mark all as read</button>}

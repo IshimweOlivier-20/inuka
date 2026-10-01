@@ -102,7 +102,7 @@ export default function Scholarships() {
               <label className="block">
                 <span className="sr-only">Search scholarships</span>
                 <input type="search" value={filters.q} onChange={set('q')} placeholder="Search by name, country, university…"
-                  className="w-full min-h-11 rounded-lg border border-line bg-white px-3" />
+                  className="w-full min-h-11 rounded-lg border border-line bg-surface px-3" />
               </label>
               <Button variant="outline" className="w-full mt-3 lg:hidden" onClick={() => setShowFilters(!showFilters)} aria-expanded={showFilters}>
                 Filters{activeCount ? ` (${activeCount})` : ''}
@@ -148,7 +148,7 @@ function Select({ label, options, ...props }) {
   return (
     <label className="block">
       <span className="block text-sm font-medium mb-1">{label}</span>
-      <select className="w-full min-h-11 rounded-lg border border-line bg-white px-3" {...props}>
+      <select className="w-full min-h-11 rounded-lg border border-line bg-surface px-3" {...props}>
         {options.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
       </select>
     </label>

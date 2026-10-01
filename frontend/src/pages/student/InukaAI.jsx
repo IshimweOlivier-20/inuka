@@ -22,7 +22,7 @@ export default function InukaAI() {
 
   return (
     <div className="grid lg:grid-cols-[260px_1fr] gap-6 h-[calc(100vh-9rem)] min-h-[520px]">
-      <aside className="hidden lg:flex flex-col bg-white rounded-2xl border border-line overflow-hidden" aria-label="Your conversations">
+      <aside className="hidden lg:flex flex-col bg-surface rounded-2xl border border-line overflow-hidden" aria-label="Your conversations">
         <div className="p-3 border-b border-line">
           <button type="button" onClick={startNew} className="w-full min-h-11 rounded-lg bg-brand text-white font-semibold inline-flex items-center justify-center gap-2 hover:bg-brand-dark">
             <MessageSquarePlus size={18} aria-hidden="true" />New conversation
@@ -43,7 +43,7 @@ export default function InukaAI() {
         </ul>
       </aside>
       <section className="flex flex-col bg-paper rounded-2xl border border-line overflow-hidden min-h-0">
-        <header className="flex items-center gap-3 px-4 py-3 bg-white border-b border-line">
+        <header className="flex items-center gap-3 px-4 py-3 bg-surface border-b border-line">
           <AiAvatar size={40} />
           <div className="min-w-0">
             <h1 className="text-lg font-bold leading-tight">INUKA AI — Your Learning Guide</h1>

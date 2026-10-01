@@ -69,7 +69,7 @@ password `ChangeMe123`. The student and mentor accounts are created by `npm run 
 |---|---|---|
 | **Student** | `student@inuka.app` | Courses and progress, scholarships (save, apply, document checklist), documents vault, **book mentors** (`/mentorship`), rate sessions and read mentor notes, **INUKA AI** chat (`/ai` and the bubble at the bottom right) |
 | **Mentor** | `mentor@inuka.app` | Dashboard with new requests (**accept or decline**, with a message), upcoming sessions with the video link and Join button, **Sessions** page (calendar, history, ratings, **session notes**, "Mark as done"), **My profile** (bio, expertise, languages, photo, **weekly availability**) |
-| **Admin** | `admin@inuka.app` | Overview (growth chart, active users, popular courses, most bookmarked scholarships), **Users** (search, edit, suspend, delete), **Mentors** (approve, or send back with feedback), **Courses** (edit courses, add/reorder/edit lessons and quiz questions), **Scholarships** (add, edit, hide, hide all expired, refugee flag), **Analytics** (finish rates, drop-off lessons, AI question themes), **Announcements** (to all students, refugees, one country, mentors or everyone) |
+| **Admin** | `admin@inuka.app` | Overview (growth chart, active users, popular courses, most bookmarked scholarships), **Users** (**add accounts** for students, mentors or admins, search, edit, suspend, delete), **Mentors** (approve, or send back with feedback), **Courses** (**new courses**, delete courses, add/reorder/edit lessons and quiz questions), **Scholarships** (add, edit, hide, hide all expired, refugee flag), **Website content** (add, edit and delete news & guides, testimonials, team, partners, FAQ and tips; email subscribers with CSV download), **Analytics** (finish rates, drop-off lessons, AI question themes), **Announcements** (to all students, refugees, one country, mentors or everyone) |
 
 Every dashboard has a **search bar** at the top (press `/` to jump to it). Results depend on the role.
 People cannot open another role's dashboard or its API: they are sent back to their own.
@@ -280,26 +280,82 @@ Students can add a photo when they sign up or later in **Profile**; mentors must
 WebP up to 3 MB, saved in `backend/uploads/photos/` with random names, and shown at `/api/public/photos/…`
 (mentor photos have to be visible to students). Documents in the vault stay private.
 
-## 15. INUKA AI: switch it on
+## 15. INUKA AI: switch it on (free options)
 
-INUKA AI needs a key from an AI provider. Without one, the chat says it is not switched on yet and points
-students to mentors. In `backend/.env`:
+INUKA AI works with free and paid AI services. Without one, the chat says it is not switched on yet and points
+students to mentors. Choose in `backend/.env`, then restart the backend:
+
+| `AI_PROVIDER` | Cost | How to get started | Notes |
+|---|---|---|---|
+| `gemini` (recommended to start) | **Free tier** | Get a key at https://aistudio.google.com/apikey and put it in `AI_API_KEY` | Good quality, understands French and Swahili too. On the free tier, Google may use the conversations to improve its products (the Privacy Policy says so). Free tier has daily limits. |
+| `groq` | **Free tier** | Key at https://console.groq.com/keys | Very fast Llama models. Free tier has per-minute and daily limits. |
+| `ollama` | **Completely free and private** | Install https://ollama.com, run `ollama pull llama3.2`, leave `AI_API_KEY` empty | Runs on your own computer or server, so nothing leaves it. Needs a reasonably strong machine (8 GB RAM or more) and answers more slowly. |
+| `openai` | Paid | Key at https://platform.openai.com | GPT-4o, as written in the spec. |
+| `anthropic` | Paid | Key at https://console.anthropic.com | Claude. |
+
+Example for the free Gemini tier:
 
 ```
-AI_PROVIDER=openai          # the spec uses OpenAI GPT-4o; or: anthropic
-AI_API_KEY=your-key-here    # from platform.openai.com (or console.anthropic.com)
-AI_MODEL=                   # optional; default gpt-4o (OpenAI) or claude-haiku-4-5-20251001 (Anthropic)
+AI_PROVIDER=gemini
+AI_API_KEY=your-key-from-aistudio
 ```
 
-Restart the backend. The system prompt from spec §13.5 is in `backend/src/services/aiService.js` and is sent
-with every message, together with the student's first name, country, education level and the list of INUKA
-courses (so it can recommend one). Conversations are saved in `chat_messages`; admins only see topic counts,
-never anyone's messages. Each student can send 30 messages per hour, to keep costs predictable. Set a monthly
-spending limit in your provider's dashboard too.
+`AI_MODEL` changes the model (defaults: `gemini-3.5-flash`, `llama-3.3-70b-versatile`, `llama3.2`, `gpt-4o`,
+`claude-haiku-4-5-20251001`). Free tiers and model names change from time to time; if the chat shows
+"INUKA AI could not answer", the backend terminal prints the reason (for example a renamed model or a used-up
+daily limit).
+
+The system prompt from spec §13.5 is in `backend/src/services/aiService.js` and is sent with every message,
+together with the student's first name, country, education level and the list of INUKA courses (so it can
+recommend one). Conversations are saved in `chat_messages`; admins only see topic counts, never anyone's
+messages. Each student can send 30 messages per hour.
 
 ## 16. Emails for mentorship
 
 Booking requests, confirmations, declines and cancellations are emailed to the student and the mentor through
 SendGrid (printed in the backend terminal while `SENDGRID_API_KEY` is empty). Times in emails use
 `APP_TIMEZONE` (default `Africa/Kigali`); on the website everyone sees times in their own time zone.
+
+## 17. Light and dark mode
+
+Every page has a sun / moon button (top right) to switch between light and dark mode. The first time, INUKA
+follows the device setting; after someone clicks the button, their choice is remembered on that device.
+
+The colours are set in `frontend/src/index.css`: light colours in the `@theme` block, dark colours under
+`[data-theme=dark]`. Cards and panels use the `bg-surface` colour (white in light mode, dark blue-grey in dark
+mode); use it instead of `bg-white` in new pages so they work in both modes. For anything special in dark mode,
+Tailwind's `dark:` prefix works, for example `dark:bg-black`.
+
+## 18. Accounts created by an admin
+
+In **Users → Add account**, an admin can create a student, mentor or admin. Nobody types a password for them:
+the person receives an email with a link to choose their own password (valid 3 days). In development, without
+SendGrid, the link is shown on the screen instead. Mentors created this way are approved straight away and add
+their photo and weekly availability after signing in.
+
+## 19. Writing content: the text editor
+
+Everywhere admins write longer content there is a text editor with a toolbar, like a word processor: lessons,
+News & guides articles and FAQ answers.
+
+- Text style (paragraph, heading 1–3), font, font size
+- **Bold**, *italic*, underline, strikethrough, text colour and highlight (12 colours plus any colour you choose)
+- Alignment (left, centre, right, justify), bullet and numbered lists, quotes, divider line
+- Links, **images** (upload from your computer, JPG/PNG/WebP/GIF up to 5 MB, or paste a link) and **YouTube videos**
+- Undo / redo, clear formatting, word count, and "Edit HTML" for advanced changes
+
+Uploaded images are saved in `backend/uploads/media/` and shown at `/api/public/media/…`. Before anything is shown
+on the website it is cleaned (`frontend/src/utils/sanitize.js`): formatting, images and YouTube videos stay,
+anything unsafe (scripts, other websites' frames) is removed. Short fields that appear on cards (titles,
+summaries, descriptions) stay plain text on purpose, so cards look tidy.
+
+Tip for dark mode: leave text on "Default" colour unless you really need a colour; a very dark colour chosen for
+light mode can be hard to read in dark mode.
+
+## 20. Sign in and sign up
+
+`/login` and `/register` are one card with two halves. On a computer, the blue panel slides across when someone
+switches between "Sign in" and "Create account"; on a phone, one form shows at a time with a blue banner and a
+button to switch. The code is in `frontend/src/pages/auth/AuthPage.jsx` (the card), `Login.jsx` and
+`Register.jsx` (the forms) and `AuthShell.jsx` (the blue panel, also used by the forgot/reset password pages).
 

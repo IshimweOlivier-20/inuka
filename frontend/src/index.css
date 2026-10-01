@@ -13,6 +13,7 @@
   --color-accent-dark: #0369A1; /* sky-blue text on light backgrounds */
   --color-accent-soft: #F0F9FF; /* sky tint */
   --color-paper: #F5F9FF;       /* page background (blue-white) */
+  --color-surface: #FFFFFF;     /* cards, panels, inputs (dark grey-blue in dark mode) */
   --color-ink: #0F1E3D;         /* body text (dark navy) */
   --color-ink-soft: #4A5B78;
   --color-line: #E1E8F2;
@@ -44,7 +45,24 @@
 .lesson-prose h3 { font-size: 1.25rem; margin: 1.75rem 0 0.5rem; color: var(--color-brand); }
 .lesson-prose ul { list-style: disc; padding-left: 1.5rem; margin: 0 0 1rem; }
 .lesson-prose li { margin-bottom: 0.35rem; }
-.lesson-prose strong { color: var(--color-ink); }
+.lesson-prose strong { font-weight: 700; } /* keeps any colour chosen in the editor */
+/* Formatting from the admin text editor */
+.lesson-prose h2 { font-size: 1.6rem; margin: 2rem 0 0.6rem; }
+.lesson-prose h4 { font-size: 1.1rem; margin: 1.5rem 0 0.4rem; }
+.lesson-prose ol { list-style: decimal; padding-left: 1.5rem; margin: 0 0 1rem; }
+.lesson-prose li > p { margin: 0; }
+.lesson-prose blockquote { border-left: 4px solid var(--color-brand); background: var(--color-brand-soft); padding: 0.75rem 1rem; margin: 0 0 1rem; border-radius: 0 0.5rem 0.5rem 0; }
+.lesson-prose a { color: var(--color-brand); text-decoration: underline; }
+.lesson-prose hr { border: 0; border-top: 1px solid var(--color-line); margin: 1.75rem 0; }
+.lesson-prose img { max-width: 100%; height: auto; border-radius: 0.75rem; margin: 0.5rem 0 1rem; }
+.lesson-prose iframe { width: 100%; max-width: 640px; aspect-ratio: 16 / 9; height: auto; border: 0; border-radius: 0.75rem; margin: 0.5rem 0 1rem; }
+.lesson-prose div[data-youtube-video] { margin: 0.5rem 0 1rem; }
+.lesson-prose mark { padding: 0 0.15em; border-radius: 0.2em; }
+.rich-content p { margin: 0 0 0.6rem; } .rich-content ul { list-style: disc; padding-left: 1.4rem; } .rich-content ol { list-style: decimal; padding-left: 1.4rem; } .rich-content a { color: var(--color-brand); text-decoration: underline; }
+/* Editor area */
+.rich-editor-area { max-width: none; min-height: inherit; }
+.rich-editor-area p.is-editor-empty:first-child::before { content: attr(data-placeholder); color: var(--color-ink-soft); float: left; height: 0; pointer-events: none; }
+.rich-editor-area img.ProseMirror-selectednode, .rich-editor-area div[data-youtube-video].ProseMirror-selectednode iframe { outline: 3px solid var(--color-brand); }
 
 /* Smooth scrolling for the landing page section links (off when the user prefers less motion) */
 @media (prefers-reduced-motion: no-preference) {
@@ -100,3 +118,49 @@
 @keyframes typing { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
 .typing-dot { animation: typing 1.2s infinite; }
 @media (prefers-reduced-motion: reduce) { .ai-sprout, .typing-dot { animation: none; } }
+
+/* ─────────────────────────────────────────────────────────────
+   Light and dark mode. The theme is set on <html data-theme="light|dark">
+   (see index.html and components/layout/ThemeToggle.jsx).
+   Dark mode swaps the neutral colours; blue buttons and bands stay the same.
+   ───────────────────────────────────────────────────────────── */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+:root { color-scheme: light; --skeleton-base: #E4EAF5; --skeleton-shine: #F4F7FC; }
+[data-theme=dark] {
+  color-scheme: dark;
+  --color-paper: #0B1220;
+  --color-surface: #131C2E;
+  --color-ink: #E7EDF7;
+  --color-ink-soft: #A5B4CB;
+  --color-line: #26334D;
+  --color-brand-soft: #16294A;
+  --color-accent-soft: #10253A;
+  --skeleton-base: #1C2740;
+  --skeleton-shine: #26344F;
+}
+/* Blue text needs to be lighter on dark backgrounds */
+[data-theme=dark] .text-brand,
+[data-theme=dark] .hover\:text-brand:hover { color: #6EA8FF; }
+[data-theme=dark] .text-brand-deep { color: #A9C8FF; }
+[data-theme=dark] .text-accent-dark { color: #7DD3FC; }
+[data-theme=dark] .text-cyan { color: #38D3EE; }
+[data-theme=dark] .border-brand { border-color: #4C8DF5; }
+[data-theme=dark] .lesson-prose h3 { color: #6EA8FF; }
+/* Status colours from Tailwind's palette */
+[data-theme=dark] .bg-sky-50 { background-color: rgb(14 165 233 / 0.10); }
+[data-theme=dark] .bg-sky-100 { background-color: rgb(14 165 233 / 0.18); }
+[data-theme=dark] .text-sky-800 { color: #7DD3FC; }
+[data-theme=dark] .bg-red-50 { background-color: rgb(239 68 68 / 0.10); }
+[data-theme=dark] .bg-red-100 { background-color: rgb(239 68 68 / 0.18); }
+[data-theme=dark] .text-red-800 { color: #FCA5A5; }
+[data-theme=dark] .border-red-200 { border-color: rgb(239 68 68 / 0.35); }
+[data-theme=dark] .bg-gray-100 { background-color: #1E293B; }
+[data-theme=dark] .bg-cyan-50 { background-color: rgb(8 145 178 / 0.16); }
+[data-theme=dark] .bg-\[\#E0F7FD\] { background-color: rgb(8 145 178 / 0.16); }
+/* Illustrations on the home page: soften the bright white shapes */
+[data-theme=dark] .slides-on-light svg :not(text)[fill="#F9FAFB" i] { fill: #2A3E63; }
+[data-theme=dark] .slides-on-light svg ellipse[fill="#000"] { fill: #000; opacity: 0.35; }
+/* Smooth change when switching */
+html.theme-switching, html.theme-switching * { transition: background-color .25s ease, border-color .25s ease, color .25s ease !important; }
+

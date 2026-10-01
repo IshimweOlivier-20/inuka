@@ -25,7 +25,7 @@ export default function CourseDetail() {
       {certificate && <div className="mt-5"><Alert tone="success"><PartyPopper size={18} className="inline -mt-1 mr-1" aria-hidden="true" />You finished this course. Your certificate is in <Link to="/my-learning" className="underline font-semibold">My Learning</Link>.</Alert></div>}
       {next && <Button to={`/lessons/${next.id}`} className="mt-5">{done ? 'Continue' : 'Start the first lesson'}</Button>}
 
-      <ol className="mt-8 bg-white rounded-xl border border-line divide-y divide-line">
+      <ol className="mt-8 bg-surface rounded-xl border border-line divide-y divide-line">
         {course.lessons.map((l, i) => (
           <li key={l.id}>
             {l.locked ? (

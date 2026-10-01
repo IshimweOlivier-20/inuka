@@ -66,7 +66,7 @@ function MentorDirectory({ onBooked }) {
           <span className="sr-only">Search mentors</span>
           <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-soft" aria-hidden="true" />
           <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name, topic or organisation"
-            className="w-full min-h-11 rounded-lg border border-line bg-white pl-10 pr-3" />
+            className="w-full min-h-11 rounded-lg border border-line bg-surface pl-10 pr-3" />
         </label>
         <Field as="select" label="Expertise" value={expertise} onChange={(e) => setExpertise(e.target.value)} className="min-w-[200px]">
           <option value="">All areas</option>{data?.filters.expertise.map((x) => <option key={x}>{x}</option>)}
@@ -84,7 +84,7 @@ function MentorDirectory({ onBooked }) {
       ) : (
         <ul className="mt-6 grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
           {data.mentors.map((m) => (
-            <li key={m.id} className="bg-white rounded-2xl border border-line p-5 flex flex-col">
+            <li key={m.id} className="bg-surface rounded-2xl border border-line p-5 flex flex-col">
               <div className="flex items-center gap-4">
                 <Avatar user={m} size="xl" />
                 <div className="min-w-0">
@@ -202,7 +202,7 @@ function BookingModal({ mentorId, onClose, onBooked }) {
                     const date = new Date(times[0]);
                     return (
                       <button key={key} type="button" role="radio" aria-checked={day === key} onClick={() => { setDay(key); setTime(''); }}
-                        className={`shrink-0 min-w-[76px] rounded-xl border px-3 py-2 text-center ${day === key ? 'bg-brand text-white border-brand' : 'bg-white border-line hover:border-brand'}`}>
+                        className={`shrink-0 min-w-[76px] rounded-xl border px-3 py-2 text-center ${day === key ? 'bg-brand text-white border-brand' : 'bg-surface border-line hover:border-brand'}`}>
                         <span className="block text-xs font-semibold uppercase">{date.toLocaleDateString('en-GB', { weekday: 'short' })}</span>
                         <span className="block text-lg font-bold leading-tight">{date.getDate()}</span>
                         <span className="block text-xs">{date.toLocaleDateString('en-GB', { month: 'short' })}</span>
@@ -213,7 +213,7 @@ function BookingModal({ mentorId, onClose, onBooked }) {
                 <div className="flex flex-wrap gap-2 mt-2" role="radiogroup" aria-label="Time">
                   {(days.find(([k]) => k === day)?.[1] || []).map((t) => (
                     <button key={t} type="button" role="radio" aria-checked={time === t} onClick={() => setTime(t)}
-                      className={`min-h-11 px-4 rounded-lg border font-semibold tabular-nums ${time === t ? 'bg-brand text-white border-brand' : 'bg-white border-line hover:border-brand'}`}>
+                      className={`min-h-11 px-4 rounded-lg border font-semibold tabular-nums ${time === t ? 'bg-brand text-white border-brand' : 'bg-surface border-line hover:border-brand'}`}>
                       {sessionTime(t)}
                     </button>
                   ))}

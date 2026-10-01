@@ -32,7 +32,7 @@ export function AdminScholarships() {
         action={<Button to="/admin/scholarships/new"><Plus size={18} aria-hidden="true" />Add scholarship</Button>} />
       {msg && <Alert tone={msg.tone}>{msg.text}</Alert>}
       {data?.expiredActive > 0 && (
-        <div className="rounded-xl bg-white border border-danger/30 p-4 flex flex-wrap items-center gap-3">
+        <div className="rounded-xl bg-surface border border-danger/30 p-4 flex flex-wrap items-center gap-3">
           <p className="flex-1">{data.expiredActive} visible {data.expiredActive === 1 ? 'scholarship has' : 'scholarships have'} a deadline that has passed.</p>
           <Button variant="outline" onClick={removeExpired}>Hide expired scholarships</Button>
         </div>
@@ -42,7 +42,7 @@ export function AdminScholarships() {
         <Select label="Status" value={status} onChange={(v) => { setStatus(v); setPage(1); }} options={[['', 'All'], ['active', 'Visible'], ['inactive', 'Hidden'], ['expired', 'Deadline passed']]} />
       </div>
       {!data ? <ListRowsSkeleton rows={6} /> : (
-        <div className="bg-white rounded-xl border border-line overflow-hidden">
+        <div className="bg-surface rounded-xl border border-line overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-paper text-left text-ink-soft">

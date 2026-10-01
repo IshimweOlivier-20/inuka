@@ -31,14 +31,14 @@ export default function ApplicationsTable() {
       {msg && <Alert tone="success">{msg}</Alert>}
       <ul className="space-y-3">
         {apps.map((a) => (
-          <li key={a.id} className="bg-white rounded-xl border border-line p-4 grid gap-3 md:grid-cols-[1.4fr_1fr_1.4fr_auto] md:items-center">
+          <li key={a.id} className="bg-surface rounded-xl border border-line p-4 grid gap-3 md:grid-cols-[1.4fr_1fr_1.4fr_auto] md:items-center">
             <div>
               <p className="font-semibold">{a.scholarship.name}</p>
               <p className="text-sm text-ink-soft">{a.scholarship.hostUniversity || a.scholarship.orgName} — started {formatDate(a.dateApplied)}</p>
             </div>
             <label className="text-sm">
               <span className="sr-only">Status</span>
-              <select value={a.status} onChange={(e) => update(a.id, { status: e.target.value })} className="w-full min-h-11 rounded-lg border border-line bg-white px-3">
+              <select value={a.status} onChange={(e) => update(a.id, { status: e.target.value })} className="w-full min-h-11 rounded-lg border border-line bg-surface px-3">
                 {Object.entries(APP_STATUS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
               </select>
             </label>

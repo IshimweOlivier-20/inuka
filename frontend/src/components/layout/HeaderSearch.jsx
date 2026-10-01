@@ -73,14 +73,14 @@ export default function HeaderSearch() {
             onChange={(e) => { setQ(e.target.value); setOpen(true); }} onFocus={() => setOpen(true)} onKeyDown={onKeyDown}
             role="combobox" aria-expanded={showList} aria-controls={listId} aria-autocomplete="list" aria-label="Search INUKA"
             aria-activedescendant={showList && items[active] ? `${listId}-${active}` : undefined}
-            className="w-full min-h-11 rounded-full border border-line bg-white pl-10 pr-10 text-[15px] focus:outline-none focus:ring-2 focus:ring-brand"
+            className="w-full min-h-11 rounded-full border border-line bg-surface pl-10 pr-10 text-[15px] focus:outline-none focus:ring-2 focus:ring-brand"
           />
           {mobileOpen && (
             <button type="button" onClick={() => { setMobileOpen(false); setOpen(false); }} className="sm:hidden absolute right-1 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center" aria-label="Close search"><X size={20} /></button>
           )}
           {showList && (
             <div id={listId} role="listbox" aria-label="Search results"
-              className="absolute left-0 right-0 mt-2 max-h-[70vh] overflow-y-auto rounded-xl bg-white border border-line shadow-[0_18px_40px_-20px_rgba(15,30,61,0.45)] z-50">
+              className="absolute left-0 right-0 mt-2 max-h-[70vh] overflow-y-auto rounded-xl bg-surface border border-line shadow-[0_18px_40px_-20px_rgba(15,30,61,0.45)] z-50">
               {groups === null ? <p className="px-4 py-3 text-sm text-ink-soft">Searching…</p>
                 : groups.length === 0 ? <p className="px-4 py-3 text-sm text-ink-soft">Nothing found for “{q}”.</p>
                   : groups.map((g) => (

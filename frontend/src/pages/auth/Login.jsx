@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import AuthShell from './AuthShell';
+import { FormPanel } from './AuthShell';
 import GoogleButton from '../../components/auth/GoogleButton';
 import { Alert, Button, Field } from '../../components/ui';
 import { useAuth } from '../../context/AuthContext';
@@ -38,12 +38,12 @@ export default function Login() {
   };
 
   return (
-    <AuthShell title="Welcome back" subtitle={as === 'mentor' ? 'Sign in to your mentor dashboard.' : 'Sign in to continue learning.'}>
+    <FormPanel title="Sign in" subtitle={as === 'mentor' ? 'Sign in to your mentor dashboard.' : 'Sign in to continue learning.'}>
       <div className="grid grid-cols-2 gap-2 p-1 bg-paper rounded-lg mb-5" role="tablist" aria-label="Sign in as">
         {[['student', 'Student login'], ['mentor', 'Mentor login']].map(([k, label]) => (
           <button key={k} type="button" role="tab" aria-selected={as === k}
             onClick={() => setParams(k === 'mentor' ? { as: 'mentor' } : {}, { replace: true, state: location.state })}
-            className={`min-h-11 rounded-md font-medium ${as === k ? 'bg-white shadow-sm text-brand' : 'text-ink-soft hover:text-ink'}`}>
+            className={`min-h-11 rounded-md font-medium ${as === k ? 'bg-surface shadow-sm text-brand' : 'text-ink-soft hover:text-ink'}`}>
             {label}
           </button>
         ))}
@@ -57,11 +57,7 @@ export default function Login() {
         <div className="text-right -mt-2"><Link to="/forgot-password" className="text-sm text-brand hover:underline">Forgot password?</Link></div>
         <Button type="submit" loading={busy} className="w-full">Sign in</Button>
       </form>
-      {as === 'mentor' ? (
-        <p className="mt-6 text-center text-ink-soft">Want to guide students? <Link to="/register?role=mentor" className="text-brand font-semibold hover:underline">Apply to become a mentor</Link></p>
-      ) : (
-        <p className="mt-6 text-center text-ink-soft">New to INUKA? <Link to="/register" className="text-brand font-semibold hover:underline">Create a free account</Link></p>
-      )}
-    </AuthShell>
+
+    </FormPanel>
   );
 }

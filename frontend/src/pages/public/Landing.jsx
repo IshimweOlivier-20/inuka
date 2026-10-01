@@ -39,7 +39,7 @@ export default function Landing() {
       <LandingNav />
 
       {/* Hero */}
-      <section className="bg-white pt-28 pb-16 md:pt-36 md:pb-24">
+      <section className="bg-surface pt-28 pb-16 md:pt-36 md:pb-24">
         <div className="max-w-[1200px] mx-auto px-5 grid md:grid-cols-[1.05fr_1fr] gap-10 md:gap-14 items-center">
           <div className="hero-copy">
             <h1 className="text-ink text-[2.6rem] sm:text-6xl font-bold leading-[1.05] tracking-tight">Your future<br />starts here.</h1>
@@ -83,7 +83,7 @@ export default function Landing() {
       <AudienceSection />
 
       {/* How it works */}
-      <section id="how-it-works" className="scroll-mt-16 bg-white border-y border-line py-16 md:py-20">
+      <section id="how-it-works" className="scroll-mt-16 bg-surface border-y border-line py-16 md:py-20">
         <div className="max-w-[1200px] mx-auto px-5">
           <Reveal as="h2" className="text-3xl font-bold mb-10">How INUKA works</Reveal>
           <ol className="grid md:grid-cols-3 gap-8">

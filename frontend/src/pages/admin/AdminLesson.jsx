@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import DOMPurify from 'dompurify';
+import RichEditor from '../../components/editor/RichEditor';
+import { sanitizeRich } from '../../utils/sanitize';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { Alert, Button, Card, Field } from '../../components/ui';
 import { ListRowsSkeleton } from '../../components/ui/Skeletons';
 import { PageTitle } from '../../components/admin/AdminUI';
 import { api, errorMessage } from '../../services/api';
 
-// Lesson editor: content (simple HTML with a live preview) and quiz questions.
+// Lesson editor: content (rich text editor with a preview) and quiz questions.
 export default function AdminLesson() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ export default function AdminLesson() {
     setF((old) => old || { title: l.title, summary: l.summary || '', contentHtml: l.contentHtml || '', audioUrl: l.audioUrl || '', isPublished: l.isPublished });
   }).catch((e) => setMsg({ tone: 'error', text: errorMessage(e) }));
   useEffect(() => { document.title = 'Edit lesson — INUKA admin'; load(); }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
-  const preview = useMemo(() => DOMPurify.sanitize(f?.contentHtml || ''), [f?.contentHtml]);
+  const preview = useMemo(() => sanitizeRich(f?.contentHtml || ''), [f?.contentHtml]);
 
   if (!lesson) return msg ? <Alert>{msg.text}</Alert> : <ListRowsSkeleton rows={6} />;
   const save = async (e) => {
@@ -49,19 +50,19 @@ export default function AdminLesson() {
               <p className="text-sm font-medium">Lesson content</p>
               <div role="tablist" className="flex gap-1 bg-paper rounded-lg p-1">
                 {[['write', 'Write'], ['preview', 'Preview']].map(([k, l]) => (
-                  <button key={k} type="button" role="tab" aria-selected={tab === k} onClick={() => setTab(k)} className={`min-h-9 px-3 rounded-md text-sm font-medium ${tab === k ? 'bg-white shadow-sm text-brand' : 'text-ink-soft'}`}>{l}</button>
+                  <button key={k} type="button" role="tab" aria-selected={tab === k} onClick={() => setTab(k)} className={`min-h-9 px-3 rounded-md text-sm font-medium ${tab === k ? 'bg-surface shadow-sm text-brand' : 'text-ink-soft'}`}>{l}</button>
                 ))}
               </div>
             </div>
-            {tab === 'write' ? (
-              <>
-                <textarea rows={16} value={f.contentHtml} onChange={(e) => setF({ ...f, contentHtml: e.target.value })} aria-label="Lesson content (HTML)"
-                  className="mt-2 w-full rounded-lg border border-line p-3 font-mono text-sm" />
-                <p className="text-xs text-ink-soft mt-1">Use simple HTML: &lt;p&gt; paragraph, &lt;h3&gt; heading, &lt;ul&gt;&lt;li&gt; list, &lt;strong&gt; bold. Students can listen to the text aloud.</p>
-              </>
-            ) : (
-              <div className="lesson-prose mt-2 rounded-lg border border-line p-4 min-h-[200px]" dangerouslySetInnerHTML={{ __html: preview || '<p>Nothing written yet.</p>' }} />
-            )}
+            <div className="mt-2">
+              {tab === 'write' ? (
+                <RichEditor label="Lesson content" value={f.contentHtml} onChange={(html) => setF((x) => ({ ...x, contentHtml: html }))}
+                  placeholder="Write the lesson here. Use headings, lists, colours, images and videos." />
+              ) : (
+                <div className="lesson-prose rounded-xl border border-line p-5 min-h-[200px]" dangerouslySetInnerHTML={{ __html: preview || '<p>Nothing written yet.</p>' }} />
+              )}
+              <p className="text-xs text-ink-soft mt-1">Preview shows the lesson exactly as students see it. Students can also listen to the text aloud.</p>
+            </div>
           </div>
           <Field label="Audio file link (optional)" type="url" value={f.audioUrl} onChange={(e) => setF({ ...f, audioUrl: e.target.value })} />
           <label className="flex items-center gap-3 min-h-11"><input type="checkbox" className="w-5 h-5 accent-[#0A6CF0]" checked={f.isPublished} onChange={(e) => setF({ ...f, isPublished: e.target.checked })} />Show this lesson to students</label>
