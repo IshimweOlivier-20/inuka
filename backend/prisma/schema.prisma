@@ -527,6 +527,9 @@ model TeamMember {
   bio         String?
   photoUrl    String? @map("photo_url")
   linkedinUrl String? @map("linkedin_url")
+  facebookUrl String? @map("facebook_url")
+  xUrl        String? @map("x_url")
+  instagramUrl String? @map("instagram_url")
   orderIndex  Int     @default(0) @map("order_index")
   isSample    Boolean @default(false) @map("is_sample")
   isPublished Boolean  @default(true) @map("is_published")
@@ -565,4 +568,17 @@ model Subscriber {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("subscribers")
+}
+
+// Messages sent with the "Submit your query" form on the home page.
+model ContactMessage {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  message   String
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt])
+  @@map("contact_messages")
 }

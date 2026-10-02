@@ -249,23 +249,33 @@ and no yellow anywhere on the site. All colours are defined once, in the `@theme
 
 The home page hero is pure white. Buttons on blue backgrounds are white.
 Deadline badges: red under 30 days, blue 30 to 90 days, light blue over 90 days.
-The illustrations use the same colours, set at the top of `HeroSlides.jsx`, `PageSlides.jsx` and `MissionSection.jsx`.
+The home page uses real photos of young Africans instead of illustrations (see section 22).
 
-## 12. Sign in with Google (optional)
+## 12. Sign in with Google ("Sign up with Google")
 
-The Google button appears on the sign-in and sign-up pages only when it is set up:
+The sign-in page has **Sign in with Google** and the sign-up page has **Sign up with Google** (spec 4.2 and 4.4).
+Google's own page opens, the person picks their Google account, and comes back signed in. Until you set it up,
+the button shows a short "not switched on yet" note while developing, and is hidden on the live website.
 
 1. Go to https://console.cloud.google.com → create a project (for example "INUKA").
 2. **APIs & Services → OAuth consent screen**: choose External, fill in the app name (INUKA) and your email, and save.
 3. **APIs & Services → Credentials → Create credentials → OAuth client ID** → type **Web application**.
-   Under **Authorised JavaScript origins** add `http://localhost:5173` (and later your real website address).
-4. Copy the **Client ID** (it ends in `.apps.googleusercontent.com`) into `backend/.env`:
-   `GOOGLE_CLIENT_ID=your-id.apps.googleusercontent.com`
-5. Restart the backend. The Google button now shows.
+4. Under **Authorised redirect URIs** add exactly:
+   `http://localhost:5173/api/auth/google/callback`
+   (later also `https://your-website/api/auth/google/callback`).
+5. Copy the **Client ID** and **Client secret** into `backend/.env`:
+   ```
+   GOOGLE_CLIENT_ID=your-id.apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=your-secret
+   ```
+   The redirect address is built from `FRONTEND_URL`. If your backend is on a different address, set
+   `GOOGLE_REDIRECT_URI` to the full callback address instead (it must match the one in Google exactly).
+6. Restart the backend. The Google button now works.
 
-People who sign up with Google become **students**, skip the form, and are asked on their dashboard to finish
-their profile (countries, education, language). Mentors always use the mentor form, because they need a photo,
-bio and weekly times. Someone who already has an account with the same email can also sign in with Google.
+People who sign up with Google become **students**, skip the form (name, email and photo come from Google), and are
+asked on their dashboard to finish their profile (countries, education, language). Mentors always use the mentor form,
+because they need a photo, bio and weekly times. Someone who already has an account with the same email can also
+sign in with Google. If something goes wrong (cancelled, email not verified, account suspended), the sign-in page says so.
 
 ## 13. Terms of Use and Privacy Policy
 
@@ -359,3 +369,168 @@ switches between "Sign in" and "Create account"; on a phone, one form shows at a
 button to switch. The code is in `frontend/src/pages/auth/AuthPage.jsx` (the card), `Login.jsx` and
 `Register.jsx` (the forms) and `AuthShell.jsx` (the blue panel, also used by the forgot/reset password pages).
 
+## 21. Admin: create pages, editor everywhere, "Are you sure?"
+
+- **Create and edit on full pages, not pop-ups.** New course (`/admin/courses/new`), add lesson
+  (`/admin/courses/<id>/lessons/new`), add or edit an account (`/admin/users/new`, `/admin/users/<id>`), scholarships,
+  and all website content (`/admin/content/<type>/new`, e.g. testimonials, team, partners, FAQ, tips, articles).
+  Each page has a "← Back" link and a Save / Cancel bar that stays at the bottom of the screen.
+- **The text editor is on every text field that needs formatting**: course descriptions, lesson summaries and
+  content, scholarship descriptions, announcements (with a 400-character counter), article summaries and full
+  articles, testimonials, team bios, partner descriptions, tips and FAQ answers. Short fields get the compact
+  editor (bold, italic, underline, colour, highlight, lists, links); long content gets the full one (headings,
+  fonts, sizes, images, YouTube videos). Lists like "Who can apply" stay one item per line, because they feed
+  the filters.
+- **"Are you sure?" before every important action**, in an INUKA-styled box (not the browser's grey box):
+  deleting a course, lesson, quiz question, scholarship, account, website item or subscriber; hiding a scholarship
+  or all expired ones; approving a mentor; sending an announcement ("Send to 120 people?"); suspending an account;
+  a mentor marking a session as done; a student cancelling a session or deleting an AI conversation.
+  Dangerous actions have a red button. After each action a short message appears at the top ("Course saved.",
+  "Lesson deleted.").
+
+## 22. Home page photos
+
+The home page now uses **real photos of young Africans** instead of illustrations:
+
+- **Hero**: three wide photos fade slowly from one to the next behind the text (it pauses when the mouse is over it,
+  and stays still for people who turn off animations). A dark navy shade on the left keeps the text easy to read.
+- **Mission section**: a large photo with a small photo on its corner.
+
+The hero is kept simple, like the reference design: menu, photo, heading, short text and two buttons.
+Under it, a navy panel overlaps the bottom of the photo: "One place to learn, apply and grow" with coloured cards
+(Courses, Lessons, Scholarships, Open to refugees, Mentors, INUKA AI, Certificates) showing live numbers. Arrows (or a
+swipe on phones) slide the cards; each card opens the matching page. The Mentors card shows the number of approved
+mentors once there are 10 or more, and "Free" before that. Edit the cards in `components/landing/PlatformPanel.jsx`.
+
+**Fonts** (free Google Fonts, loaded in `index.html`), like the Edubin reference: *Roboto* bold for headings, *Open Sans* for text, buttons and links (regular weight, soft grey paragraphs, line height 1.7).
+
+All photos are listed in **`frontend/src/config/photos.js`**. The current ones are free photos from Unsplash
+(Lagos, Kumasi, Nairobi and others), loaded straight from Unsplash, so they need an internet connection.
+If a photo cannot load, the hero shows plain dark navy and still looks fine.
+
+**Before launch, use your own photos** of INUKA students and mentors, with their written permission:
+put the files in `frontend/public/photos/` and change `src` in `photos.js` to e.g. `'/photos/hero-1.jpg'`.
+Wide photos (at least 1920 px wide, person on the right side) work best for the hero; tall photos for the mission
+section. Update `alt` (what the photo shows) and `credit` too. Keep each photo under about 400 KB so the page loads
+fast on phones (for example, export as JPG at quality 75).
+
+## 23. Colours and logo
+
+**Main colours**: white backgrounds and **dark blue** `#07294D` (menu text, headings, panels, footer, sidebar).
+**Accent colours**, used where they help, like the Edubin reference:
+- **Yellow** `#FFC600`: the main call-to-action button in the hero, the "Free" badges, subject badges, small labels
+  above headings, progress bars and the back-to-top ring.
+- **Green** `#2E9E5B`: success ticks, "completed", Computer skills.
+- **Coral red** `#E5533D` and **blue** `#2F6FEB`: coloured tiles (e.g. the cards under the hero, course pictures).
+- Red `#DC2626` stays for errors and alerts.
+All colours are set once at the top of `frontend/src/index.css` (`@theme`).
+
+**Logo**: the INUKA "i" mark (a rounded square with a tall bar and a dot), dark blue with a white bar and a soft
+blue dot, next to the INUKA wordmark. It is in `frontend/src/components/layout/Logo.jsx`; the browser tab icon is
+`frontend/public/favicon.svg` and the phone icon is `frontend/public/apple-touch-icon.png`.
+
+**Home page sections** (ideas taken from the reference, not copied): hero with a yellow "Get started" and a white
+"Explore courses" button → navy panel with coloured cards → About INUKA → **Featured courses** (cards with a coloured
+picture area, yellow subject badge and a round yellow "Free" badge) → Who it's for → How it works → impact, stories,
+team, partners, FAQ. Each section heading has a small label above it with a yellow line (e.g. "OUR COURSES").
+
+**Buttons, cards, links, footer** (reference style):
+- Buttons have small square corners. The main button is yellow with dark blue text (`<Button>`); `variant="dark"`
+  gives a dark blue button, `variant="outline"` a dark blue outline that fills on hover.
+- Cards have small corners (6 px), a thin border and a very light shadow.
+- Menu links are medium weight (not bold) and turn yellow on hover; the current page is yellow too.
+  Dashboard sidebar links also turn yellow on hover.
+- Footer: four columns (INUKA + short text, Company, Information, Contact us with **Phone:** / **Email:** and yellow
+  social icons), white text that turns yellow on hover, and a darker bottom bar with © and Terms | Privacy | FAQs.
+
+## 24. Query form, FAQ and team
+
+- **Join INUKA + "Get scholarship alerts"** (just above the footer, white background): on the left the invitation and
+  "Create your free account"; on the right a short form with **email**, an optional **message**, a tick box
+  "Also email me when new scholarships and guides are added", and **Submit**. Ticked → the email joins the scholarship
+  alerts list (Website content → Email subscribers). A message → saved in **Admin → Website content → Messages**
+  (reply by email in one click, mark as read, delete), and emailed to `CONTACT_EMAIL` in `backend/.env` if set.
+  The person must tick the box or write a message. A hidden field and a limit of 5 sends per hour stop spam.
+  **Run `npx prisma migrate deploy` once** to create the `contact_messages` table.
+- **FAQ**: questions on the left (click to open), a photo on the right (set in `frontend/src/config/photos.js`,
+  `FAQ_PHOTO`). "Send it to us" jumps to the query form.
+- **Our team**: photo cards with a white name box on top, sliding one card at a time (arrows, or automatically every
+  few seconds; it pauses when the mouse is over it; no scroll bar). Add each person's own photo in
+  Admin → Website content → Team (photo link). People without a photo show their initials on dark blue.
+  The three "Sample team member" placeholders have free Unsplash photos of young Africans (Accra, Ghana; Zaria,
+  Nigeria; Kumasi, Ghana) and are hidden in production. **Real team members are never given a stranger's photo.**
+  Run `npm run db:seed` to add the sample photos to an existing database.
+
+## 25. Team hover, testimonials and goals band
+
+- **Team cards**: hover a card (or tap on a phone) and the name turns yellow and the social icons slide in
+  (Facebook, X, LinkedIn, Instagram). Add each person's links in **Admin → Website content → Team**; only the icons
+  with a link are shown. Placeholder "Sample team member" cards show all four icons so you can see the design.
+  **Run `npx prisma migrate deploy`** once (new columns `facebook_url`, `x_url`, `instagram_url`).
+- **Photos for placeholders**: sample team members and sample testimonials now always show a stock photo of a young
+  African, even if the database has no photo yet (list in `frontend/src/config/photos.js`, `SAMPLE_PHOTOS`).
+  Real people always need their own photo, added in the admin with their permission.
+- **Testimonials**: one story at a time — a round photo with soft circles behind it, the quote in italics, then the
+  name and role. Arrows on the sides (below on phones); it moves on by itself every 7 seconds and pauses on hover.
+- **Goals band** ("Where INUKA is going"): a photo of graduates under a dark blue shade, four big white numbers that
+  count up, a short yellow line under each, and a bold white label. Numbers are set in `frontend/src/config/site.js`
+  (`IMPACT`); the photo in `photos.js` (`STATS_PHOTO`).
+
+## 26. Partner logos, story dots, panel cards
+
+- **Partners & sponsors**: logos slide one by one (5 visible on a computer, 3 on a tablet, 2 on a phone), in full
+  colour, endlessly, pausing when the mouse is over them. Logo files are in `frontend/public/partners/`
+  (ALU, MINEMA, Mastercard Foundation, Red Cross, Save the Children, World Vision, Inkomoko and UNICEF are added;
+  MINEDUC, REMA and Alight still need their files and show their name meanwhile).
+  **On the live website a partner only appears after you publish it**: Admin → Website content → Partners →
+  open it → tick "Show on the website". Publish each one only once that organisation has agreed to be listed.
+  While developing, all partners are shown so you can preview the logos.
+- **Testimonials**: small dots under the story show how many stories there are; the current one is a longer yellow
+  dot. Click a dot to jump to that story.
+- **Cards under the hero** ("One place to learn, apply and grow"): white cards with a coloured icon, a dark blue
+  number and a grey label.
+
+## 27. Who INUKA is for, team hover
+
+- **Who INUKA is for**: each card has a photo across the top (it zooms in slowly on hover), then the title, a short
+  description and a full-width button ("Start for free" / "Become a mentor"). Photos are in
+  `frontend/src/config/photos.js` (`AUDIENCE_PHOTOS`).
+- **Team cards**: the white name box is narrower (centred, about three quarters of the card). On hover the photo
+  zooms in with a slight tilt and darkens a little, the name turns yellow and the social icons appear.
+- The dark "Support INUKA" box under the partner logos was removed. The "Become a partner" email is still reachable
+  from the contact details in the footer.
+
+## 28. INUKA logo and sign-in card
+
+- **Logo**: the INUKA logo (open book, growing sprout, rising sun) recoloured to the site colours: dark blue book and
+  letters, yellow sun, green leaves. Files in `frontend/public/brand/`:
+  `inuka-logo.png` (menu), `inuka-logo-tagline.png` (with "Rise. Learn. Succeed."), `inuka-mark.png` (symbol only),
+  and `-white` versions of each for dark backgrounds (footer, dashboard sidebar, dark mode).
+  The browser tab icon is `frontend/public/favicon.png`, the phone icon `apple-touch-icon.png`.
+  To change the logo later, replace these files (keep the names) — `components/layout/Logo.jsx` uses them everywhere.
+- **Sign in / sign up card**: much shorter. The blue side shows one plain white icon that matches the form (no
+  circles, dots or badges): a sign-in icon on the sign-in page, an add-person icon on the sign-up page, and a
+  heart-handshake for mentors (`components/auth/AuthArt.jsx`).
+  Smaller headings and text, password and confirm side by side.
+
+
+## 29. Course pictures
+
+Every course card (home page "Featured courses", the Courses page, the student "My courses" page and the dashboard's
+"Continue learning" box) now has a photo that matches the course:
+
+| Course | Photo |
+|---|---|
+| Reading & Comprehension | Young man reading a book on a library floor (Makmot Robin) |
+| Writing: Sentences & Paragraphs | Young woman writing in a notebook (Iwaria Inc.) |
+| Essay Composition | Student writing on paper, Accra, Ghana (Kingsley Hemans) |
+| Speaking & Pronunciation | Young woman speaking into a microphone, Luanda, Angola (Emmanuel Zua) |
+| Writing for Scholarships | Young woman writing on her laptop (Iwaria Inc.) |
+| Introduction to Computers | Young man at a laptop in a computer class, Lagos (NESA by Makers) |
+| Internet & Email Basics | Young man browsing on a laptop, Yaba, Nigeria (NESA by Makers) |
+| Digital Tools for Education | Young man using a smartphone, Lagos (Olumide Bamgbelu) |
+| Preparing for University Online | College student holding a laptop (Seth Ebenezer Tetteh) |
+
+All are free under the Unsplash License. They are set in `frontend/src/config/photos.js` (`COURSE_PHOTOS`, by course
+slug). To use your own picture for a course, paste its link in **Admin → Courses → Thumbnail image link**; that always
+wins over these photos. No database change or re-seed is needed.

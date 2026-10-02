@@ -4,6 +4,8 @@ import { Alert, Button, ProgressBar } from '../../components/ui';
 import { api, errorMessage } from '../../services/api';
 import { CourseDetailSkeleton } from '../../components/ui/Skeletons';
 import { Check, Lock, PartyPopper } from 'lucide-react';
+import RichText from '../../components/ui/RichText';
+import { plainText } from '../../utils/sanitize';
 
 export default function CourseDetail() {
   const { slug } = useParams();
@@ -19,8 +21,8 @@ export default function CourseDetail() {
   return (
     <div className="max-w-3xl">
       <Link to="/courses" className="text-sm text-brand hover:underline">← All courses</Link>
-      <h1 className="text-3xl font-bold mt-2">{course.title}</h1>
-      <p className="text-ink-soft mt-2">{course.description}</p>
+      <h1 className="text-2xl sm:text-[1.75rem] font-bold mt-2">{course.title}</h1>
+      <RichText html={course.description} className="text-ink-soft mt-2" />
       <div className="mt-5"><ProgressBar value={Math.round((done / course.lessons.length) * 100)} label={`${done} of ${course.lessons.length} lessons completed`} /></div>
       {certificate && <div className="mt-5"><Alert tone="success"><PartyPopper size={18} className="inline -mt-1 mr-1" aria-hidden="true" />You finished this course. Your certificate is in <Link to="/my-learning" className="underline font-semibold">My Learning</Link>.</Alert></div>}
       {next && <Button to={`/lessons/${next.id}`} className="mt-5">{done ? 'Continue' : 'Start the first lesson'}</Button>}
@@ -31,12 +33,12 @@ export default function CourseDetail() {
             {l.locked ? (
               <div className="flex items-center gap-4 p-4 opacity-60">
                 <Marker state="locked" n={i + 1} />
-                <div className="flex-1"><p className="font-medium">{l.title}</p><p className="text-sm text-ink-soft">{l.summary}</p></div>
+                <div className="flex-1"><p className="font-medium">{l.title}</p><p className="text-sm text-ink-soft">{plainText(l.summary)}</p></div>
               </div>
             ) : (
               <Link to={`/lessons/${l.id}`} className="flex items-center gap-4 p-4 hover:bg-paper">
                 <Marker state={l.completed ? 'done' : 'open'} n={i + 1} />
-                <div className="flex-1"><p className="font-medium">{l.title}</p><p className="text-sm text-ink-soft">{l.summary}</p></div>
+                <div className="flex-1"><p className="font-medium">{l.title}</p><p className="text-sm text-ink-soft">{plainText(l.summary)}</p></div>
                 {l.bestScore !== null && <span className="text-sm text-ink-soft whitespace-nowrap">Quiz {l.bestScore}%</span>}
               </Link>
             )}

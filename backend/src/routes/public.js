@@ -6,6 +6,7 @@ import { prisma } from '../lib/prisma.js';
 import { HttpError } from '../middleware/errorHandler.js';
 import { searchScholarships } from '../services/scholarshipSearch.js';
 import { MEDIA_NAME, PHOTO_NAME, mediaDir, photoDir } from '../services/storageService.js';
+import { sendEmail } from '../services/emailService.js';
 
 const router = Router();
 const isProd = () => process.env.NODE_ENV === 'production';
@@ -31,22 +32,25 @@ router.get('/landing', async (req, res) => {
   // Cache for 1 hour in production (spec 21.2). No cache in development, so edits show immediately.
   if (isProd() && cache.data && Date.now() - cache.at < 3600_000) return res.json(cache.data);
 
-  const [scholarshipCount, courseCount, lessonCount, studentCount, testimonials, team, partners, faq] =
+  const [scholarshipCount, refugeeScholarshipCount, courseCount, lessonCount, studentCount, mentorCount, testimonials, team, partners, faq] =
     await Promise.all([
       prisma.scholarship.count({ where: { isActive: true } }),
+      prisma.scholarship.count({ where: { isActive: true, openToRefugees: true } }),
       prisma.course.count({ where: { isPublished: true } }),
       prisma.lesson.count({ where: { isPublished: true } }),
       prisma.user.count({ where: { role: 'student', isVerified: true, isActive: true } }),
+      prisma.mentor.count({ where: { isApproved: true, user: { isActive: true } } }),
       prisma.testimonial.findMany({ where: visible(), orderBy: { orderIndex: 'asc' } }),
       prisma.teamMember.findMany({ where: visible(), orderBy: { orderIndex: 'asc' } }),
-      prisma.partner.findMany({ where: visible(), orderBy: { orderIndex: 'asc' } }),
+      // Partners: on the live site only published ones; while developing, also unpublished ones so you can preview logos.
+      prisma.partner.findMany({ where: isProd() ? visible() : {}, orderBy: { orderIndex: 'asc' } }),
       prisma.faqItem.findMany({ where: { isPublished: true }, orderBy: { orderIndex: 'asc' } }),
     ]);
 
   cache = {
     at: Date.now(),
     data: {
-      stats: { scholarshipCount, courseCount, lessonCount, studentCount },
+      stats: { scholarshipCount, refugeeScholarshipCount, courseCount, lessonCount, studentCount, mentorCount },
       testimonials, team, partners, faq,
     },
   };
@@ -82,7 +86,7 @@ router.get('/courses', async (req, res) => {
     where: { isPublished: true },
     orderBy: { orderIndex: 'asc' },
     select: {
-      id: true, slug: true, title: true, category: true, track: true, level: true, description: true, skills: true,
+      id: true, slug: true, title: true, category: true, track: true, level: true, description: true, skills: true, thumbnailUrl: true,
       lessons: { where: { isPublished: true }, orderBy: { orderIndex: 'asc' }, select: { id: true, title: true, summary: true } },
     },
   });
@@ -115,6 +119,38 @@ router.post('/subscribe', subscribeLimiter, async (req, res) => {
     create: { email: email.toLowerCase() },
   });
   res.status(201).json({ ok: true });
+});
+
+// "Submit your query" form on the home page. Saved for the admin (Website content → Messages) and emailed to
+// CONTACT_EMAIL if set. Ticking "send me scholarship alerts" also adds the email to the subscribers list.
+const contactLimiter = rateLimit({ windowMs: 60 * 60 * 1000, limit: 5, message: { error: 'You have sent several messages already. Please try again in an hour.' } });
+
+router.post('/contact', contactLimiter, async (req, res) => {
+  const data = z.object({
+    name: z.string().trim().max(100).optional().or(z.literal('')),
+    email: z.email('Please enter a valid email address.'),
+    message: z.string().trim().max(3000, 'Please keep your message under 3000 characters.').optional().or(z.literal('')),
+    alerts: z.boolean().optional(),
+    website: z.string().max(0).optional().or(z.literal('')), // hidden field: bots fill it, people do not
+  }).parse(req.body);
+  if (data.website) return res.status(201).json({ ok: true });
+  const message = data.message || '';
+  if (!data.alerts && message.length < 10) {
+    throw new HttpError(400, message ? 'Please write your question (at least 10 characters).' : 'Please write a message, or tick the box to get scholarship alerts.');
+  }
+  if (message && message.length < 10) throw new HttpError(400, 'Please write your question (at least 10 characters).');
+  const email = data.email.toLowerCase();
+  const name = data.name || email.split('@')[0];
+  if (data.alerts) await prisma.subscriber.upsert({ where: { email }, update: {}, create: { email, source: 'contact' } });
+  if (message) {
+    await prisma.contactMessage.create({ data: { name, email, message } });
+    const to = process.env.CONTACT_EMAIL;
+    if (to) {
+      sendEmail({ to, subject: `New question on INUKA from ${email}`, text: `${email} wrote:\n\n${message}\n\nReply to them directly by email. You can also see all messages in the admin dashboard: Website content → Messages.` })
+        .catch((e) => console.error('Contact email failed', e));
+    }
+  }
+  res.status(201).json({ ok: true, subscribed: !!data.alerts, messageSaved: !!message });
 });
 
 export default router;

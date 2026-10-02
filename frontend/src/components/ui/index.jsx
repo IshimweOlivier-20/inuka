@@ -3,15 +3,16 @@ import { useEffect, useId, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 const variants = {
-  primary: 'bg-brand text-white hover:bg-brand-dark',
-  accent: 'bg-white text-[#0A3D91] hover:bg-[#E8F1FE]', // white button on blue backgrounds, same in both themes
-  outline: 'border-2 border-brand text-brand hover:bg-brand-soft',
+  primary: 'bg-accent text-night hover:bg-accent-hover',        // yellow, like the reference theme
+  dark: 'bg-brand text-white hover:bg-brand-dark',
+  accent: 'bg-white text-[#07294D] hover:bg-[#EEF3F9]', // white button on blue backgrounds, same in both themes
+  outline: 'border-2 border-brand text-brand hover:bg-brand hover:text-white',
   ghost: 'text-brand hover:bg-brand-soft',
   danger: 'bg-danger text-white hover:bg-red-600',
 };
 
 export function Button({ variant = 'primary', to, href, className = '', loading, children, ...props }) {
-  const cls = `inline-flex items-center justify-center gap-2 min-h-11 px-5 rounded-lg font-display font-semibold text-[15px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${variants[variant]} ${className}`;
+  const cls = `inline-flex items-center justify-center gap-2 min-h-11 px-6 rounded font-body font-semibold text-[15px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${variants[variant]} ${className}`;
   if (to) return <Link to={to} className={cls} {...props}>{children}</Link>;
   if (href) return <a href={href} className={cls} {...props}>{children}</a>;
   return (
@@ -59,7 +60,7 @@ export function Alert({ tone = 'error', children }) {
 }
 
 export function Card({ className = '', children, ...props }) {
-  return <div className={`bg-surface rounded-xl border border-line p-5 ${className}`} {...props}>{children}</div>;
+  return <div className={`bg-surface rounded-md border border-line p-5 shadow-[0_2px_10px_-6px_rgba(7,41,77,0.12)] ${className}`} {...props}>{children}</div>;
 }
 
 export function ProgressBar({ value, label, tone = 'accent' }) {
@@ -76,9 +77,9 @@ export function ProgressBar({ value, label, tone = 'accent' }) {
 
 export function Pill({ tone = 'grey', children }) {
   const tones = {
-    sky: 'bg-sky-100 text-sky-800',
+    sky: 'bg-brand-soft text-brand',
     red: 'bg-red-100 text-red-800',
-    cyan: 'bg-cyan-50 text-cyan border border-cyan/30',
+    cyan: 'bg-brand-soft text-cyan border border-cyan/30',
     grey: 'bg-gray-100 text-ink-soft',
     brand: 'bg-brand-soft text-brand',
   };

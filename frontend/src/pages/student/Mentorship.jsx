@@ -3,6 +3,8 @@ import { useSearchParams } from 'react-router-dom';
 import { CalendarClock, CircleCheck, HeartHandshake, Languages, Search, UsersRound } from 'lucide-react';
 import { Alert, Button, Card, EmptyState, Field, Modal, Pill } from '../../components/ui';
 import Avatar from '../../components/ui/Avatar';
+import RichText from '../../components/ui/RichText';
+import { useConfirm, useToast } from '../../context/FeedbackContext';
 import { ListRowsSkeleton, ScholarshipGridSkeleton } from '../../components/ui/Skeletons';
 import {
   JoinSessionButton, StarInput, Stars, StatusPill, countWords, sessionDate, sessionTime, sessionWhen,
@@ -22,7 +24,7 @@ export default function Mentorship() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold">Mentorship</h1>
+      <h1 className="text-2xl sm:text-[1.75rem] font-bold">Mentorship</h1>
       <p className="text-ink-soft mt-1">Book a free 1-hour video session with a mentor who can guide your applications.</p>
       <div role="tablist" className="flex gap-1 mt-6 border-b border-line">
         {[['find', 'Find a mentor'], ['sessions', `My sessions${upcomingCount ? ` (${upcomingCount})` : ''}`]].map(([k, l]) => (
@@ -175,7 +177,7 @@ function BookingModal({ mentorId, onClose, onBooked }) {
             <div className="min-w-0">
               <p className="font-semibold">{m.firstName} {m.lastName}</p>
               <p className="text-sm text-ink-soft">{m.title}{m.org ? `, ${m.org}` : ''}</p>
-              <p className="text-sm mt-2 whitespace-pre-line">{m.bio}</p>
+              <RichText html={m.bio} className="text-sm mt-2" />
               {d.reviews.length > 0 && (
                 <details className="mt-2 text-sm">
                   <summary className="cursor-pointer text-brand font-semibold min-h-11 inline-flex items-center">What students say ({d.reviews.length})</summary>
@@ -234,6 +236,8 @@ function BookingModal({ mentorId, onClose, onBooked }) {
 
 /* ---------- My sessions + rating (spec 12.4) ---------- */
 function MySessions({ bookings, reload, onFind }) {
+  const confirm = useConfirm();
+  const toast = useToast();
   const [msg, setMsg] = useState(null);
   if (!bookings) return <ListRowsSkeleton rows={3} />;
   const now = Date.now();
@@ -241,9 +245,10 @@ function MySessions({ bookings, reload, onFind }) {
   const past = bookings.filter((b) => !upcoming.includes(b));
 
   const cancel = async (b) => {
-    if (!window.confirm(`Cancel your session "${b.topic}" on ${sessionWhen(b.scheduledAt)}?`)) return;
-    try { await api.post(`/bookings/${b.id}/cancel`); setMsg({ tone: 'success', text: 'Your session has been cancelled.' }); reload(); }
-    catch (e) { setMsg({ tone: 'error', text: errorMessage(e) }); }
+    const ok = await confirm({ title: 'Cancel this session?', message: `"${b.topic}" on ${sessionWhen(b.scheduledAt)}. Your mentor will be told, and the time becomes free for other students.`, confirmLabel: 'Yes, cancel session', cancelLabel: 'Keep it', tone: 'danger' });
+    if (!ok) return;
+    try { await api.post(`/bookings/${b.id}/cancel`); toast.success('Your session has been cancelled.'); reload(); }
+    catch (e) { toast.error(errorMessage(e)); }
   };
 
   if (!bookings.length) {

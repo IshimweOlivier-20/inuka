@@ -19,6 +19,7 @@ const Privacy = lazy(() => import('./pages/public/Legal').then((m) => ({ default
 
 // Sign in, sign up, account emails
 const AuthPage = lazy(() => import('./pages/auth/AuthPage'));
+const GoogleDone = lazy(() => import('./pages/auth/GoogleDone'));
 const VerifyEmail = lazy(() => import('./pages/auth/AccountPages').then((m) => ({ default: m.VerifyEmail })));
 const ForgotPassword = lazy(() => import('./pages/auth/AccountPages').then((m) => ({ default: m.ForgotPassword })));
 const ResetPassword = lazy(() => import('./pages/auth/AccountPages').then((m) => ({ default: m.ResetPassword })));
@@ -43,14 +44,17 @@ const MentorProfile = lazy(() => import('./pages/mentor/MentorProfile'));
 // Admin dashboard
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
+const AdminUser = lazy(() => import('./pages/admin/AdminUsers').then((m) => ({ default: m.AdminUser })));
 const AdminMentors = lazy(() => import('./pages/admin/AdminMentors'));
 const AdminCourses = lazy(() => import('./pages/admin/AdminCourses').then((m) => ({ default: m.AdminCourses })));
 const AdminCourse = lazy(() => import('./pages/admin/AdminCourses').then((m) => ({ default: m.AdminCourse })));
+const AdminNewLesson = lazy(() => import('./pages/admin/AdminCourses').then((m) => ({ default: m.AdminNewLesson })));
 const AdminLesson = lazy(() => import('./pages/admin/AdminLesson'));
 const AdminScholarships = lazy(() => import('./pages/admin/AdminScholarships').then((m) => ({ default: m.AdminScholarships })));
 const AdminScholarshipForm = lazy(() => import('./pages/admin/AdminScholarships').then((m) => ({ default: m.AdminScholarshipForm })));
 const AdminAnalytics = lazy(() => import('./pages/admin/AdminInsights').then((m) => ({ default: m.AdminAnalytics })));
 const AdminContent = lazy(() => import('./pages/admin/AdminContent'));
+const AdminContentItem = lazy(() => import('./pages/admin/AdminContent').then((m) => ({ default: m.AdminContentItem })));
 const AdminAnnouncements = lazy(() => import('./pages/admin/AdminInsights').then((m) => ({ default: m.AdminAnnouncements })));
 
 // Shared
@@ -101,6 +105,7 @@ export default function App() {
         {/* Sign in and sign up share one sliding card (same component, so it animates between them) */}
         <Route path="/login" element={<GuestOnly><AuthPage /></GuestOnly>} />
         <Route path="/register" element={<GuestOnly><AuthPage /></GuestOnly>} />
+        <Route path="/auth/google" element={<GoogleDone />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
@@ -130,15 +135,18 @@ export default function App() {
         <Route element={<RequireAuth roles={['admin']}><AppLayout /></RequireAuth>}>
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/users/:id" element={<AdminUser />} />
           <Route path="/admin/mentors" element={<AdminMentors />} />
           <Route path="/admin/courses" element={<AdminCourses />} />
           <Route path="/admin/courses/:id" element={<AdminCourse />} />
+          <Route path="/admin/courses/:id/lessons/new" element={<AdminNewLesson />} />
           <Route path="/admin/lessons/:id" element={<AdminLesson />} />
           <Route path="/admin/scholarships" element={<AdminScholarships />} />
           <Route path="/admin/scholarships/:id" element={<AdminScholarshipForm />} />
           <Route path="/admin/analytics" element={<AdminAnalytics />} />
           <Route path="/admin/announcements" element={<AdminAnnouncements />} />
           <Route path="/admin/content" element={<AdminContent />} />
+          <Route path="/admin/content/:type/:id" element={<AdminContentItem />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

@@ -22,7 +22,7 @@ export default function ChatBubble() {
       )}
       {!open && (
         <button type="button" onClick={() => setOpen(true)} aria-label="Open INUKA AI"
-          className="w-14 h-14 rounded-full bg-brand text-white shadow-[0_12px_30px_-10px_rgba(10,108,240,0.7)] flex items-center justify-center hover:bg-brand-dark">
+          className="w-14 h-14 rounded-full bg-brand text-white shadow-[0_12px_30px_-10px_rgba(7,41,77,0.7)] flex items-center justify-center hover:bg-brand-dark">
           <AiAvatar size={56} />
         </button>
       )}

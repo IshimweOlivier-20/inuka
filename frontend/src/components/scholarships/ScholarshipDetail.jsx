@@ -1,6 +1,7 @@
 import { Button, Modal, Pill } from '../ui';
 import { FUNDING_LABEL, LEVEL_LABEL, deadlineTone, formatDate } from '../../utils/format';
 import { Bookmark, BookmarkCheck, Check, ExternalLink } from 'lucide-react';
+import RichText from '../../components/ui/RichText';
 
 export default function ScholarshipDetail({ data, onClose, onSave, onApply, onOpenRelated }) {
   if (!data) return null;
@@ -25,7 +26,7 @@ export default function ScholarshipDetail({ data, onClose, onSave, onApply, onOp
         {s.deadlineNote && <p className="text-sm text-ink-soft mt-1">{s.deadlineNote}</p>}
       </div>
 
-      <p className="mt-5">{s.description}</p>
+      <RichText html={s.description} className="mt-5" />
       <Section title="Who can apply" items={s.eligibility} />
       <Section title="What it covers" items={s.coverage} />
       <Section title="How to apply" items={s.applicationSteps} ordered />

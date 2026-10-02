@@ -7,6 +7,7 @@ import ListenButton from '../../components/courses/ListenButton';
 import { api, errorMessage } from '../../services/api';
 import { LessonSkeleton } from '../../components/ui/Skeletons';
 import { BadgeMedal } from '../../utils/badgeIcons';
+import RichText from '../../components/ui/RichText';
 
 export default function LessonPage() {
   const { id } = useParams();
@@ -59,8 +60,8 @@ export default function LessonPage() {
     <article className="max-w-3xl">
       <Link to={`/courses/${course.slug}`} className="text-sm text-brand hover:underline">← {course.title}</Link>
       <div className="mt-3"><ProgressBar value={position.percent} label={`Lesson ${position.index + 1} of ${position.total}`} tone="brand" /></div>
-      <h1 className="text-3xl font-bold mt-6">{lesson.title}</h1>
-      {lesson.summary && <p className="text-ink-soft mt-1 text-lg">{lesson.summary}</p>}
+      <h1 className="text-2xl sm:text-[1.75rem] font-bold mt-6">{lesson.title}</h1>
+      {lesson.summary && <RichText html={lesson.summary} className="text-ink-soft mt-1 text-lg" />}
       <div className="mt-4"><ListenButton getText={() => contentRef.current?.innerText || ''} /></div>
 
       <div ref={contentRef} className="lesson-prose mt-6" dangerouslySetInnerHTML={{ __html: html }} />

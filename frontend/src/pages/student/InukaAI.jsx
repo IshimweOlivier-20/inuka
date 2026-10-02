@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { MessageSquarePlus, Trash2 } from 'lucide-react';
 import ChatPanel, { AiAvatar } from '../../components/ai/ChatPanel';
-import { api } from '../../services/api';
+import { api, errorMessage } from '../../services/api';
+import { useConfirm, useToast } from '../../context/FeedbackContext';
 import { timeAgo } from '../../utils/format';
 
 // Full-page INUKA AI (spec 13.2), with saved conversations (spec 13.6).
 export default function InukaAI() {
+  const confirm = useConfirm();
+  const toast = useToast();
   const [conversations, setConversations] = useState([]);
   const [active, setActive] = useState(null);
   const [chatKey, setChatKey] = useState(0);
@@ -14,8 +17,11 @@ export default function InukaAI() {
 
   const startNew = () => { setActive(null); setChatKey((k) => k + 1); };
   const remove = async (id) => {
-    if (!window.confirm('Delete this conversation?')) return;
-    await api.delete(`/ai/conversations/${id}`);
+    const c = conversations.find((x) => x.id === id);
+    const ok = await confirm({ title: 'Delete this conversation?', message: `"${c?.title || 'Conversation'}" and all its messages are deleted for good.`, confirmLabel: 'Yes, delete', tone: 'danger' });
+    if (!ok) return;
+    try { await api.delete(`/ai/conversations/${id}`); toast.success('Conversation deleted.'); }
+    catch (e) { toast.error(errorMessage(e)); return; }
     if (active === id) startNew();
     load();
   };

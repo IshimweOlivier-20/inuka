@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Reveal from '../ui/Reveal';
 import { IMPACT } from '../../config/site';
+import { STATS_PHOTO } from '../../config/photos';
 
 const reducedMotion = () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -44,25 +45,26 @@ function CountUp({ value, suffix = '+' }) {
 }
 
 export default function ImpactSection() {
+  const [photoOk, setPhotoOk] = useState(true);
   return (
-    <section id="impact" className="impact-band scroll-mt-16 relative overflow-hidden text-white py-16 md:py-24">
-      <div className="relative max-w-[1200px] mx-auto px-5">
-        <Reveal className="max-w-2xl">
-          <h2 className="text-white text-3xl md:text-4xl font-bold">Where INUKA is going</h2>
-          <p className="mt-3 text-lg text-white/75">Our goals for {IMPACT.goalYear}. Every number is a young person closer to university.</p>
+    <section id="impact" className="scroll-mt-16 relative isolate overflow-hidden bg-night text-white py-20 md:py-28">
+      {photoOk && <img src={STATS_PHOTO.src} alt="" loading="lazy" onError={() => setPhotoOk(false)} className="absolute inset-0 -z-20 w-full h-full object-cover" />}
+      <div className="absolute inset-0 -z-10 bg-[rgba(7,41,77,0.86)]" aria-hidden="true" />
+      <div className="max-w-[1200px] mx-auto px-5">
+        <Reveal className="text-center">
+          <p className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.12em] text-accent"><span className="w-8 h-1 rounded-full bg-accent" aria-hidden="true" />Where INUKA is going</p>
+          <h2 className="mt-2 text-white text-xl md:text-2xl font-bold">Our goals for {IMPACT.goalYear}</h2>
         </Reveal>
-
-        <dl className="mt-12 grid grid-cols-2 lg:grid-cols-4">
+        <dl className="mt-12 grid grid-cols-2 lg:grid-cols-4 gap-y-12 gap-x-6">
           {IMPACT.goals.map((g, i) => (
-            <Reveal key={g.label} delay={i * 110}
-              className={`py-6 lg:py-2 pr-4 border-white/15 ${i % 2 === 0 ? 'pl-0' : 'pl-5 border-l'} ${i === 0 ? 'lg:pl-0' : 'lg:pl-7 lg:border-l'} ${i >= 2 ? 'border-t lg:border-t-0' : ''}`}>
+            <Reveal key={g.label} delay={i * 110} className="text-center flex flex-col items-center">
               <dt className="sr-only">{g.label}</dt>
-              <dd className="font-display font-bold text-accent text-5xl sm:text-6xl tracking-tight leading-none"><CountUp value={g.value} /></dd>
-              <dd className="mt-3 text-white/80 text-base sm:text-lg leading-snug">{g.label}</dd>
+              <dd className="font-body font-bold text-white text-4xl sm:text-5xl leading-none"><CountUp value={g.value} /></dd>
+              <dd aria-hidden="true" className="mt-4 w-16 h-[3px] rounded-full bg-accent" />
+              <dd className="mt-4 font-body font-semibold text-white text-base sm:text-lg leading-snug max-w-[18ch]">{g.label}</dd>
             </Reveal>
           ))}
         </dl>
-
       </div>
     </section>
   );

@@ -54,7 +54,7 @@ export default function MentorProfile() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">My mentor profile</h1>
+        <h1 className="text-2xl sm:text-[1.75rem] font-bold">My mentor profile</h1>
         <p className="text-ink-soft mt-1">This is what students see when they choose a mentor.</p>
       </div>
       <div className="grid lg:grid-cols-[1fr_320px] gap-6 items-start">

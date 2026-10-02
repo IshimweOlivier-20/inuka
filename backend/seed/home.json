@@ -128,19 +128,22 @@
       "name": "Sample team member",
       "role": "Mentorship Lead",
       "bio": "Recruits and supports INUKA mentors. Replace this with a real team member.",
-      "isSample": true
+      "isSample": true,
+      "photoUrl": "https://images.unsplash.com/photo-1624670319970-37aa780d4874?auto=format&fit=crop&w=700&h=880&q=75"
     },
     {
       "name": "Sample team member",
       "role": "Curriculum Lead",
       "bio": "Writes and reviews English and computer skills lessons. Replace this with a real team member.",
-      "isSample": true
+      "isSample": true,
+      "photoUrl": "https://images.unsplash.com/photo-1620424037570-15137a4a562d?auto=format&fit=crop&w=700&h=880&q=75"
     },
     {
       "name": "Sample team member",
       "role": "Refugee Outreach Lead",
       "bio": "Works with communities and camps to reach refugee youth. Replace this with a real team member.",
-      "isSample": true
+      "isSample": true,
+      "photoUrl": "https://images.unsplash.com/photo-1586171984069-1dbce3573a10?auto=format&fit=crop&w=700&h=880&q=75"
     }
   ],
   "testimonials": [
@@ -149,21 +152,24 @@
       "country": "Rwanda",
       "role": "S6 graduate",
       "quote": "Replace this with a real student's words, with their permission. For example: what they learned, and what changed for them.",
-      "isSample": true
+      "isSample": true,
+      "photoUrl": "https://images.unsplash.com/photo-1603085356448-6857558a32b5?auto=format&fit=crop&w=700&q=75"
     },
     {
       "name": "Sample student",
       "country": "Kenya (refugee)",
       "role": "University applicant",
       "quote": "Real testimonials build trust. Ask students who used INUKA to share one or two honest sentences.",
-      "isSample": true
+      "isSample": true,
+      "photoUrl": "https://images.unsplash.com/photo-1741940365182-bc0ffdc1262d?auto=format&fit=crop&w=700&q=75"
     },
     {
       "name": "Sample mentor",
       "country": "Uganda",
       "role": "Admissions counsellor",
       "quote": "Mentors can share why they volunteer on INUKA. Always get written permission before publishing anyone's name or photo.",
-      "isSample": true
+      "isSample": true,
+      "photoUrl": "https://images.unsplash.com/photo-1716654716572-9f31d7f0f897?auto=format&fit=crop&w=700&q=75"
     }
   ],
   "partnerOrganisations": [

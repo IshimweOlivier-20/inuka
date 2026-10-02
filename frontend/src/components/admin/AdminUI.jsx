@@ -1,4 +1,5 @@
-import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ArrowLeft, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 
 // Small building blocks shared by the admin pages.
 
@@ -6,7 +7,7 @@ export function PageTitle({ title, intro, action }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h1 className="text-3xl font-bold">{title}</h1>
+        <h1 className="text-2xl sm:text-[1.75rem] font-bold">{title}</h1>
         {intro && <p className="text-ink-soft mt-1 max-w-3xl">{intro}</p>}
       </div>
       {action}
@@ -60,7 +61,7 @@ export function BarChart({ data, label, height = 160 }) {
         {[0.25, 0.5, 0.75, 1].map((f) => <line key={f} x1="0" x2="100" y1={(height / 2) * (1 - f)} y2={(height / 2) * (1 - f)} stroke="var(--color-line)" strokeWidth="0.3" vectorEffect="non-scaling-stroke" />)}
         {data.map((d, i) => {
           const h = (d.value / max) * (height / 2 - 2);
-          return <rect key={i} x={i * w + w * 0.18} width={w * 0.64} y={height / 2 - h} height={Math.max(h, d.value ? 0.6 : 0)} rx="0.8" fill="#0A6CF0"><title>{`${d.label}: ${d.value}`}</title></rect>;
+          return <rect key={i} x={i * w + w * 0.18} width={w * 0.64} y={height / 2 - h} height={Math.max(h, d.value ? 0.6 : 0)} rx="0.8" fill="#07294D"><title>{`${d.label}: ${d.value}`}</title></rect>;
         })}
       </svg>
       <div className="flex text-[11px] text-ink-soft mt-1">
@@ -84,5 +85,23 @@ export function RankBars({ rows, empty = 'No data yet.' }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+// "← Back to …" link at the top of create / edit pages.
+export function BackLink({ to, children }) {
+  return (
+    <Link to={to} className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline min-h-11">
+      <ArrowLeft size={16} aria-hidden="true" />{children}
+    </Link>
+  );
+}
+
+// Save / cancel bar that stays at the bottom of the screen on create and edit pages.
+export function ActionBar({ children }) {
+  return (
+    <div className="sticky bottom-0 z-10 -mx-4 md:-mx-8 px-4 md:px-8 py-3 bg-paper/95 backdrop-blur border-t border-line flex flex-wrap items-center gap-3">
+      {children}
+    </div>
   );
 }

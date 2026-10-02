@@ -17,12 +17,16 @@ import { api, errorMessage } from '../../services/api';
 // headings, font, size, bold/italic/underline, text colour, highlight, alignment, lists, quotes, links, images, YouTube videos.
 // It produces simple HTML that the website shows with sanitizeRich() (utils/sanitize.js).
 
-const FONTS = [['', 'Default font'], ['Poppins, sans-serif', 'Poppins'], ['Inter, sans-serif', 'Inter'], ['Georgia, serif', 'Georgia (serif)'], ['"Fira Code", monospace', 'Monospace']];
+const FONTS = [['', 'Default font'], ['"Plus Jakarta Sans", sans-serif', 'Plus Jakarta Sans'], ['Inter, sans-serif', 'Inter'], ['Georgia, serif', 'Georgia (serif)'], ['"Fira Code", monospace', 'Monospace']];
 const SIZES = [['', 'Normal size'], ['14px', 'Small'], ['20px', 'Large'], ['24px', 'Larger'], ['30px', 'Huge']];
 const COLORS = ['#0F1E3D', '#4A5B78', '#0A6CF0', '#0A3D91', '#0891B2', '#0284C7', '#EF4444', '#B91C1C', '#7C3AED', '#DB2777', '#EA580C', '#15803D'];
 const HIGHLIGHTS = ['#FEF3C7', '#DBEAFE', '#E0F2FE', '#FCE7F3', '#EDE9FE', '#FEE2E2', '#DCFCE7', '#F3F4F6'];
 
-export default function RichEditor({ value, onChange, label = 'Content', placeholder = 'Start writing…', minHeight = 320, inModal = false }) {
+// variant 'full' (lessons, articles) or 'compact' (summaries, descriptions, quotes, announcements: no headings, fonts, images or video).
+// maxChars: optional limit on the visible text length (shown under the editor).
+export default function RichEditor({ value, onChange, label = 'Content', placeholder = 'Start writing…', minHeight: minHeightProp, inModal = false, variant = 'full', maxChars, showLabel = false, hint }) {
+  const full = variant === 'full';
+  const minHeight = minHeightProp ?? (full ? 320 : 120);
   const [source, setSource] = useState(false);
   const [dialog, setDialog] = useState(null); // 'link' | 'image' | 'video'
   const lastEmitted = useRef(value);
@@ -38,7 +42,7 @@ export default function RichEditor({ value, onChange, label = 'Content', placeho
       CharacterCount,
     ],
     content: value || '',
-    editorProps: { attributes: { class: 'lesson-prose rich-editor-area focus:outline-none', style: `min-height:${Math.max(80, minHeight - 30)}px`, 'aria-label': label, 'aria-multiline': 'true', role: 'textbox' } },
+    editorProps: { attributes: { class: `${full ? 'lesson-prose' : 'rich-content text-[15px]'} rich-editor-area focus:outline-none`, style: `min-height:${Math.max(80, minHeight - 30)}px`, 'aria-label': label, 'aria-multiline': 'true', role: 'textbox' } },
     onUpdate: ({ editor: e }) => {
       const html = e.isEmpty ? '' : e.getHTML();
       lastEmitted.current = html;
@@ -64,6 +68,7 @@ export default function RichEditor({ value, onChange, label = 'Content', placeho
       font: e.getAttributes('textStyle').fontFamily || '', size: e.getAttributes('textStyle').fontSize || '',
       color: e.getAttributes('textStyle').color || '', canUndo: e.can().undo(), canRedo: e.can().redo(),
       words: e.storage.characterCount?.words?.() ?? 0,
+      chars: e.storage.characterCount?.characters?.() ?? 0,
     }),
   });
   if (!editor || !state) return <div className="rounded-xl border border-line bg-surface" style={{ minHeight }} />;
@@ -74,17 +79,21 @@ export default function RichEditor({ value, onChange, label = 'Content', placeho
     else chain().toggleHeading({ level: Number(v.slice(1)) }).run();
   };
 
-  return (
+  const box = (
     <div className="rounded-xl border border-line bg-surface focus-within:ring-2 focus-within:ring-brand/40">
       <p className="sr-only">{label}</p>
       <div role="toolbar" aria-label={`${label} formatting`} className={`flex flex-wrap items-center gap-0.5 border-b border-line bg-paper rounded-t-xl px-2 py-1.5 sticky z-10 ${inModal ? 'top-0' : 'top-16'}`}>
         <Btn label="Undo" onClick={() => chain().undo().run()} disabled={!state.canUndo}><Undo2 size={18} /></Btn>
         <Btn label="Redo" onClick={() => chain().redo().run()} disabled={!state.canRedo}><Redo2 size={18} /></Btn>
         <Sep />
-        <Select label="Text style" value={state.block} onChange={setBlock} options={[['p', 'Paragraph'], ['h2', 'Heading 1'], ['h3', 'Heading 2'], ['h4', 'Heading 3']]} />
-        <Select label="Font" value={state.font} onChange={(v) => (v ? chain().setFontFamily(v).run() : chain().unsetFontFamily().run())} options={FONTS} />
-        <Select label="Font size" value={state.size} onChange={(v) => (v ? chain().setFontSize(v).run() : chain().unsetFontSize().run())} options={SIZES} icon={<Type size={15} aria-hidden="true" />} />
-        <Sep />
+        {full && (
+          <>
+            <Select label="Text style" value={state.block} onChange={setBlock} options={[['p', 'Paragraph'], ['h2', 'Heading 1'], ['h3', 'Heading 2'], ['h4', 'Heading 3']]} />
+            <Select label="Font" value={state.font} onChange={(v) => (v ? chain().setFontFamily(v).run() : chain().unsetFontFamily().run())} options={FONTS} />
+            <Select label="Font size" value={state.size} onChange={(v) => (v ? chain().setFontSize(v).run() : chain().unsetFontSize().run())} options={SIZES} icon={<Type size={15} aria-hidden="true" />} />
+            <Sep />
+          </>
+        )}
         <Btn label="Bold" active={state.bold} onClick={() => chain().toggleBold().run()}><Bold size={18} /></Btn>
         <Btn label="Italic" active={state.italic} onClick={() => chain().toggleItalic().run()}><Italic size={18} /></Btn>
         <Btn label="Underline" active={state.underline} onClick={() => chain().toggleUnderline().run()}><UnderlineIcon size={18} /></Btn>
@@ -95,23 +104,27 @@ export default function RichEditor({ value, onChange, label = 'Content', placeho
         <Swatches label="Highlight" colors={HIGHLIGHTS} icon={<Highlighter size={18} />}
           onPick={(c) => (c ? chain().setBackgroundColor(c).run() : chain().unsetBackgroundColor().run())} />
         <Sep />
-        <Btn label="Align left" active={state.align === 'left'} onClick={() => chain().setTextAlign('left').run()}><AlignLeft size={18} /></Btn>
-        <Btn label="Align centre" active={state.align === 'center'} onClick={() => chain().setTextAlign('center').run()}><AlignCenter size={18} /></Btn>
-        <Btn label="Align right" active={state.align === 'right'} onClick={() => chain().setTextAlign('right').run()}><AlignRight size={18} /></Btn>
-        <Btn label="Justify" active={state.align === 'justify'} onClick={() => chain().setTextAlign('justify').run()}><AlignJustify size={18} /></Btn>
-        <Sep />
+        {full && (
+          <>
+            <Btn label="Align left" active={state.align === 'left'} onClick={() => chain().setTextAlign('left').run()}><AlignLeft size={18} /></Btn>
+            <Btn label="Align centre" active={state.align === 'center'} onClick={() => chain().setTextAlign('center').run()}><AlignCenter size={18} /></Btn>
+            <Btn label="Align right" active={state.align === 'right'} onClick={() => chain().setTextAlign('right').run()}><AlignRight size={18} /></Btn>
+            <Btn label="Justify" active={state.align === 'justify'} onClick={() => chain().setTextAlign('justify').run()}><AlignJustify size={18} /></Btn>
+            <Sep />
+          </>
+        )}
         <Btn label="Bullet list" active={state.bullet} onClick={() => chain().toggleBulletList().run()}><List size={18} /></Btn>
         <Btn label="Numbered list" active={state.ordered} onClick={() => chain().toggleOrderedList().run()}><ListOrdered size={18} /></Btn>
-        <Btn label="Quote" active={state.quote} onClick={() => chain().toggleBlockquote().run()}><Quote size={18} /></Btn>
-        <Btn label="Divider line" onClick={() => chain().setHorizontalRule().run()}><Minus size={18} /></Btn>
+        {full && <Btn label="Quote" active={state.quote} onClick={() => chain().toggleBlockquote().run()}><Quote size={18} /></Btn>}
+        {full && <Btn label="Divider line" onClick={() => chain().setHorizontalRule().run()}><Minus size={18} /></Btn>}
         <Sep />
         <Btn label="Insert link" active={state.link} onClick={() => setDialog('link')}><Link2 size={18} /></Btn>
         <Btn label="Remove link" disabled={!state.link} onClick={() => chain().extendMarkRange('link').unsetLink().run()}><Unlink size={18} /></Btn>
-        <Btn label="Insert image" onClick={() => setDialog('image')}><ImagePlus size={18} /></Btn>
-        <Btn label="Insert YouTube video" onClick={() => setDialog('video')}><Video size={18} /></Btn>
+        {full && <Btn label="Insert image" onClick={() => setDialog('image')}><ImagePlus size={18} /></Btn>}
+        {full && <Btn label="Insert YouTube video" onClick={() => setDialog('video')}><Video size={18} /></Btn>}
         <Sep />
         <Btn label="Clear formatting" onClick={() => chain().unsetAllMarks().clearNodes().run()}><RemoveFormatting size={18} /></Btn>
-        <Btn label={source ? 'Back to editor' : 'Edit HTML'} active={source} onClick={() => setSource(!source)}><Code2 size={18} /></Btn>
+        {full && <Btn label={source ? 'Back to editor' : 'Edit HTML'} active={source} onClick={() => setSource(!source)}><Code2 size={18} /></Btn>}
       </div>
 
       {source ? (
@@ -123,10 +136,20 @@ export default function RichEditor({ value, onChange, label = 'Content', placeho
         </div>
       )}
       <div className="flex justify-between gap-3 border-t border-line px-3 py-1.5 text-xs text-ink-soft bg-paper rounded-b-xl">
-        <span>{state.words} {state.words === 1 ? 'word' : 'words'}</span>
+        <span className={maxChars && state.chars > maxChars ? 'text-danger font-semibold' : ''}>
+          {maxChars ? `${state.chars} of ${maxChars} characters` : `${state.words} ${state.words === 1 ? 'word' : 'words'}`}
+        </span>
         <span className="hidden sm:inline">Tip: Ctrl+B bold, Ctrl+I italic, Ctrl+Z undo</span>
       </div>
       {dialog && <InsertDialog kind={dialog} editor={editor} onClose={() => setDialog(null)} />}
+    </div>
+  );
+  if (!showLabel && !hint) return box;
+  return (
+    <div>
+      {showLabel && <p className="text-sm font-medium mb-1.5" aria-hidden="true">{label}</p>}
+      {box}
+      {hint && <p className="text-xs text-ink-soft mt-1">{hint}</p>}
     </div>
   );
 }

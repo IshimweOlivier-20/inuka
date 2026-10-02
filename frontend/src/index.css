@@ -2,27 +2,34 @@
 
 /* INUKA design tokens (spec 2.4 and 2.5) */
 @theme {
-  /* All-blue palette: azure primary, deep blue backgrounds, sky-blue highlights (no green, no yellow) */
-  --color-brand: #0A6CF0;       /* primary: buttons, links, headings */
-  --color-brand-dark: #0056CC;  /* hover / pressed */
-  --color-brand-deep: #0A3D91;  /* deep blue: hero, sidebar, dark bands */
-  --color-brand-soft: #E8F1FE;  /* tint: cards, chips, hover backgrounds */
-  --color-cyan: #0891B2;        /* secondary accent: icons, Computer Skills track */
-  --color-sky: #00B4F0;         /* bright cyan for illustrations and glows */
-  --color-accent: #00B4F0;      /* sky blue: highlights, goal numbers, progress */
-  --color-accent-dark: #0369A1; /* sky-blue text on light backgrounds */
-  --color-accent-soft: #F0F9FF; /* sky tint */
-  --color-paper: #F5F9FF;       /* page background (blue-white) */
-  --color-surface: #FFFFFF;     /* cards, panels, inputs (dark grey-blue in dark mode) */
-  --color-ink: #0F1E3D;         /* body text (dark navy) */
-  --color-ink-soft: #4A5B78;
-  --color-line: #E1E8F2;
-  --color-success: #0284C7;     /* ticks, completed states (blue) */
+  /* INUKA palette: white backgrounds + dark blue (navy) as the main colours,
+     with yellow, green, coral-red and blue as accents on buttons, badges and tiles. */
+  --color-brand: #07294D;       /* primary dark blue: buttons, links, headings, logo */
+  --color-brand-dark: #041B33;  /* hover / pressed */
+  --color-brand-deep: #07294D;  /* dark blue bands, sidebar, panels */
+  --color-night: #07294D;       /* dark blue behind photos and panels (same in light and dark mode) */
+  --color-brand-soft: #EEF3F9;  /* light blue-grey tint: chips, hover backgrounds */
+  --color-cyan: #2E5A88;        /* secondary blue: icons, Computer Skills track */
+  --color-sky: #5B85B8;
+  --color-accent: #FFC600;      /* yellow: main call-to-action buttons, badges, progress, highlights */
+  --color-accent-hover: #E5A800; /* darker yellow: button hover, nav link hover on white */
+  --color-yellow: #FFC600;
+  --color-green: #2E9E5B;       /* success, "open", Computer skills tiles */
+  --color-coral: #E5533D;       /* lively red for tiles (errors use --color-danger) */
+  --color-blue: #2F6FEB;        /* bright blue for tiles and links on dark */
+  --color-accent-dark: #1D4371; /* text on light backgrounds */
+  --color-accent-soft: #F2F6FA;
+  --color-paper: #F8FAFC;       /* page background (near white) */
+  --color-surface: #FFFFFF;     /* cards, panels, inputs */
+  --color-ink: #0B1B33;         /* body text */
+  --color-ink-soft: #5F6670;    /* secondary / paragraph text (soft grey, like the reference) */
+  --color-line: #E5E9F0;
+  --color-success: #2E9E5B;     /* ticks, completed states (green) */
   --color-warning: #F59E0B;
-  --color-danger: #EF4444;
+  --color-danger: #DC2626;
 
-  --font-display: "Poppins", ui-sans-serif, system-ui, sans-serif;
-  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Open Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Fira Code", ui-monospace, monospace;
 }
 
@@ -30,10 +37,12 @@
   html { font-size: 16px; }
   body {
     @apply bg-paper text-ink font-body antialiased;
-    line-height: 1.6;
+    line-height: 1.7;
   }
   h1, h2, h3, h4 { @apply font-display text-ink; line-height: 1.25; }
-  :focus-visible { outline: 3px solid var(--color-accent); outline-offset: 2px; border-radius: 4px; }
+  h1, h2 { letter-spacing: -0.01em; }
+  h1, h2, h3 { font-weight: 700; }
+  :focus-visible { outline: 3px solid var(--color-blue); outline-offset: 2px; border-radius: 4px; }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   }
@@ -71,46 +80,28 @@
   /* Hero load moment: the text rises in */
   .hero-copy { animation: rise-in 0.8s ease-out both; }
 
-  /* Hero slides: each scene animates in every time it becomes the active slide */
-  .hero-slide.is-active .sprout-stem { stroke-dasharray: 1; stroke-dashoffset: 1; animation: grow-stem 1s 0.3s ease-out forwards; }
-  .hero-slide .sprout-leaf, .hero-slide .pop { transform-box: fill-box; }
-  .hero-slide.is-active .sprout-leaf { transform-origin: left center; transform: scale(0); animation: unfold 0.5s ease-out forwards; }
-  .hero-slide.is-active .leaf-2 { transform-origin: right center; }
-  .hero-slide.is-active .leaf-1 { animation-delay: 0.7s; }
-  .hero-slide.is-active .leaf-2 { animation-delay: 0.95s; }
-  .hero-slide.is-active .leaf-3 { animation-delay: 1.2s; }
-  .hero-slide.is-active .pop { transform-origin: center; animation: pop 0.55s var(--d, 0s) cubic-bezier(.2, .9, .3, 1.3) both; }
-  .hero-slide.is-active .float { animation: pop 0.55s var(--d, 0s) cubic-bezier(.2, .9, .3, 1.3) both, bob 3.2s calc(var(--d, 0s) + 0.6s) ease-in-out infinite; }
-  .hero-slide.is-active .float-slow { animation: pop 0.55s var(--d, 0s) cubic-bezier(.2, .9, .3, 1.3) both, bob 4.4s calc(var(--d, 0s) + 0.6s) ease-in-out infinite; }
-  .hero-slide.is-active .confetti { animation: pop 0.4s var(--d, 0s) ease-out both, drift 3s calc(var(--d, 0s) + 0.4s) ease-in-out infinite alternate; }
-  .slide-progress { animation-name: progress; animation-timing-function: linear; animation-fill-mode: forwards; }
+  /* Home hero photos: slow zoom while a photo is showing */
+  .hero-photo.is-active img { animation: slow-zoom 9s ease-out both; }
 }
+@keyframes slow-zoom { from { transform: scale(1.08); } to { transform: scale(1); } }
 @keyframes rise-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
-@keyframes grow-stem { to { stroke-dashoffset: 0; } }
-@keyframes unfold { to { transform: scale(1); } }
 @keyframes pop-in { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: none; } }
 
 /* FAQ: remove the default triangle marker in Safari */
 .faq summary::-webkit-details-marker { display: none; }
 @keyframes pop { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: scale(1); } }
-@keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
-@keyframes drift { from { translate: 0 0; } to { translate: 0 8px; } }
-@keyframes progress { from { width: 0; } to { width: 100%; } }
 
 
 /* ---------- Our impact band ---------- */
 .impact-band {
-  background:
-    radial-gradient(ellipse 60% 70% at 100% 0%, rgba(0, 180, 240, 0.22), transparent 60%),
-    radial-gradient(ellipse 50% 60% at 0% 100%, rgba(0, 180, 240, 0.25), transparent 60%),
-    linear-gradient(135deg, #0A3D91 0%, #072C6B 100%);
+  background: #07294D;
 }
 
 
 /* Slideshow on a white background: shapes drawn in white become pale blue so they stay visible
    (text keeps its own colour). */
 .slides-on-light svg :not(text)[fill="#F9FAFB" i] { fill: #D3E4FD; }
-.slides-on-light svg ellipse[fill="#000"] { fill: #0A6CF0; opacity: 0.08; }
+.slides-on-light svg ellipse[fill="#000"] { fill: #07294D; opacity: 0.08; }
 
 /* INUKA AI avatar: the sprout gently sways (spec 13.3) */
 @keyframes sway { 0%, 100% { rotate: -6deg; } 50% { rotate: 6deg; } }
@@ -122,13 +113,16 @@
 /* ─────────────────────────────────────────────────────────────
    Light and dark mode. The theme is set on <html data-theme="light|dark">
    (see index.html and components/layout/ThemeToggle.jsx).
-   Dark mode swaps the neutral colours; blue buttons and bands stay the same.
+   Dark mode swaps the neutral colours and lightens the dark blue so buttons stay visible.
    ───────────────────────────────────────────────────────────── */
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
-:root { color-scheme: light; --skeleton-base: #E4EAF5; --skeleton-shine: #F4F7FC; }
+:root { color-scheme: light; --skeleton-base: #E8EDF3; --skeleton-shine: #F5F7FA; }
 [data-theme=dark] {
   color-scheme: dark;
+  --logo-mark: #2F5D93;
+  --color-brand: #2F5D93;
+  --color-brand-dark: #3B6BA5;
   --color-paper: #0B1220;
   --color-surface: #131C2E;
   --color-ink: #E7EDF7;
@@ -141,26 +135,30 @@
 }
 /* Blue text needs to be lighter on dark backgrounds */
 [data-theme=dark] .text-brand,
-[data-theme=dark] .hover\:text-brand:hover { color: #6EA8FF; }
-[data-theme=dark] .text-brand-deep { color: #A9C8FF; }
-[data-theme=dark] .text-accent-dark { color: #7DD3FC; }
-[data-theme=dark] .text-cyan { color: #38D3EE; }
-[data-theme=dark] .border-brand { border-color: #4C8DF5; }
-[data-theme=dark] .lesson-prose h3 { color: #6EA8FF; }
+[data-theme=dark] .hover\:text-brand:hover { color: #9DBCE3; }
+[data-theme=dark] .text-brand-deep { color: #C9DAEF; }
+[data-theme=dark] .text-accent-dark { color: #B5CDEA; }
+[data-theme=dark] .text-cyan { color: #9DBCE3; }
+[data-theme=dark] .border-brand { border-color: #7FA3D1; }
+[data-theme=dark] .lesson-prose h3 { color: #9DBCE3; }
 /* Status colours from Tailwind's palette */
 [data-theme=dark] .bg-sky-50 { background-color: rgb(14 165 233 / 0.10); }
 [data-theme=dark] .bg-sky-100 { background-color: rgb(14 165 233 / 0.18); }
-[data-theme=dark] .text-sky-800 { color: #7DD3FC; }
+[data-theme=dark] .text-sky-800 { color: #B5CDEA; }
 [data-theme=dark] .bg-red-50 { background-color: rgb(239 68 68 / 0.10); }
 [data-theme=dark] .bg-red-100 { background-color: rgb(239 68 68 / 0.18); }
 [data-theme=dark] .text-red-800 { color: #FCA5A5; }
 [data-theme=dark] .border-red-200 { border-color: rgb(239 68 68 / 0.35); }
 [data-theme=dark] .bg-gray-100 { background-color: #1E293B; }
 [data-theme=dark] .bg-cyan-50 { background-color: rgb(8 145 178 / 0.16); }
-[data-theme=dark] .bg-\[\#E0F7FD\] { background-color: rgb(8 145 178 / 0.16); }
+[data-theme=dark] .bg-\[\#EEF3F9\] { background-color: rgb(8 145 178 / 0.16); }
 /* Illustrations on the home page: soften the bright white shapes */
 [data-theme=dark] .slides-on-light svg :not(text)[fill="#F9FAFB" i] { fill: #2A3E63; }
 [data-theme=dark] .slides-on-light svg ellipse[fill="#000"] { fill: #000; opacity: 0.35; }
 /* Smooth change when switching */
 html.theme-switching, html.theme-switching * { transition: background-color .25s ease, border-color .25s ease, color .25s ease !important; }
+
+/* Alerts (toasts) slide in from the top */
+@keyframes toast-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
+.toast-in { animation: toast-in .25s ease-out both; }
 

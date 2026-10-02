@@ -1,13 +1,17 @@
 // A real icon (Lucide) on a coloured tile, in INUKA colours.
 const TONES = {
   brand: 'bg-brand text-white',
-  accent: 'bg-[#0284C7] text-white',
-  cyan: 'bg-cyan text-white',
+  accent: 'bg-accent text-night',
+  yellow: 'bg-accent text-night',
+  green: 'bg-green text-white',
+  coral: 'bg-coral text-white',
+  blue: 'bg-blue text-white',
+  cyan: 'bg-green text-white',
   deep: 'bg-brand-deep text-white',
-  ink: 'bg-ink text-white',
+  ink: 'bg-night text-white',
   tint: 'bg-brand-soft text-brand',
   soft: 'bg-brand-soft text-brand ring-1 ring-brand/10',
-  warm: 'bg-sky-50 text-accent-dark ring-1 ring-accent/30',
+  warm: 'bg-brand-soft text-accent-dark ring-1 ring-accent/30',
   glass: 'bg-white/15 text-white ring-1 ring-white/20',
 };
 const SIZES = {

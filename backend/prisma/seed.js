@@ -77,6 +77,14 @@ async function seedHomeContent() {
   await fill('tip', home.tips, 'tips');
   await fill('faqItem', home.faq, 'FAQ items');
   await fill('teamMember', home.team, 'team members');
+  // Placeholder team members get stock photos of young Africans (free Unsplash photos) until real people are added.
+  // Real team members are never given a stock photo: add their own photo in Admin → Website content → Team.
+  for (const t of home.team.filter((x) => x.isSample && x.photoUrl)) {
+    await prisma.teamMember.updateMany({ where: { isSample: true, role: t.role, photoUrl: null }, data: { photoUrl: t.photoUrl } });
+  }
+  for (const t of home.testimonials.filter((x) => x.isSample && x.photoUrl)) {
+    await prisma.testimonial.updateMany({ where: { isSample: true, role: t.role, photoUrl: null }, data: { photoUrl: t.photoUrl } });
+  }
   await fill('testimonial', home.testimonials, 'testimonials (samples)');
   // Partners: remove old placeholder partners, then add the organisations list.
   // They are added UNPUBLISHED: publish each one (isPublished = true) only once that organisation has agreed

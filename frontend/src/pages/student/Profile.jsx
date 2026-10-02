@@ -18,7 +18,7 @@ export default function Profile() {
   const tab = params.get('tab') || 'personal';
   return (
     <div>
-      <h1 className="text-3xl font-bold">Profile</h1>
+      <h1 className="text-2xl sm:text-[1.75rem] font-bold">Profile</h1>
       <div role="tablist" className="flex gap-1 mt-6 border-b border-line overflow-x-auto">
         {TABS.map(([k, l]) => (
           <button key={k} role="tab" aria-selected={tab === k} onClick={() => setParams({ tab: k })}

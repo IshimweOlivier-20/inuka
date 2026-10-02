@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Award, BookOpen, CalendarClock, Check, Headphones, Laptop, ListChecks } from 'lucide-react';
 import { FUNDING_LABEL, LEVEL_LABEL, deadlineTone, formatDate } from '../../utils/format';
+import { plainText } from '../../utils/sanitize';
 
 const INTERVAL = 5500; // ms per card
 
@@ -77,7 +78,7 @@ export default function Showcase({ items, getKey, getLabel, renderItem, label })
 
 function ShowcaseSkeleton() {
   return (
-    <div className="w-full max-w-[440px] rounded-3xl bg-surface/95 p-6 animate-pulse" aria-label="Loading" role="status">
+    <div className="w-full max-w-[440px] rounded-xl bg-surface/95 p-6 animate-pulse" aria-label="Loading" role="status">
       <div className="flex gap-3 items-center"><div className="w-12 h-12 rounded-xl bg-brand-soft" /><div className="h-4 w-32 rounded bg-brand-soft" /></div>
       <div className="h-6 w-4/5 rounded bg-brand-soft mt-5" />
       <div className="h-4 w-1/2 rounded bg-brand-soft mt-3" />
@@ -87,19 +88,19 @@ function ShowcaseSkeleton() {
   );
 }
 
-const cardClass = 'rounded-3xl bg-surface text-ink shadow-[0_12px_30px_-18px_rgba(3,20,60,0.35)] overflow-hidden';
+const cardClass = 'rounded-xl bg-surface text-ink ring-1 ring-white/25 shadow-[0_12px_30px_-18px_rgba(3,20,60,0.35)] overflow-hidden';
 
 /* ---------- Course card ---------- */
 const SUBJECT = {
-  english: { name: 'English', Icon: BookOpen, band: 'from-brand to-[#3B8BF5]' },
-  computer: { name: 'Computer skills', Icon: Laptop, band: 'from-cyan to-sky' },
+  english: { name: 'English', Icon: BookOpen, band: 'bg-brand' },
+  computer: { name: 'Computer skills', Icon: Laptop, band: 'bg-cyan' },
 };
 
 export function CourseShowcaseCard({ c, to }) {
   const s = SUBJECT[c.category] || SUBJECT.english;
   return (
     <article className={cardClass}>
-      <div className={`bg-gradient-to-r ${s.band} px-6 py-5 text-white`}>
+      <div className={`${s.band} px-6 py-5 text-white`}>
         <div className="flex items-center gap-3">
           <span className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center"><s.Icon size={22} aria-hidden="true" /></span>
           <span className="text-sm font-semibold">{s.name} · Course {c.track}</span>
@@ -142,7 +143,7 @@ export function ScholarshipShowcaseCard({ s, onOpen }) {
     <article className={cardClass}>
       <div className="px-6 pt-6">
         <div className="flex items-start gap-3">
-          <span className="w-14 h-14 shrink-0 rounded-2xl bg-gradient-to-br from-brand to-brand-deep text-white font-display font-bold text-lg flex items-center justify-center" aria-hidden="true">
+          <span className="w-14 h-14 shrink-0 rounded-lg bg-brand text-white font-display font-bold text-lg flex items-center justify-center" aria-hidden="true">
             {initials(s.orgName)}
           </span>
           <div className="min-w-0">
@@ -153,15 +154,15 @@ export function ScholarshipShowcaseCard({ s, onOpen }) {
         <div className="flex flex-wrap gap-2 mt-4">
           <span className={`rounded-full px-3 py-1 text-xs font-semibold ${s.fundingType === 'fully_funded' ? 'bg-brand text-white' : 'bg-brand-soft text-brand-deep'}`}>{FUNDING_LABEL[s.fundingType]}</span>
           {s.openToRefugees && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-sky-100 text-sky-800 px-3 py-1 text-xs font-semibold">
+            <span className="inline-flex items-center gap-1 rounded-full bg-brand-soft text-brand px-3 py-1 text-xs font-semibold">
               <Check size={13} strokeWidth={3} aria-hidden="true" />{s.refugeesOnly ? 'For refugees' : 'Open to refugees'}
             </span>
           )}
           <span className="rounded-full bg-paper border border-line px-3 py-1 text-xs font-semibold text-ink-soft">{LEVEL_LABEL[s.level]}</span>
         </div>
-        <p className="mt-4 text-[15px] text-ink-soft line-clamp-3">{s.description}</p>
+        <p className="mt-4 text-[15px] text-ink-soft line-clamp-3">{plainText(s.description)}</p>
       </div>
-      <div className="mt-5 mx-6 rounded-2xl bg-paper border border-line px-4 py-3 flex items-center gap-3">
+      <div className="mt-5 mx-6 rounded-lg bg-paper border border-line px-4 py-3 flex items-center gap-3">
         <CalendarClock size={20} className="text-brand shrink-0" aria-hidden="true" />
         <div className="min-w-0 text-sm">
           <p className="font-semibold">{s.hostUniversity || s.hostCountry}</p>

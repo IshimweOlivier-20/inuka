@@ -15,7 +15,7 @@ const lines = z.array(z.string().trim().min(1)).max(30);
 const schema = z.object({
   name: z.string().trim().min(3, 'Please enter the scholarship name.'),
   orgName: z.string().trim().min(2, 'Please enter the organisation.'),
-  description: z.string().trim().min(20, 'Please write a description (at least 20 characters).'),
+  description: z.string().trim().max(30000).refine((v) => v.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim().length >= 20, 'Please write a description (at least 20 characters).'),
   hostCountry: z.string().trim().min(2, 'Please enter the study country.'),
   hostUniversity: z.string().trim().optional().nullable(),
   region: z.enum(REGIONS, { error: 'Please choose a region.' }),

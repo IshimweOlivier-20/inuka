@@ -67,7 +67,8 @@ async function audienceWhere(audience, country) {
 // POST /api/admin/announcements { message, link?, audience, country? } — in-app notification to a group
 router.post('/announcements', async (req, res) => {
   const { message, link, audience, country } = z.object({
-    message: z.string().trim().min(5, 'Please write the announcement.').max(400, 'Please keep announcements under 400 characters.'),
+    message: z.string().trim().min(5, 'Please write the announcement.').max(5000)
+      .refine((m) => m.replace(/<[^>]+>/g, '').trim().length <= 400, 'Please keep announcements under 400 characters of text.'),
     link: z.string().trim().regex(/^(\/|https:\/\/)/, 'Links must start with / (a page on INUKA) or https://').optional().or(z.literal('')),
     audience: z.enum(['all_students', 'refugees', 'mentors', 'everyone', 'country']),
     country: z.string().trim().optional(),
@@ -93,9 +94,11 @@ router.get('/announcements', async (req, res) => {
     groups.set(key, g);
   }
   const countries = await prisma.user.groupBy({ by: ['countryResidence'], where: { role: 'student', countryResidence: { not: null } }, _count: { _all: true } });
+  const audienceCounts = Object.fromEntries(await Promise.all(Object.keys(AUDIENCES).map(async (k) => [k, await prisma.user.count({ where: await audienceWhere(k) })])));
   res.json({
     announcements: [...groups.values()].slice(0, 20),
     audiences: AUDIENCES,
+    audienceCounts,
     countries: countries.map((c) => ({ country: c.countryResidence, students: c._count._all })).sort((a, b) => b.students - a.students),
   });
 });

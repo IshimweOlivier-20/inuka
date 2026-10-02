@@ -9,7 +9,7 @@ export function applyTheme(theme, remember = true) {
   const root = document.documentElement;
   root.classList.add('theme-switching');
   root.setAttribute('data-theme', theme);
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#0B1220' : '#0A6CF0');
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#0B1220' : '#07294D');
   if (remember) { try { localStorage.setItem(KEY, theme); } catch { /* private mode: not remembered */ } }
   setTimeout(() => root.classList.remove('theme-switching'), 300);
   window.dispatchEvent(new CustomEvent('inuka-theme', { detail: theme }));

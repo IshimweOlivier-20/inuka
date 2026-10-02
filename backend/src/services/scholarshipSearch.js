@@ -57,7 +57,7 @@ const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); retur
 function prepare(rows) {
   return rows.map((s) => ({
     ...s,
-    _text: fold([s.name, s.orgName, s.hostCountry, s.hostUniversity, s.region, s.description,
+    _text: fold([s.name, s.orgName, s.hostCountry, s.hostUniversity, s.region, String(s.description || "").replace(/<[^>]+>/g, " "),
       ...(Array.isArray(s.eligibility) ? s.eligibility : [])].join(' ')),
     _dest: destinationOf(s),
     _covers: coverageOf(s),

@@ -31,7 +31,7 @@ router.post('/courses', async (req, res) => {
     title: z.string().trim().min(3, 'Please enter a title.'),
     category: z.enum(['english', 'computer'], { error: 'Please choose English or Computer skills.' }),
     level: z.string().trim().min(2, 'Please enter the level, e.g. Beginner.'),
-    description: z.string().trim().min(10, 'Please write a short description.'),
+    description: z.string().trim().max(20000).refine((v) => v.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim().length >= 10, 'Please write a short description.'),
     skills: z.array(z.string().trim().min(1)).max(12).default([]),
   }).parse(req.body);
   const same = await prisma.course.findMany({ where: { category: data.category }, select: { track: true } });
@@ -54,7 +54,7 @@ router.delete('/courses/:id', async (req, res) => {
 router.patch('/courses/:id', async (req, res) => {
   const data = z.object({
     title: z.string().trim().min(3, 'Please enter a title.').optional(),
-    description: z.string().trim().min(10, 'Please write a short description.').optional(),
+    description: z.string().trim().max(20000).refine((v) => v.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim().length >= 10, 'Please write a short description.').optional(),
     level: z.string().trim().min(2).optional(),
     thumbnailUrl: z.url('Please enter a full image link.').nullable().optional().or(z.literal('')),
     skills: z.array(z.string().trim().min(1)).max(12).optional(),
@@ -67,7 +67,7 @@ router.patch('/courses/:id', async (req, res) => {
 
 const lessonSchema = z.object({
   title: z.string().trim().min(3, 'Please enter a lesson title.'),
-  summary: z.string().trim().max(300).optional().nullable(),
+  summary: z.string().trim().max(8000).optional().nullable(),
   contentHtml: z.string().max(200000).default(''),
   audioUrl: z.url('Please enter a full audio link.').optional().nullable().or(z.literal('')),
   isPublished: z.boolean().optional(),

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
 import { timeAgo } from '../../utils/format';
+import RichText from '../../components/ui/RichText';
 
 export default function NotificationBell() {
   const [open, setOpen] = useState(false);
@@ -47,7 +48,7 @@ export default function NotificationBell() {
             {data.notifications.map((n) => (
               <li key={n.id}>
                 <button onClick={() => openItem(n)} className={`w-full text-left px-4 py-3 border-b border-line last:border-0 hover:bg-paper ${n.isRead ? '' : 'bg-brand-soft/60'}`}>
-                  <p className="text-sm">{n.message}</p>
+                  <RichText html={n.message} className="text-sm" />
                   <p className="text-xs text-ink-soft mt-0.5">{timeAgo(n.createdAt)}</p>
                 </button>
               </li>

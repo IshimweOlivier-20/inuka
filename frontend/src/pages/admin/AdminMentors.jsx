@@ -3,7 +3,9 @@ import { ExternalLink, UserCheck } from 'lucide-react';
 import { Alert, Button, EmptyState, Field, Modal, Pill } from '../../components/ui';
 import Avatar from '../../components/ui/Avatar';
 import { ListRowsSkeleton } from '../../components/ui/Skeletons';
+import RichText from '../../components/ui/RichText';
 import { PageTitle } from '../../components/admin/AdminUI';
+import { useConfirm, useToast } from '../../context/FeedbackContext';
 import { DAY_NAMES, utcSlotsToLocalRanges } from '../../utils/availability';
 import { api, errorMessage } from '../../services/api';
 import { formatDate } from '../../utils/format';
@@ -12,9 +14,10 @@ const TABS = [['pending', 'Waiting for approval'], ['approved', 'Approved'], ['r
 
 // Mentor approval (spec 16.2): review applications, approve, or reject with feedback.
 export default function AdminMentors() {
+  const confirm = useConfirm();
+  const toast = useToast();
   const [tab, setTab] = useState('pending');
   const [data, setData] = useState(null);
-  const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
   const [rejecting, setRejecting] = useState(null);
 
@@ -23,14 +26,15 @@ export default function AdminMentors() {
   useEffect(() => { setData(null); load(); }, [tab]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const approve = async (m) => {
-    try { await api.post(`/admin/mentors/${m.id}/approve`); setNotice(`${m.user.firstName} ${m.user.lastName} is approved and has been told by email.`); load(); }
-    catch (e) { setError(errorMessage(e)); }
+    const ok = await confirm({ title: `Approve ${m.user.firstName} ${m.user.lastName}?`, message: 'Students will see this mentor straight away and can book sessions. The mentor is told by email.', confirmLabel: 'Yes, approve' });
+    if (!ok) return;
+    try { await api.post(`/admin/mentors/${m.id}/approve`); toast.success(`${m.user.firstName} ${m.user.lastName} is approved and has been told by email.`); load(); }
+    catch (e) { toast.error(errorMessage(e)); }
   };
 
   return (
     <div className="space-y-5">
       <PageTitle title="Mentors" intro="Every mentor is checked before students can see them. Approve good profiles, or send them back with feedback." />
-      {notice && <Alert tone="success">{notice}</Alert>}
       {error && <Alert>{error}</Alert>}
       <div role="tablist" className="flex gap-1 border-b border-line overflow-x-auto">
         {TABS.map(([k, l]) => (
@@ -58,7 +62,7 @@ export default function AdminMentors() {
               </div>
               <div className="mt-4 grid lg:grid-cols-[1fr_260px] gap-5">
                 <div>
-                  <p className="whitespace-pre-line text-[15px]">{m.bio}</p>
+                  <RichText html={m.bio} className="text-[15px]" />
                   <div className="flex flex-wrap gap-1.5 mt-3">{(m.expertise || []).map((x) => <Pill key={x} tone="brand">{x}</Pill>)}</div>
                   <p className="text-sm text-ink-soft mt-2">Languages: {(m.languages || []).join(', ')}</p>
                   {m.linkedinUrl && <a href={m.linkedinUrl} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-brand hover:underline min-h-11">LinkedIn profile<ExternalLink size={14} aria-hidden="true" /></a>}
@@ -76,7 +80,7 @@ export default function AdminMentors() {
           ))}
         </ul>
       )}
-      {rejecting && <RejectDialog m={rejecting} onClose={() => setRejecting(null)} onDone={(t) => { setRejecting(null); setNotice(t); load(); }} />}
+      {rejecting && <RejectDialog m={rejecting} onClose={() => setRejecting(null)} onDone={(t) => { setRejecting(null); toast.success(t); load(); }} />}
     </div>
   );
 }

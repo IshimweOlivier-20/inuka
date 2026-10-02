@@ -112,7 +112,7 @@ export default function Register() {
         </div>
       )}
       {error && <div className="mb-4"><Alert>{error}</Alert></div>}
-      {step === 1 && role === 'student' && <GoogleButton text="signup_with" role="student" divider="or sign up with your email" />}
+      {step === 1 && role === 'student' && <GoogleButton label="Sign up with Google" divider="or sign up with your email" />}
 
       {step === 1 ? (
         <form onSubmit={next} className="space-y-4" noValidate>
@@ -121,8 +121,10 @@ export default function Register() {
             <Field label="Last name" autoComplete="family-name" value={f.lastName} onChange={set('lastName')} error={errors.lastName} />
           </div>
           <Field label="Email address" type="email" autoComplete="email" value={f.email} onChange={set('email')} error={errors.email} />
-          <Field label="Password" type="password" autoComplete="new-password" value={f.password} onChange={set('password')} error={errors.password} hint="At least 8 characters, including one number." />
-          <Field label="Confirm password" type="password" autoComplete="new-password" value={f.confirm} onChange={set('confirm')} error={errors.confirm} />
+          <div className="grid sm:grid-cols-2 gap-4">
+            <Field label="Password" type="password" autoComplete="new-password" value={f.password} onChange={set('password')} error={errors.password} hint="8+ characters, with a number." />
+            <Field label="Confirm password" type="password" autoComplete="new-password" value={f.confirm} onChange={set('confirm')} error={errors.confirm} />
+          </div>
           <Button type="submit" className="w-full">Continue</Button>
         </form>
       ) : (

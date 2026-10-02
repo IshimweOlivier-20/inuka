@@ -49,7 +49,7 @@ export default function MentorSessions() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Sessions</h1>
+        <h1 className="text-2xl sm:text-[1.75rem] font-bold">Sessions</h1>
         <p className="text-ink-soft mt-1">Your calendar, session notes and the ratings students gave you.</p>
       </div>
       {notice && <Alert tone="success">{notice}</Alert>}

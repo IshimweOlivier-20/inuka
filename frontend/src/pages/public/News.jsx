@@ -10,6 +10,7 @@ import { api, errorMessage } from '../../services/api';
 import { formatDate } from '../../utils/format';
 import IconTile from '../../components/ui/IconTile';
 import { CATEGORY_ICON, Newspaper } from '../../components/landing/categoryIcons';
+import RichText from '../../components/ui/RichText';
 
 const FILTERS = [['', 'All'], ['guide', 'Guides'], ['news', 'News']];
 
@@ -28,7 +29,7 @@ export function NewsList() {
     <PublicShell>
       <section className="bg-brand-soft border-b border-line">
         <div className="max-w-[1200px] mx-auto px-5 py-12 md:py-16">
-          <h1 className="text-4xl font-bold">News & guides</h1>
+          <h1 className="text-2xl sm:text-[1.75rem] font-bold">News & guides</h1>
           <p className="text-lg text-ink-soft mt-2 max-w-2xl">Step-by-step guides for your scholarship applications, and the latest updates from INUKA.</p>
           <div role="tablist" className="flex gap-2 mt-6">
             {FILTERS.map(([k, l]) => (
@@ -42,7 +43,7 @@ export function NewsList() {
         {error && <p role="alert" className="text-danger">{error}</p>}
         {!posts && !error && (
           <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" aria-label="Loading articles">
-            {[0, 1, 2].map((i) => <li key={i} className="bg-surface rounded-2xl border border-line overflow-hidden"><Skeleton height={144} borderRadius={0} /><div className="p-5"><Skeleton width={120} /><Skeleton height={22} className="mt-3" /><Skeleton count={2} /></div></li>)}
+            {[0, 1, 2].map((i) => <li key={i} className="bg-surface rounded-lg border border-line overflow-hidden"><Skeleton height={144} borderRadius={0} /><div className="p-5"><Skeleton width={120} /><Skeleton height={22} className="mt-3" /><Skeleton count={2} /></div></li>)}
           </ul>
         )}
         {posts && posts.length === 0 && <p className="text-ink-soft">No articles here yet. Check back soon.</p>}
@@ -78,14 +79,14 @@ export function Article() {
                 <Pill tone={data.post.category === 'news' ? 'cyan' : 'brand'}>{CATEGORY_LABEL[data.post.category] || data.post.category}</Pill>
                 <span>{data.post.readMinutes} min read</span>
               </div>
-              <h1 className="text-3xl md:text-[2.6rem] font-bold mt-3 leading-tight">{data.post.title}</h1>
-              <p className="text-lg text-ink-soft mt-3">{data.post.excerpt}</p>
+              <h1 className="text-2xl md:text-[2.1rem] font-bold mt-3 leading-tight">{data.post.title}</h1>
+              <RichText html={data.post.excerpt} className="text-lg text-ink-soft mt-3" />
               <p className="text-sm text-ink-soft mt-4">By {data.post.authorName}, {formatDate(data.post.publishedAt)}</p>
             </header>
-            <div className="mt-8 h-44 rounded-2xl bg-gradient-to-br from-brand-soft to-[#D6E8FD] dark:to-[#1E3A66] flex items-center justify-center" aria-hidden="true"><IconTile icon={CATEGORY_ICON[data.post.category] || Newspaper} tone={data.post.category === 'news' ? 'accent' : 'brand'} size="xl" /></div>
+            <div className="mt-8 h-44 rounded-lg bg-brand-soft flex items-center justify-center" aria-hidden="true"><IconTile icon={CATEGORY_ICON[data.post.category] || Newspaper} tone={data.post.category === 'news' ? 'accent' : 'brand'} size="xl" /></div>
             <div className="lesson-prose mt-8" dangerouslySetInnerHTML={{ __html: sanitizeRich(data.post.contentHtml) }} />
 
-            <aside className="mt-10 rounded-2xl bg-brand text-white p-6 flex flex-col sm:flex-row sm:items-center gap-4">
+            <aside className="mt-10 rounded-lg bg-brand text-white p-6 flex flex-col sm:flex-row sm:items-center gap-4">
               <p className="flex-1 text-lg"><strong className="font-display">Ready to start?</strong> Free courses, scholarships and a document vault, all in one place.</p>
               <Button to="/register" variant="accent">Create a free account</Button>
             </aside>

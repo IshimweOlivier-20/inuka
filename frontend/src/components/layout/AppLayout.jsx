@@ -30,7 +30,7 @@ export default function AppLayout() {
   const isStudent = role === 'student';
 
   const linkCls = ({ isActive }) =>
-    `flex items-center gap-3 min-h-11 px-4 rounded-lg font-medium transition-colors ${collapsed ? 'md:justify-center md:px-0' : ''} ${isActive ? 'bg-white/15 text-white shadow-[inset_3px_0_0_var(--color-accent)]' : 'text-white/80 hover:bg-white/10 hover:text-white'}`;
+    `flex items-center gap-3 min-h-11 px-4 rounded-lg font-medium transition-colors ${collapsed ? 'md:justify-center md:px-0' : ''} ${isActive ? 'bg-white/15 text-accent shadow-[inset_3px_0_0_var(--color-accent)]' : 'text-white/80 hover:bg-white/10 hover:text-accent'}`;
 
   return (
     <div className={`min-h-screen transition-[padding] ${collapsed ? 'md:pl-[76px]' : 'md:pl-60'}`}>
@@ -40,7 +40,7 @@ export default function AppLayout() {
       <aside className={`fixed inset-y-0 left-0 z-40 w-60 ${collapsed ? 'md:w-[76px]' : ''} bg-brand-deep flex flex-col transition-[transform,width] md:translate-x-0 ${menuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className={`px-5 py-5 ${collapsed ? 'md:px-0 md:text-center' : ''}`}>
           <span className={collapsed ? 'md:hidden' : ''}><Logo light /></span>
-          {collapsed && <span className="hidden md:inline font-display font-extrabold text-2xl text-white" aria-label="INUKA">I</span>}
+          {collapsed && <span className="hidden md:inline-flex" aria-label="INUKA"><Logo light markOnly /></span>}
           {!isStudent && <p className={`mt-2 text-xs font-semibold uppercase tracking-wider text-white/60 ${label}`}>{ROLE_LABEL[role]} dashboard</p>}
         </div>
         <nav className="flex-1 px-3 space-y-1" aria-label="Main">

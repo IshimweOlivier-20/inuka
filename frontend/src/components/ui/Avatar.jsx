@@ -10,5 +10,5 @@ export default function Avatar({ user, size = 'sm', className = '' }) {
   if (user?.profilePhotoUrl && !broken) {
     return <img src={user.profilePhotoUrl} alt="" className={`${box} object-cover bg-brand-soft`} onError={() => setBroken(true)} referrerPolicy="no-referrer" />;
   }
-  return <span className={`${box} bg-[#0284C7] text-white font-display font-semibold flex items-center justify-center`} aria-hidden="true">{initials}</span>;
+  return <span className={`${box} bg-[#2E5A88] text-white font-display font-semibold flex items-center justify-center`} aria-hidden="true">{initials}</span>;
 }

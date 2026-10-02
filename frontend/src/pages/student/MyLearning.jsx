@@ -25,7 +25,7 @@ export default function MyLearning() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">My Learning</h1>
+      <h1 className="text-2xl sm:text-[1.75rem] font-bold">My Learning</h1>
       <div className="grid md:grid-cols-3 gap-6">
         <Card><Ring pct={d.dash.levels.english.percent} label="English track" sub={d.dash.levels.english.level} /></Card>
         <Card><Ring pct={d.dash.levels.computer.percent} label="Computer skills track" sub={d.dash.levels.computer.level} /></Card>
@@ -96,7 +96,7 @@ function Ring({ pct, label, sub }) {
     <div className="flex items-center gap-4">
       <svg width="104" height="104" viewBox="0 0 104 104" role="img" aria-label={`${label}: ${pct}% complete`}>
         <circle cx="52" cy="52" r={r} fill="none" stroke="#E5E7EB" strokeWidth="12" />
-        <circle cx="52" cy="52" r={r} fill="none" stroke="#0A6CF0" strokeWidth="12" strokeLinecap="round"
+        <circle cx="52" cy="52" r={r} fill="none" stroke="#07294D" strokeWidth="12" strokeLinecap="round"
           strokeDasharray={c} strokeDashoffset={c * (1 - pct / 100)} transform="rotate(-90 52 52)" />
         <text x="52" y="58" textAnchor="middle" className="font-display" fontSize="20" fontWeight="700" fill="#1A1A2E">{pct}%</text>
       </svg>

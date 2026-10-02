@@ -1,3 +1,4 @@
+import { coursePhoto } from '../../config/photos';
 import { useEffect, useState } from 'react';
 import Avatar from '../../components/ui/Avatar';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -112,11 +113,12 @@ export default function StudentDashboard() {
 
 // Thumbnail for the Continue Learning card: the course image, or a coloured tile for its subject.
 function CourseThumb({ c }) {
-  if (c.thumbnailUrl) return <img src={c.thumbnailUrl} alt="" className="w-20 h-20 rounded-xl object-cover shrink-0" />;
+  const photo = coursePhoto(c);
+  if (photo) return <img src={photo} alt="" className="w-20 h-20 rounded-xl object-cover shrink-0" />;
   const english = c.category === 'english';
   const Icon = english ? BookOpen : Laptop;
   return (
-    <span className={`w-20 h-20 shrink-0 rounded-xl text-white flex flex-col items-center justify-center gap-1 bg-gradient-to-br ${english ? 'from-brand to-brand-deep' : 'from-cyan to-[#0369A1]'}`} aria-hidden="true">
+    <span className={`w-20 h-20 shrink-0 rounded-xl text-white flex flex-col items-center justify-center gap-1 ${english ? 'bg-brand' : 'bg-cyan'}`} aria-hidden="true">
       <Icon size={28} />
       <span className="text-[11px] font-semibold tracking-wide">COURSE {c.track}</span>
     </span>

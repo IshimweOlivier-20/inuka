@@ -21,3 +21,12 @@ export const sanitizeRich = (html) => DOMPurify.sanitize(html || '', {
 
 // Plain text written before the editor existed is shown as-is; HTML from the editor is cleaned.
 export const looksLikeHtml = (s) => /<\/?[a-z][\s\S]*>/i.test(s || '');
+
+// Text only (for cards, previews and search), e.g. "<p>Hello <b>you</b></p>" -> "Hello you".
+export function plainText(html) {
+  if (!html) return '';
+  if (!looksLikeHtml(html)) return html;
+  const div = document.createElement('div');
+  div.innerHTML = DOMPurify.sanitize(html.replace(/<\/(p|li|h[1-6]|blockquote)>/gi, ' </$1>').replace(/<br\s*\/?>/gi, ' '));
+  return (div.textContent || '').replace(/\s+/g, ' ').trim();
+}

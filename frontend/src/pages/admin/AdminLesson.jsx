@@ -1,17 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import RichEditor from '../../components/editor/RichEditor';
 import { sanitizeRich } from '../../utils/sanitize';
-import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { Alert, Button, Card, Field } from '../../components/ui';
 import { ListRowsSkeleton } from '../../components/ui/Skeletons';
-import { PageTitle } from '../../components/admin/AdminUI';
+import { BackLink, PageTitle } from '../../components/admin/AdminUI';
+import { useConfirm, useToast } from '../../context/FeedbackContext';
 import { api, errorMessage } from '../../services/api';
 
 // Lesson editor: content (rich text editor with a preview) and quiz questions.
 export default function AdminLesson() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const confirm = useConfirm();
+  const toast = useToast();
   const [lesson, setLesson] = useState(null);
   const [f, setF] = useState(null);
   const [msg, setMsg] = useState(null);
@@ -28,23 +31,25 @@ export default function AdminLesson() {
   if (!lesson) return msg ? <Alert>{msg.text}</Alert> : <ListRowsSkeleton rows={6} />;
   const save = async (e) => {
     e.preventDefault(); setMsg(null);
-    try { await api.patch(`/admin/lessons/${id}`, f); setMsg({ tone: 'success', text: 'Lesson saved.' }); }
+    try { await api.patch(`/admin/lessons/${id}`, { ...f, summary: f.summary || null }); toast.success('Lesson saved.'); }
     catch (err) { setMsg({ tone: 'error', text: errorMessage(err) }); }
   };
   const remove = async () => {
-    if (!window.confirm(`Delete the lesson "${lesson.title}" and its quiz? Students' progress on it is removed too.`)) return;
-    await api.delete(`/admin/lessons/${id}`); navigate(`/admin/courses/${lesson.course.id}`);
+    const ok = await confirm({ title: `Delete the lesson "${lesson.title}"?`, message: "Its quiz questions and students' progress on it are deleted too. This cannot be undone. To keep it, untick \"Show this lesson to students\" instead.", confirmLabel: 'Yes, delete lesson', tone: 'danger' });
+    if (!ok) return;
+    try { await api.delete(`/admin/lessons/${id}`); toast.success('Lesson deleted.'); navigate(`/admin/courses/${lesson.course.id}`); }
+    catch (err) { toast.error(errorMessage(err)); }
   };
 
   return (
     <div className="space-y-6">
-      <Link to={`/admin/courses/${lesson.course.id}`} className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline min-h-11"><ArrowLeft size={16} aria-hidden="true" />{lesson.course.title}</Link>
+      <BackLink to={`/admin/courses/${lesson.course.id}`}>{lesson.course.title}</BackLink>
       <PageTitle title="Edit lesson" action={<Button variant="ghost" className="text-danger" onClick={remove}><Trash2 size={18} aria-hidden="true" />Delete lesson</Button>} />
       {msg && <Alert tone={msg.tone}>{msg.text}</Alert>}
       <Card>
         <form onSubmit={save} className="space-y-4" noValidate>
           <Field label="Lesson title" value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} />
-          <Field label="Short summary (optional)" value={f.summary} onChange={(e) => setF({ ...f, summary: e.target.value })} />
+          <RichEditor showLabel variant="compact" label="Short summary (optional)" value={f.summary} onChange={(html) => setF((x) => ({ ...x, summary: html }))} placeholder="One or two sentences about what students learn." />
           <div>
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm font-medium">Lesson content</p>
@@ -65,7 +70,7 @@ export default function AdminLesson() {
             </div>
           </div>
           <Field label="Audio file link (optional)" type="url" value={f.audioUrl} onChange={(e) => setF({ ...f, audioUrl: e.target.value })} />
-          <label className="flex items-center gap-3 min-h-11"><input type="checkbox" className="w-5 h-5 accent-[#0A6CF0]" checked={f.isPublished} onChange={(e) => setF({ ...f, isPublished: e.target.checked })} />Show this lesson to students</label>
+          <label className="flex items-center gap-3 min-h-11"><input type="checkbox" className="w-5 h-5 accent-[#07294D]" checked={f.isPublished} onChange={(e) => setF({ ...f, isPublished: e.target.checked })} />Show this lesson to students</label>
           <Button type="submit">Save lesson</Button>
         </form>
       </Card>
@@ -105,6 +110,8 @@ function Quizzes({ lessonId, quizzes, reload }) {
 }
 
 function QuizForm({ lessonId, quiz, onDone, onCancel }) {
+  const confirm = useConfirm();
+  const toast = useToast();
   const [question, setQuestion] = useState(quiz?.question || '');
   const [options, setOptions] = useState(quiz?.options?.length ? quiz.options : ['', '', '', '']);
   const [correct, setCorrect] = useState(quiz ? quiz.options.indexOf(quiz.correctAnswer) : 0);
@@ -117,10 +124,15 @@ function QuizForm({ lessonId, quiz, onDone, onCancel }) {
     const body = { question, options: filled, correctAnswer: opts[correct] || '', explanation };
     try {
       if (quiz) await api.patch(`/admin/quizzes/${quiz.id}`, body); else await api.post(`/admin/lessons/${lessonId}/quizzes`, body);
+      toast.success(quiz ? 'Question saved.' : 'Question added.');
       onDone();
     } catch (e) { setError(errorMessage(e)); }
   };
-  const remove = async () => { if (window.confirm('Delete this question?')) { await api.delete(`/admin/quizzes/${quiz.id}`); onDone(); } };
+  const remove = async () => {
+    const ok = await confirm({ title: 'Delete this question?', message: `"${quiz.question}" is removed from the quiz. This cannot be undone.`, confirmLabel: 'Yes, delete question', tone: 'danger' });
+    if (!ok) return;
+    try { await api.delete(`/admin/quizzes/${quiz.id}`); toast.success('Question deleted.'); onDone(); } catch (e) { toast.error(errorMessage(e)); }
+  };
 
   return (
     <div className="space-y-3">
@@ -131,7 +143,7 @@ function QuizForm({ lessonId, quiz, onDone, onCancel }) {
         <div className="space-y-2">
           {options.map((o, i) => (
             <div key={i} className="flex items-center gap-2">
-              <input type="radio" name={`correct-${quiz?.id || 'new'}`} checked={correct === i} onChange={() => setCorrect(i)} className="w-5 h-5 accent-[#0A6CF0]" aria-label={`Answer ${i + 1} is correct`} />
+              <input type="radio" name={`correct-${quiz?.id || 'new'}`} checked={correct === i} onChange={() => setCorrect(i)} className="w-5 h-5 accent-[#07294D]" aria-label={`Answer ${i + 1} is correct`} />
               <input value={o} onChange={(e) => setOptions(options.map((x, j) => (j === i ? e.target.value : x)))} placeholder={`Answer ${i + 1}`} aria-label={`Answer ${i + 1}`}
                 className="flex-1 min-h-11 rounded-lg border border-line px-3" />
             </div>

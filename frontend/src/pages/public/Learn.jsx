@@ -7,10 +7,12 @@ import {
 } from '../../components/filters/FilterPanel';
 import { useUrlFilters } from '../../components/filters/useUrlFilters';
 import IconTile from '../../components/ui/IconTile';
+import CourseImage from '../../components/ui/CourseImage';
 import { Button, EmptyState, ProgressBar } from '../../components/ui';
 import { CourseCardSkeleton } from '../../components/ui/Skeletons';
 import { useAuth } from '../../context/AuthContext';
 import { api, errorMessage } from '../../services/api';
+import { plainText } from '../../utils/sanitize';
 
 const SPEC = {
   q: { type: 'value' },
@@ -24,7 +26,7 @@ const SPEC = {
 
 const SUBJECTS = {
   english: { label: 'English language', short: 'English', icon: BookOpen, tone: 'brand', band: 'bg-brand-soft' },
-  computer: { label: 'Computer skills', short: 'Computer skills', icon: Laptop, tone: 'cyan', band: 'bg-[#E0F7FD]' },
+  computer: { label: 'Computer skills', short: 'Computer skills', icon: Laptop, tone: 'cyan', band: 'bg-[#EEF3F9]' },
 };
 const LEVELS = { absolute: 'Absolute beginner', beginner: 'Beginner', intermediate: 'Intermediate' };
 const LENGTHS = { short: 'Up to 6 lessons', medium: '7 to 8 lessons', long: '9 lessons or more' };
@@ -108,7 +110,8 @@ function CourseCard({ c, signedIn }) {
       : c._status === 'completed' ? `/courses/${c.slug}` : `/lessons/${c._nextLessonId}`;
   const action = !signedIn ? 'Start this course' : { not_started: 'Start this course', in_progress: 'Continue', completed: 'Review course' }[c._status];
   return (
-    <li className="bg-surface rounded-2xl border border-line overflow-hidden flex flex-col hover:border-brand/30 hover:shadow-[0_14px_40px_-24px_rgba(7, 44, 107,0.5)] transition">
+    <li className="group bg-surface rounded-lg border border-line overflow-hidden flex flex-col hover:border-brand/30 hover:shadow-[0_14px_40px_-24px_rgba(7,44,107,0.5)] transition">
+      <CourseImage c={c} className="h-44" />
       <div className={`px-5 pt-5 pb-4 ${subject.band}`}>
         <div className="flex items-center gap-3">
           <IconTile icon={subject.icon} tone={subject.tone} size="sm" />
@@ -126,7 +129,7 @@ function CourseCard({ c, signedIn }) {
             {c.skills.map((s) => <li key={s} className="rounded-full bg-paper border border-line px-2.5 py-0.5 text-xs font-medium text-ink-soft">{s}</li>)}
           </ul>
         )}
-        <p className="text-[15px] text-ink-soft flex-1">{c.description}</p>
+        <p className="text-[15px] text-ink-soft flex-1">{plainText(c.description)}</p>
         {c._matchedLesson && (
           <p className="mt-3 text-sm rounded-lg bg-brand-soft border border-brand/20 px-3 py-2">
             Includes the lesson <strong>{c._matchedLesson}</strong>
@@ -145,7 +148,7 @@ function CourseCard({ c, signedIn }) {
             {c.lessons.map((l, i) => (
               <li key={l.id} className="flex gap-3 text-sm">
                 <span className="w-6 h-6 shrink-0 rounded-full bg-brand-soft text-brand font-semibold flex items-center justify-center text-xs">{i + 1}</span>
-                <span><span className="font-medium text-ink">{l.title}</span>{l.summary && <span className="block text-ink-soft">{l.summary}</span>}</span>
+                <span><span className="font-medium text-ink">{l.title}</span>{l.summary && <span className="block text-ink-soft">{plainText(l.summary)}</span>}</span>
               </li>
             ))}
           </ol>
@@ -178,7 +181,7 @@ export default function Learn() {
 
   const prepared = useMemo(() => (courses || []).map((c) => {
     const p = progress[c.slug];
-    const lessonText = c.lessons.map((l) => `${l.title} ${l.summary || ''}`).join(' ');
+    const lessonText = c.lessons.map((l) => `${l.title} ${plainText(l.summary)}`).join(' ');
     return {
       ...c,
       _levels: levelsOf(c.level),
@@ -186,8 +189,8 @@ export default function Learn() {
       _status: p?.status || 'not_started',
       _percent: p?.percent || 0,
       _nextLessonId: p?.nextLessonId,
-      _text: fold([c.title, c.description, c.level, SUBJECTS[c.category]?.label, ...(c.skills || []), lessonText].join(' ')),
-      _headText: fold([c.title, c.description, ...(c.skills || [])].join(' ')),
+      _text: fold([c.title, plainText(c.description), c.level, SUBJECTS[c.category]?.label, ...(c.skills || []), lessonText].join(' ')),
+      _headText: fold([c.title, plainText(c.description), ...(c.skills || [])].join(' ')),
     };
   }), [courses, progress]);
 
@@ -199,7 +202,7 @@ export default function Learn() {
     let list = prepared.filter((c) => matches(c, v, null)).map((c) => {
       // When the search only matched a lesson, say which one.
       if (!words.length || words.every((w) => c._headText.includes(w))) return c;
-      const hit = c.lessons.find((l) => words.every((w) => fold(`${l.title} ${l.summary}`).includes(w)));
+      const hit = c.lessons.find((l) => words.every((w) => fold(`${l.title} ${plainText(l.summary)}`).includes(w)));
       return hit ? { ...c, _matchedLesson: hit.title } : c;
     });
     const sorters = {
@@ -286,7 +289,7 @@ export default function Learn() {
           </div>
 
           {!user && courses && (
-            <div className="mt-10 rounded-2xl bg-brand text-white p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-5">
+            <div className="mt-10 rounded-lg bg-brand text-white p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-5">
               <div className="flex-1">
                 <h2 className="text-white text-2xl font-bold">Ready to start learning?</h2>
                 <p className="text-white/80 mt-1">Create a free account to take the quizzes, track your progress and earn certificates.</p>

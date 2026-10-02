@@ -32,7 +32,7 @@ function OptionRow({ type, name, label, count, checked, onChange }) {
   return (
     <label className={`flex items-center gap-3 min-h-10 rounded-lg px-2 -mx-2 ${disabled ? 'opacity-45 cursor-not-allowed' : 'cursor-pointer hover:bg-brand-soft'}`}>
       <input type={type} name={name} checked={checked} disabled={disabled} onChange={onChange}
-        className="w-[18px] h-[18px] shrink-0 accent-[#0A6CF0] cursor-[inherit]" />
+        className="w-[18px] h-[18px] shrink-0 accent-[#07294D] cursor-[inherit]" />
       <span className={`flex-1 text-[15px] ${checked ? 'font-semibold text-ink' : 'text-ink'}`}>{label}</span>
       {count !== undefined && (
         <>

@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Plus } from 'lucide-react';
 import { Alert, Button, Card, Field, Pill } from '../../components/ui';
 import { ListRowsSkeleton } from '../../components/ui/Skeletons';
-import { PageTitle, Pager, SearchInput, Select } from '../../components/admin/AdminUI';
+import RichEditor from '../../components/editor/RichEditor';
+import { ActionBar, BackLink, PageTitle, Pager, SearchInput, Select } from '../../components/admin/AdminUI';
+import { useConfirm, useToast } from '../../context/FeedbackContext';
 import { api, errorMessage } from '../../services/api';
 import { FUNDING_LABEL, LEVEL_LABEL, formatDate } from '../../utils/format';
 
 // Scholarship management (spec 16.2): add, edit, remove expired, flag refugee-friendly.
 export function AdminScholarships() {
+  const confirm = useConfirm();
+  const toast = useToast();
   const [q, setQ] = useState('');
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);
@@ -19,11 +23,24 @@ export function AdminScholarships() {
   useEffect(() => { const t = setTimeout(load, q ? 300 : 0); return () => clearTimeout(t); }, [q, status, page]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggle = async (s, field) => {
-    try { await api.patch(`/admin/scholarships/${s.id}`, { [field]: !s[field] }); load(); } catch (e) { setMsg({ tone: 'error', text: errorMessage(e) }); }
+    if (field === 'isActive' && s.isActive) {
+      const ok = await confirm({ title: `Hide "${s.name}"?`, message: 'Students will no longer see it on the website. It stays here, so you can show it again later.', confirmLabel: 'Yes, hide it' });
+      if (!ok) return;
+    }
+    try {
+      await api.patch(`/admin/scholarships/${s.id}`, { [field]: !s[field] });
+      toast.success(field === 'isActive' ? (s.isActive ? `"${s.name}" is hidden.` : `"${s.name}" is visible on the website.`) : (s.openToRefugees ? 'Marked as not open to refugees.' : 'Marked as open to refugees.'));
+      load();
+    } catch (e) { toast.error(errorMessage(e)); }
   };
   const removeExpired = async () => {
-    const { data: r } = await api.post('/admin/scholarships/remove-expired');
-    setMsg({ tone: 'success', text: `${r.count} expired ${r.count === 1 ? 'scholarship was' : 'scholarships were'} hidden from the website.` }); load();
+    const n = data.expiredActive;
+    const ok = await confirm({ title: `Hide ${n} expired ${n === 1 ? 'scholarship' : 'scholarships'}?`, message: 'Scholarships whose deadline has passed are hidden from the website. You can show them again next year.', confirmLabel: 'Yes, hide them' });
+    if (!ok) return;
+    try {
+      const { data: r } = await api.post('/admin/scholarships/remove-expired');
+      toast.success(`${r.count} expired ${r.count === 1 ? 'scholarship was' : 'scholarships were'} hidden from the website.`); load();
+    } catch (e) { toast.error(errorMessage(e)); }
   };
 
   return (
@@ -57,10 +74,10 @@ export function AdminScholarships() {
                       <td className="px-4 py-3"><p className="font-semibold">{s.name}{s.isFeatured && <span className="ml-1.5"><Pill tone="brand">Featured</Pill></span>}</p><p className="text-ink-soft">{s.orgName} · {s.hostCountry} · {FUNDING_LABEL[s.fundingType]} · {LEVEL_LABEL[s.level]}</p></td>
                       <td className={`px-4 py-3 whitespace-nowrap ${past ? 'text-danger font-semibold' : 'text-ink-soft'}`}>{s.deadline ? formatDate(s.deadline) : 'Varies'}</td>
                       <td className="px-4 py-3">
-                        <label className="inline-flex items-center gap-2 min-h-11 cursor-pointer"><input type="checkbox" className="w-5 h-5 accent-[#0A6CF0]" checked={s.openToRefugees} onChange={() => toggle(s, 'openToRefugees')} />{s.refugeesOnly ? 'Only' : 'Open'}</label>
+                        <label className="inline-flex items-center gap-2 min-h-11 cursor-pointer"><input type="checkbox" className="w-5 h-5 accent-[#07294D]" checked={s.openToRefugees} onChange={() => toggle(s, 'openToRefugees')} />{s.refugeesOnly ? 'Only' : 'Open'}</label>
                       </td>
                       <td className="px-4 py-3 text-ink-soft tabular-nums">{s._count.saves} / {s._count.applications}</td>
-                      <td className="px-4 py-3"><label className="inline-flex items-center gap-2 min-h-11 cursor-pointer"><input type="checkbox" className="w-5 h-5 accent-[#0A6CF0]" checked={s.isActive} onChange={() => toggle(s, 'isActive')} />{s.isActive ? 'Visible' : 'Hidden'}</label></td>
+                      <td className="px-4 py-3"><label className="inline-flex items-center gap-2 min-h-11 cursor-pointer"><input type="checkbox" className="w-5 h-5 accent-[#07294D]" checked={s.isActive} onChange={() => toggle(s, 'isActive')} />{s.isActive ? 'Visible' : 'Hidden'}</label></td>
                       <td className="px-4 py-3 text-right"><Button variant="ghost" to={`/admin/scholarships/${s.id}`} className="px-3">Edit</Button></td>
                     </tr>
                   );
@@ -87,6 +104,8 @@ export function AdminScholarshipForm() {
   const { id } = useParams();
   const isNew = !id || id === 'new';
   const navigate = useNavigate();
+  const confirm = useConfirm();
+  const toast = useToast();
   const [f, setF] = useState(isNew ? EMPTY : null);
   const [opts, setOpts] = useState(null);
   const [msg, setMsg] = useState(null);
@@ -112,19 +131,19 @@ export function AdminScholarshipForm() {
     };
     delete body.id; delete body.slug; delete body.createdAt; delete body.requirements;
     try {
-      if (isNew) { const { data } = await api.post('/admin/scholarships', body); navigate(`/admin/scholarships/${data.scholarship.id}`, { replace: true }); setMsg({ tone: 'success', text: 'Scholarship added. It is on the website now.' }); }
-      else { await api.put(`/admin/scholarships/${id}`, body); setMsg({ tone: 'success', text: 'Changes saved.' }); }
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (isNew) { const { data } = await api.post('/admin/scholarships', body); navigate(`/admin/scholarships/${data.scholarship.id}`, { replace: true }); toast.success(body.isActive ? 'Scholarship added. It is on the website now.' : 'Scholarship added (hidden).'); }
+      else { await api.put(`/admin/scholarships/${id}`, body); toast.success('Changes saved.'); }
     } catch (err) { setMsg({ tone: 'error', text: errorMessage(err) }); window.scrollTo({ top: 0, behavior: 'smooth' }); } finally { setBusy(false); }
   };
   const remove = async () => {
-    if (!window.confirm(`Delete "${f.name}" for good? It also disappears from students' saved lists. To keep it for next year, hide it instead.`)) return;
-    await api.delete(`/admin/scholarships/${id}`); navigate('/admin/scholarships');
+    const ok = await confirm({ title: `Delete "${f.name}"?`, message: "It is deleted for good and disappears from students' saved lists and application trackers. To keep it for next year, untick \"Visible on the website\" instead.", confirmLabel: 'Yes, delete it', tone: 'danger' });
+    if (!ok) return;
+    try { await api.delete(`/admin/scholarships/${id}`); toast.success(`"${f.name}" was deleted.`); navigate('/admin/scholarships'); } catch (err) { toast.error(errorMessage(err)); }
   };
 
   return (
     <div className="space-y-6">
-      <Link to="/admin/scholarships" className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline min-h-11"><ArrowLeft size={16} aria-hidden="true" />All scholarships</Link>
+      <BackLink to="/admin/scholarships">All scholarships</BackLink>
       <PageTitle title={isNew ? 'Add a scholarship' : 'Edit scholarship'} intro="Copy the details from the programme's official website. Never guess a deadline." />
       {msg && <Alert tone={msg.tone}>{msg.text}</Alert>}
       <form onSubmit={save} className="space-y-6" noValidate>
@@ -140,7 +159,7 @@ export function AdminScholarshipForm() {
             <Field as="select" label="Funding" value={f.fundingType} onChange={set('fundingType')}>{Object.entries(FUNDING_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</Field>
             <Field as="select" label="Study level" value={f.level} onChange={set('level')}>{Object.entries(LEVEL_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</Field>
           </div>
-          <Field as="textarea" rows={4} label="Description" value={f.description} onChange={set('description')} />
+          <RichEditor showLabel variant="compact" label="Description" value={f.description} onChange={(html) => setF((x) => ({ ...x, description: html }))} placeholder="What the scholarship is, who it is for and what makes it special." />
           <Field label="Official application link" type="url" value={f.applyUrl} onChange={set('applyUrl')} />
           <Field label="Logo image link (optional)" type="url" value={f.logoUrl} onChange={set('logoUrl')} />
         </Card>
@@ -151,10 +170,10 @@ export function AdminScholarshipForm() {
             <Field label="Deadline note (optional)" value={f.deadlineNote} onChange={set('deadlineNote')} hint='e.g. "Each partner university sets its own deadline."' />
           </div>
           <div className="flex flex-wrap gap-x-6">
-            <label className="flex items-center gap-3 min-h-11"><input type="checkbox" className="w-5 h-5 accent-[#0A6CF0]" checked={f.openToRefugees} onChange={(e) => setF({ ...f, openToRefugees: e.target.checked, refugeesOnly: e.target.checked && f.refugeesOnly })} />Open to refugees</label>
-            <label className="flex items-center gap-3 min-h-11"><input type="checkbox" className="w-5 h-5 accent-[#0A6CF0]" checked={f.refugeesOnly} onChange={(e) => setF({ ...f, refugeesOnly: e.target.checked, openToRefugees: e.target.checked || f.openToRefugees })} />Only for refugees</label>
-            <label className="flex items-center gap-3 min-h-11"><input type="checkbox" className="w-5 h-5 accent-[#0A6CF0]" checked={f.isFeatured} onChange={set('isFeatured')} />Featured (shown first)</label>
-            <label className="flex items-center gap-3 min-h-11"><input type="checkbox" className="w-5 h-5 accent-[#0A6CF0]" checked={f.isActive} onChange={set('isActive')} />Visible on the website</label>
+            <label className="flex items-center gap-3 min-h-11"><input type="checkbox" className="w-5 h-5 accent-[#07294D]" checked={f.openToRefugees} onChange={(e) => setF({ ...f, openToRefugees: e.target.checked, refugeesOnly: e.target.checked && f.refugeesOnly })} />Open to refugees</label>
+            <label className="flex items-center gap-3 min-h-11"><input type="checkbox" className="w-5 h-5 accent-[#07294D]" checked={f.refugeesOnly} onChange={(e) => setF({ ...f, refugeesOnly: e.target.checked, openToRefugees: e.target.checked || f.openToRefugees })} />Only for refugees</label>
+            <label className="flex items-center gap-3 min-h-11"><input type="checkbox" className="w-5 h-5 accent-[#07294D]" checked={f.isFeatured} onChange={set('isFeatured')} />Featured (shown first)</label>
+            <label className="flex items-center gap-3 min-h-11"><input type="checkbox" className="w-5 h-5 accent-[#07294D]" checked={f.isActive} onChange={set('isActive')} />Visible on the website</label>
           </div>
         </Card>
         <Card className="space-y-4">
@@ -167,7 +186,7 @@ export function AdminScholarshipForm() {
             <div className="grid sm:grid-cols-2 gap-x-4">
               {opts.documents.map((d) => (
                 <label key={d.key} className="flex items-start gap-3 py-1.5 min-h-11 cursor-pointer">
-                  <input type="checkbox" className="mt-0.5 w-5 h-5 accent-[#0A6CF0]" checked={f.documentsRequired.includes(d.key)}
+                  <input type="checkbox" className="mt-0.5 w-5 h-5 accent-[#07294D]" checked={f.documentsRequired.includes(d.key)}
                     onChange={() => setF({ ...f, documentsRequired: f.documentsRequired.includes(d.key) ? f.documentsRequired.filter((x) => x !== d.key) : [...f.documentsRequired, d.key] })} />
                   <span className="text-sm">{d.label}</span>
                 </label>
@@ -175,10 +194,11 @@ export function AdminScholarshipForm() {
             </div>
           </fieldset>
         </Card>
-        <div className="flex flex-wrap gap-3">
+        <ActionBar>
           <Button type="submit" loading={busy}>{isNew ? 'Add scholarship' : 'Save changes'}</Button>
+          <Button variant="ghost" to="/admin/scholarships">Cancel</Button>
           {!isNew && <Button variant="ghost" className="text-danger ml-auto" onClick={remove}>Delete</Button>}
-        </div>
+        </ActionBar>
       </form>
     </div>
   );

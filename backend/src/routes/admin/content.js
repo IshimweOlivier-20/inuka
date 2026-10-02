@@ -19,7 +19,7 @@ const TYPES = {
     schema: z.object({
       title: text(3, 'Please enter a title.'),
       category: z.enum(['news', 'guide', 'story']),
-      excerpt: text(10, 'Please write a short summary (at least 10 characters).').max(400),
+      excerpt: text(10, 'Please write a short summary (at least 10 characters).').max(4000),
       contentHtml: text(20, 'Please write the article (at least 20 characters).'),
       authorName: z.string().trim().min(2).default('INUKA Team'),
       readMinutes: z.coerce.number().int().min(1).max(60).default(3),
@@ -31,20 +31,20 @@ const TYPES = {
     model: 'testimonial', orderBy: [{ orderIndex: 'asc' }, { createdAt: 'desc' }],
     schema: z.object({
       name: text(2, 'Please enter the name.'), country: text(2, 'Please enter the country.'), role: z.string().trim().optional().nullable(),
-      quote: text(10, 'Please enter their words.').max(600), photoUrl: url, orderIndex: order, isPublished: z.boolean().default(true),
+      quote: text(10, 'Please enter their words.').max(6000), photoUrl: url, orderIndex: order, isPublished: z.boolean().default(true),
     }),
   },
   team: {
     model: 'teamMember', orderBy: [{ orderIndex: 'asc' }],
     schema: z.object({
-      name: text(2, 'Please enter the name.'), role: text(2, 'Please enter the role.'), bio: z.string().trim().max(600).optional().nullable(),
-      photoUrl: url, linkedinUrl: url, orderIndex: order, isPublished: z.boolean().default(true),
+      name: text(2, 'Please enter the name.'), role: text(2, 'Please enter the role.'), bio: z.string().trim().max(6000).optional().nullable(),
+      photoUrl: url, linkedinUrl: url, facebookUrl: url, xUrl: url, instagramUrl: url, orderIndex: order, isPublished: z.boolean().default(true),
     }),
   },
   partners: {
     model: 'partner', orderBy: [{ orderIndex: 'asc' }],
     schema: z.object({
-      name: text(2, 'Please enter the organisation name.'), kind: z.enum(['partner', 'sponsor']), description: z.string().trim().max(400).optional().nullable(),
+      name: text(2, 'Please enter the organisation name.'), kind: z.enum(['partner', 'sponsor']), description: z.string().trim().max(4000).optional().nullable(),
       websiteUrl: url, logoUrl: z.string().trim().optional().nullable(), orderIndex: order, isPublished: z.boolean().default(false),
     }),
   },
@@ -121,6 +121,23 @@ router.get('/subscribers.csv', async (req, res) => {
 router.delete('/subscribers/:id', async (req, res) => {
   await prisma.subscriber.delete({ where: { id: req.params.id } });
   res.json({ ok: true });
+});
+
+// ---------- Messages from the "Submit your query" form ----------
+router.get('/messages', async (req, res) => {
+  const [messages, unread] = await Promise.all([
+    prisma.contactMessage.findMany({ orderBy: { createdAt: 'desc' }, take: 300 }),
+    prisma.contactMessage.count({ where: { isRead: false } }),
+  ]);
+  res.json({ messages, unread });
+});
+router.patch('/messages/:id', async (req, res) => {
+  const { isRead } = z.object({ isRead: z.boolean() }).parse(req.body);
+  res.json({ message: await prisma.contactMessage.update({ where: { id: req.params.id }, data: { isRead } }) });
+});
+router.delete('/messages/:id', async (req, res) => {
+  await prisma.contactMessage.delete({ where: { id: req.params.id } });
+  res.status(204).end();
 });
 
 export default router;

@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 import { Megaphone, Sparkles, TrendingDown } from 'lucide-react';
 import { Alert, Button, Card, Field } from '../../components/ui';
 import { ListRowsSkeleton } from '../../components/ui/Skeletons';
+import RichEditor from '../../components/editor/RichEditor';
+import RichText from '../../components/ui/RichText';
 import { PageTitle, RankBars } from '../../components/admin/AdminUI';
+import { useConfirm, useToast } from '../../context/FeedbackContext';
+import { plainText } from '../../utils/sanitize';
 import { api, errorMessage } from '../../services/api';
 import { APP_STATUS, timeAgo } from '../../utils/format';
 
@@ -77,6 +81,9 @@ export function AdminAnalytics() {
 
 // Announcements (spec 16.2): in-app notification to all students or a group.
 export function AdminAnnouncements() {
+  const confirm = useConfirm();
+  const toast = useToast();
+  const [editorKey, setEditorKey] = useState(0);
   const [d, setD] = useState(null);
   const [f, setF] = useState({ message: '', link: '', audience: 'all_students', country: '' });
   const [msg, setMsg] = useState(null);
@@ -85,11 +92,24 @@ export function AdminAnnouncements() {
   useEffect(() => { document.title = 'Announcements — INUKA admin'; load(); }, []);
 
   const send = async (e) => {
-    e.preventDefault(); setBusy(true); setMsg(null);
+    e.preventDefault(); setMsg(null);
+    const text = plainText(f.message);
+    if (text.length < 5) { setMsg({ tone: 'error', text: 'Please write the announcement.' }); return; }
+    if (text.length > 400) { setMsg({ tone: 'error', text: 'Please keep announcements under 400 characters of text.' }); return; }
+    if (f.audience === 'country' && !f.country) { setMsg({ tone: 'error', text: 'Please choose a country.' }); return; }
+    const n = f.audience === 'country' ? d?.countries.find((c) => c.country === f.country)?.students : d?.audienceCounts?.[f.audience];
+    const group = f.audience === 'country' ? `students in ${f.country}` : (d?.audiences[f.audience] || '').toLowerCase();
+    const ok = await confirm({
+      title: n != null ? `Send to ${n} ${n === 1 ? 'person' : 'people'}?` : 'Send this announcement?',
+      message: `It goes to ${group} straight away and cannot be taken back.`,
+      confirmLabel: 'Yes, send it',
+    });
+    if (!ok) return;
+    setBusy(true);
     try {
       const { data } = await api.post('/admin/announcements', f);
-      setMsg({ tone: 'success', text: `Sent to ${data.sent} ${data.sent === 1 ? 'person' : 'people'} (${data.audience}). They see it under the bell icon.` });
-      setF({ ...f, message: '', link: '' }); load();
+      toast.success(`Sent to ${data.sent} ${data.sent === 1 ? 'person' : 'people'} (${data.audience}). They see it under the bell icon.`);
+      setF({ ...f, message: '', link: '' }); setEditorKey((k) => k + 1); load();
     } catch (err) { setMsg({ tone: 'error', text: errorMessage(err) }); } finally { setBusy(false); }
   };
 
@@ -100,7 +120,7 @@ export function AdminAnnouncements() {
         <Card>
           <form onSubmit={send} className="space-y-4" noValidate>
             {msg && <Alert tone={msg.tone}>{msg.text}</Alert>}
-            <Field as="textarea" rows={4} label="Message" value={f.message} onChange={(e) => setF({ ...f, message: e.target.value })} hint={`${f.message.length} of 400 characters.`} />
+            <RichEditor key={editorKey} showLabel variant="compact" label="Message" maxChars={400} value={f.message} onChange={(html) => setF((x) => ({ ...x, message: html }))} placeholder="e.g. New scholarships for refugees are open. Apply before 30 June!" />
             <Field label="Link (optional)" value={f.link} onChange={(e) => setF({ ...f, link: e.target.value })} placeholder="/scholarships" hint="A page on INUKA (starting with /) or a full https:// link." />
             <Field as="select" label="Send to" value={f.audience} onChange={(e) => setF({ ...f, audience: e.target.value })}>
               {d && Object.entries(d.audiences).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
@@ -121,7 +141,7 @@ export function AdminAnnouncements() {
             <ul className="divide-y divide-line">
               {d.announcements.map((a) => (
                 <li key={`${a.sentAt}${a.message}`} className="py-3">
-                  <p>{a.message}</p>
+                  <RichText html={a.message} />
                   <p className="text-sm text-ink-soft mt-0.5">{timeAgo(a.sentAt)} · {a.recipients} recipients · {a.read} read{a.link && ` · links to ${a.link}`}</p>
                 </li>
               ))}

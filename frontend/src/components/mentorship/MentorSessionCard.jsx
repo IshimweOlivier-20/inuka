@@ -4,10 +4,12 @@ import { Alert, Button, Field, Modal } from '../ui';
 import Avatar from '../ui/Avatar';
 import { JoinSessionButton, Stars, StatusPill, sessionDate, sessionTime } from './shared';
 import { api, errorMessage } from '../../services/api';
+import { useConfirm } from '../../context/FeedbackContext';
 
 // One session as the mentor sees it, with a student preview (spec 12.5) and the right actions:
 // pending → Accept / Decline; confirmed → Join, video link, Mark as done; any confirmed/completed → notes.
 export default function MentorSessionCard({ b, onChanged, compact }) {
+  const confirm = useConfirm();
   const [dialog, setDialog] = useState(null); // 'accept' | 'decline' | 'notes' | 'link'
   const [msg, setMsg] = useState(null);
   const now = Date.now();
@@ -16,6 +18,8 @@ export default function MentorSessionCard({ b, onChanged, compact }) {
   const s = b.student;
 
   const complete = async () => {
+    const ok = await confirm({ title: 'Mark this session as done?', message: `Only do this after you have met ${s.firstName}. They will be asked to rate the session.`, confirmLabel: 'Yes, mark as done' });
+    if (!ok) return;
     try { await api.post(`/mentor/bookings/${b.id}/complete`); onChanged?.('The session is marked as done. The student can now rate it.'); }
     catch (e) { setMsg(errorMessage(e)); }
   };

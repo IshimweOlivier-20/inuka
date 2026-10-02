@@ -1,6 +1,7 @@
 import { Button, Pill } from '../ui';
 import { FUNDING_LABEL, LEVEL_LABEL, deadlineTone, formatDate } from '../../utils/format';
 import { Bookmark, BookmarkCheck, Check } from 'lucide-react';
+import { plainText } from '../../utils/sanitize';
 
 export default function ScholarshipCard({ s, onOpen, onSave, onApply }) {
   const d = deadlineTone(s.deadline);
@@ -20,7 +21,7 @@ export default function ScholarshipCard({ s, onOpen, onSave, onApply }) {
         {s.openToRefugees && <Pill tone="cyan"><Check size={13} strokeWidth={3} aria-hidden="true" />{s.refugeesOnly ? 'For refugees' : 'Open to refugees'}</Pill>}
         <Pill tone="grey">{LEVEL_LABEL[s.level]}</Pill>
       </div>
-      <p className="text-sm text-ink-soft mt-3 line-clamp-3 flex-1">{s.description}</p>
+      <p className="text-sm text-ink-soft mt-3 line-clamp-3 flex-1">{plainText(s.description)}</p>
       <p className="mt-3 text-sm">
         <Pill tone={d.tone}>{d.text}</Pill>
         {s.deadline && <span className="ml-2 text-ink-soft">{formatDate(s.deadline)}</span>}

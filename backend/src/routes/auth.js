@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { randomBytes } from 'node:crypto';
 import bcrypt from 'bcrypt';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma.js';
@@ -151,29 +152,20 @@ router.post('/login', loginLimiter, async (req, res) => {
   res.json(await startSession(res, user));
 });
 
-// ---------- Google sign-in (spec 4.2 and 4.4) ----------
-// The website asks this first, so the Google button only appears when GOOGLE_CLIENT_ID is set in backend/.env.
+// ---------- Google sign-in / sign-up (spec 4.2 and 4.4) ----------
+// Our own "Continue with Google" button sends people to /api/auth/google/start. Google sends them back to
+// /api/auth/google/callback, where we sign them in (or create a student account) and return them to the website.
+// Needs GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in backend/.env (README section 12).
+const googleReady = () => !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
+const googleRedirectUri = () => process.env.GOOGLE_REDIRECT_URI || `${FRONTEND_URL}/api/auth/google/callback`;
+const STATE_COOKIE = 'inuka_google_state';
+
 router.get('/config', (req, res) => {
-  res.json({ googleClientId: process.env.GOOGLE_CLIENT_ID || null });
+  res.json({ google: googleReady(), showGoogleSetupHint: !googleReady() && process.env.NODE_ENV !== 'production' });
 });
 
-let googleClient;
-// POST /api/auth/google { credential } — the ID token from the "Sign in with Google" button.
-// Existing account (same Google account or same email): signs in. New person: creates a student account.
-router.post('/google', loginLimiter, async (req, res) => {
-  const clientId = process.env.GOOGLE_CLIENT_ID;
-  if (!clientId) throw new HttpError(503, 'Google sign-in is not set up yet. Please use your email and password.');
-  const { credential, role } = z.object({ credential: z.string().min(20), role: z.enum(['student', 'mentor']).optional() }).parse(req.body);
-
-  googleClient ??= new OAuth2Client(clientId);
-  let p;
-  try {
-    p = (await googleClient.verifyIdToken({ idToken: credential, audience: clientId })).getPayload();
-  } catch {
-    throw new HttpError(401, 'Google sign-in did not work. Please try again.');
-  }
-  if (!p?.email || !p.email_verified) throw new HttpError(401, 'Your Google account email is not confirmed. Please use your email and password.');
-
+// Finds the account for a Google profile, links it, or creates a new student.
+async function googleUser(p) {
   const email = p.email.toLowerCase();
   let user = await prisma.user.findFirst({ where: { OR: [{ googleId: p.sub }, { email }] } });
   if (user) {
@@ -181,20 +173,56 @@ router.post('/google', loginLimiter, async (req, res) => {
     if (!user.googleId || !user.isVerified) {
       user = await prisma.user.update({ where: { id: user.id }, data: { googleId: user.googleId || p.sub, isVerified: true } });
     }
-    return res.json({ ...(await startSession(res, user)), isNew: false });
+    return { user, isNew: false };
   }
-
-  // Mentors need a full profile (title, bio, photo, availability), so they sign up with the form.
-  if (role === 'mentor') throw new HttpError(400, 'To become a mentor, please fill in the mentor sign-up form. You can still use your Google email address.');
   user = await prisma.user.create({
     data: {
       firstName: p.given_name || p.name?.split(' ')[0] || 'Student',
       lastName: p.family_name || p.name?.split(' ').slice(1).join(' ') || '',
-      email, googleId: p.sub, role: 'student', isVerified: true,
-      profilePhotoUrl: p.picture || null,
+      email, googleId: p.sub, role: 'student', isVerified: true, profilePhotoUrl: p.picture || null,
     },
   });
-  res.status(201).json({ ...(await startSession(res, user)), isNew: true });
+  return { user, isNew: true };
+}
+
+// GET /api/auth/google/start?from=/scholarships — goes to Google's account chooser
+router.get('/google/start', loginLimiter, (req, res) => {
+  if (!googleReady()) return res.redirect(`${FRONTEND_URL}/login?google=off`);
+  const from = typeof req.query.from === 'string' && req.query.from.startsWith('/') && !req.query.from.startsWith('//') ? req.query.from : '';
+  const state = randomBytes(24).toString('hex');
+  res.cookie(STATE_COOKIE, JSON.stringify({ state, from }), { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', maxAge: 10 * 60 * 1000, path: '/api/auth/google' });
+  const url = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+  url.search = new URLSearchParams({
+    client_id: process.env.GOOGLE_CLIENT_ID, redirect_uri: googleRedirectUri(), response_type: 'code',
+    scope: 'openid email profile', state, prompt: 'select_account',
+  }).toString();
+  res.redirect(url.toString());
+});
+
+// GET /api/auth/google/callback?code=…&state=…
+router.get('/google/callback', async (req, res) => {
+  const back = (q) => res.redirect(`${FRONTEND_URL}/login?${q}`);
+  let saved = {};
+  try { saved = JSON.parse(req.cookies?.[STATE_COOKIE] || '{}'); } catch { /* ignore */ }
+  res.clearCookie(STATE_COOKIE, { path: '/api/auth/google' });
+  if (!googleReady()) return back('google=off');
+  if (req.query.error) return back('google=cancelled');
+  if (!req.query.code || !saved.state || saved.state !== req.query.state) return back('google=failed');
+  try {
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET, googleRedirectUri());
+    const { tokens } = await client.getToken(String(req.query.code));
+    const p = (await client.verifyIdToken({ idToken: tokens.id_token, audience: process.env.GOOGLE_CLIENT_ID })).getPayload();
+    if (!p?.email || !p.email_verified) return back('google=unverified');
+    const { user, isNew } = await googleUser(p);
+    const { token, maxAge } = await issueRefreshToken(user.id);
+    res.cookie(COOKIE, token, cookieOpts(maxAge));
+    const next = isNew ? '/dashboard?welcome=1' : (saved.from || '');
+    res.redirect(`${FRONTEND_URL}/auth/google${next ? `?next=${encodeURIComponent(next)}` : ''}`);
+  } catch (e) {
+    if (e instanceof HttpError && e.status === 403) return back('google=suspended');
+    console.error('Google sign-in failed:', e.message);
+    back('google=failed');
+  }
 });
 
 router.post('/refresh', async (req, res) => {

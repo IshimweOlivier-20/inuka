@@ -3,6 +3,7 @@ import { useLocation, useSearchParams } from 'react-router-dom';
 import { AuthFrame, BluePanel, GhostButton } from './AuthShell';
 import Login from './Login';
 import Register from './Register';
+import AuthArt from '../../components/auth/AuthArt';
 
 // Sign in and sign up on one card. On large screens the blue panel slides across when you switch;
 // on phones one form shows at a time with a blue banner on top.
@@ -18,10 +19,12 @@ export default function AuthPage() {
     ? { title: 'Guide a student', text: 'Share your experience and help young people reach university. Apply to become an INUKA mentor.', button: 'Become a mentor', to: '/register?role=mentor' }
     : { title: 'Hello, friend!', text: 'New to INUKA? Create your free account and start your journey to university today.', button: 'Create account', to: '/register' };
   const other = mode === 'login' ? registerCopy : loginCopy;
+  // Picture on the blue panel follows the form you are on: sign in, sign up, or mentor.
+  const art = mentor ? 'mentor' : mode;
 
   return (
     <AuthFrame>
-      <div className="relative w-full max-w-[1040px] bg-surface rounded-3xl border border-line shadow-[0_30px_70px_-35px_rgba(10,61,145,0.45)] overflow-hidden">
+      <div className="relative w-full max-w-[1040px] bg-surface rounded-3xl border border-line shadow-[0_30px_70px_-35px_rgba(7,41,77,0.45)] overflow-hidden">
         {/* Phones and tablets: banner with the other option */}
         <BluePanel className="lg:hidden">
           <div className="px-6 py-6 flex flex-wrap items-center justify-between gap-4">
@@ -35,13 +38,13 @@ export default function AuthPage() {
 
         <div className="grid lg:grid-cols-2">
           <section aria-label="Sign in" inert={mode !== 'login' || undefined}
-            className={`lg:col-start-1 lg:row-start-1 px-6 py-8 sm:px-10 sm:py-12 flex items-center transition-[opacity,transform] duration-700 ease-[cubic-bezier(.65,0,.35,1)] ${
-              mode === 'login' ? 'opacity-100 translate-x-0' : 'hidden lg:flex opacity-0 lg:translate-x-[20%]'}`}>
+            className={`lg:col-start-1 lg:row-start-1 px-6 py-7 sm:px-10 sm:py-8 flex items-center transition-[opacity,transform] duration-700 ease-[cubic-bezier(.65,0,.35,1)] ${
+              mode === 'login' ? 'opacity-100 translate-x-0' : 'hidden lg:flex opacity-0 lg:translate-x-[20%] lg:h-0 lg:py-0 lg:overflow-hidden'}`}>
             <Login />
           </section>
           <section aria-label="Create account" inert={mode !== 'register' || undefined}
-            className={`lg:col-start-2 lg:row-start-1 px-6 py-8 sm:px-10 sm:py-12 flex items-center transition-[opacity,transform] duration-700 ease-[cubic-bezier(.65,0,.35,1)] ${
-              mode === 'register' ? 'opacity-100 translate-x-0' : 'hidden lg:flex opacity-0 lg:-translate-x-[20%]'}`}>
+            className={`lg:col-start-2 lg:row-start-1 px-6 py-7 sm:px-10 sm:py-8 flex items-center transition-[opacity,transform] duration-700 ease-[cubic-bezier(.65,0,.35,1)] ${
+              mode === 'register' ? 'opacity-100 translate-x-0' : 'hidden lg:flex opacity-0 lg:-translate-x-[20%] lg:h-0 lg:py-0 lg:overflow-hidden'}`}>
             <Register />
           </section>
         </div>
@@ -52,10 +55,11 @@ export default function AuthPage() {
             <div key={forMode} aria-hidden={mode !== forMode}
               className={`absolute inset-0 flex flex-col items-center justify-center text-center px-14 transition-[opacity,transform] duration-700 ${
                 mode === forMode ? 'opacity-100 translate-x-0' : `opacity-0 pointer-events-none ${forMode === 'login' ? 'translate-x-12' : '-translate-x-12'}`}`}>
-              <p className="font-display text-4xl font-bold leading-tight">{c.title}</p>
-              <p className="mt-4 text-white/85 text-lg max-w-[32ch]">{c.text}</p>
-              <div className="mt-8"><GhostButton to={c.to} state={state}>{c.button}</GhostButton></div>
-              <p className="absolute bottom-8 text-sm text-white/60 tracking-wide">Rise. Learn. Succeed.</p>
+              <AuthArt kind={art} className="mb-7" />
+              <p className="font-display text-2xl font-bold leading-tight">{c.title}</p>
+              <p className="mt-3 text-white/85 text-[15px] max-w-[32ch]">{c.text}</p>
+              <div className="mt-6"><GhostButton to={c.to} state={state}>{c.button}</GhostButton></div>
+              <p className="absolute bottom-6 text-xs text-white/55 tracking-wide">Rise. Learn. Succeed.</p>
             </div>
           ))}
         </BluePanel>

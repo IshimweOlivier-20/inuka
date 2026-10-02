@@ -13,6 +13,13 @@ export default function Login() {
   const location = useLocation();
   const [params, setParams] = useSearchParams();
   const as = params.get('as') === 'mentor' ? 'mentor' : 'student'; // Student Login / Mentor Login (spec 4.4)
+  const googleMessage = {
+    off: 'Google sign-in is not switched on yet. Please use your email and password.',
+    cancelled: 'Google sign-in was cancelled. You can try again or use your email.',
+    failed: 'Google sign-in did not work. Please try again or use your email and password.',
+    unverified: 'Your Google account email is not confirmed. Please use your email and password.',
+    suspended: 'This account has been suspended. Contact the INUKA team for help.',
+  }[params.get('google')];
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [unverified, setUnverified] = useState(false);
@@ -48,7 +55,8 @@ export default function Login() {
           </button>
         ))}
       </div>
-      {as === 'student' && <GoogleButton text="signin_with" role="student" from={location.state?.from} />}
+      {googleMessage && <div className="mb-4"><Alert>{googleMessage}</Alert></div>}
+      {as === 'student' && <GoogleButton label="Sign in with Google" from={location.state?.from} />}
       <form onSubmit={submit} className="space-y-4" noValidate>
         {error && <Alert>{error} {unverified && <button type="button" onClick={resend} className="underline font-semibold">Send the link again</button>}</Alert>}
         {info && <Alert tone="success">{info}</Alert>}
