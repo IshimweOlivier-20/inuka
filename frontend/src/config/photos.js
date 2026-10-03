@@ -109,3 +109,74 @@ export const AUDIENCE_PHOTOS = {
   refugees: { src: unsplash('photo-1634951401794-6c84f593db82', 800), alt: 'Two young men studying together at a table in a library in Lagos, Nigeria' },
   mentors: { src: unsplash('photo-1655720357872-ce227e4164ba', 800), alt: 'A small group of young people looking at a laptop together' },
 };
+
+// Scholarships page hero: graduation photos of young Africans that fade from one to the next.
+export const SCHOLAR_PHOTOS = [
+  { src: unsplash('photo-1645263012710-35e2fc89cb5c'), alt: 'A group of graduates celebrating together in Nairobi, Kenya', credit: 'Oscar Omondi, Nairobi · Unsplash', page: 'https://unsplash.com/photos/BZbPR9JbalA', focus: 'center 30%' },
+  { src: unsplash('photo-1594750852517-f37738fa2384'), alt: 'Two young graduates in gowns celebrating', credit: 'Nqobile Vundla · Unsplash', page: 'https://unsplash.com/photos/DwEfVKirLW4', focus: 'center 30%' },
+  { src: unsplash('photo-1645262960695-ec79787ffeac'), alt: 'Two young women in graduation gowns celebrating in Nairobi, Kenya', credit: 'Oscar Omondi, Nairobi · Unsplash', page: 'https://unsplash.com/photos/y8_SpTKpUYg', focus: 'center 25%' },
+  { src: unsplash('photo-1719408937898-e15b8638e1d8'), alt: 'A group of students in graduation gowns posing for a photo', credit: '150 Billi · Unsplash', page: 'https://unsplash.com/photos/FQqRVH1EVjg', focus: 'center 30%' },
+  { src: unsplash('photo-1640117743090-93ce4f4450dd'), alt: 'A young woman in her graduation gown being congratulated, Addis Ababa, Ethiopia', credit: 'Unsplash', page: 'https://unsplash.com/', focus: 'center 30%' },
+];
+
+// Scholarship card photos, one per scholarship (keyed by slug): the place where you would study, or young African
+// scholars for programmes across Africa. All free under the Unsplash License.
+// A scholarship's own "Card photo link" (Admin → Scholarships) always wins. New scholarships without a photo get
+// one for their country (SCHOLARSHIP_BY_COUNTRY), otherwise a graduation photo.
+const sp = (id, alt) => ({ src: unsplash(id, 900), alt });
+const PLACES = {
+  london: sp('photo-1486299267070-83823f5448dd', 'Big Ben and the Houses of Parliament, London'),
+  oxford: sp('photo-1612563958093-2c3bcfbd8760', 'The Radcliffe Camera and university colleges in Oxford, England'),
+  heidelberg: sp('photo-1777902120356-eb10639611e5', 'Heidelberg, a university town in Germany'),
+  seoul: sp('photo-1599033769063-fcd3ef816810', 'A traditional palace roof in Seoul, South Korea'),
+  beijing: sp('photo-1547981609-4b6bfe67ca0b', 'The Forbidden City in Beijing, China'),
+  istanbul: sp('photo-1623439844752-524658b16ce6', 'The Süleymaniye Mosque in Istanbul, Türkiye'),
+  paris: sp('photo-1511739001486-6bfe10ce785f', 'The Eiffel Tower in Paris, France'),
+  tokyo: sp('photo-1513407030348-c983a97b98d8', 'Tokyo Tower and the city skyline, Japan'),
+  usa: sp('photo-1736451497343-6053161bcdde', 'A red-brick university building in the United States'),
+  kigali: sp('photo-1687986261123-b17f08f2796c', 'Kigali city at sunset, Rwanda'),
+  uct: sp('photo-1661324992305-afec62cd1b52', 'The University of Cape Town below the mountain, South Africa'),
+  capeTown: sp('photo-1626894169601-482d26b23f35', 'Cape Town and Table Mountain from the sea, South Africa'),
+  nairobi: sp('photo-1611348524140-53c9a25263d6', 'The Nairobi city skyline, Kenya'),
+  kampala: sp('photo-1675756261486-09bd1e0f6c8a', 'Kampala city seen from a tall building, Uganda'),
+  gradGroup: sp('photo-1645263012710-35e2fc89cb5c', 'A group of graduates celebrating together in Nairobi, Kenya'),
+  gradTwo: sp('photo-1594750852517-f37738fa2384', 'Two young graduates in gowns celebrating'),
+  gradGowns: sp('photo-1719408937898-e15b8638e1d8', 'A group of students in graduation gowns'),
+  gradWoman: sp('photo-1689255170246-9073b4818667', 'A young woman in her graduation cap and gown'),
+  gradMan: sp('photo-1594750852563-5ed8e0421d40', 'A young graduate in his gown'),
+  studyGroup: sp('photo-1655720348590-c739c860beed', 'A group of young Africans studying on laptops'),
+};
+export const SCHOLARSHIP_PHOTOS = {
+  'mastercard-foundation-scholars': PLACES.gradGroup,
+  'unhcr-dafi': PLACES.studyGroup,
+  'daad-development': PLACES.heidelberg,
+  'african-union-scholarships': PLACES.gradGowns,
+  'aga-khan-isp': PLACES.gradWoman,
+  'korean-gks': PLACES.seoul,
+  'chinese-government-csc': PLACES.beijing,
+  'turkiye-burslari': PLACES.istanbul,
+  'eiffel-excellence': PLACES.paris,
+  'mext-japan': PLACES.tokyo,
+  'commonwealth-masters': PLACES.oxford,
+  chevening: PLACES.london,
+  'fulbright-foreign-student': PLACES.usa,
+  'intra-africa-mobility': PLACES.gradTwo,
+  'rwanda-government': PLACES.kigali,
+  'uct-international': PLACES.uct,
+  'uon-bursary': PLACES.nairobi,
+  'makerere-international': PLACES.kampala,
+  'afdb-japan': PLACES.gradMan,
+  'mandela-rhodes': PLACES.capeTown,
+};
+export const SCHOLARSHIP_BY_COUNTRY = {
+  'United Kingdom': PLACES.london, Germany: PLACES.heidelberg, 'South Korea': PLACES.seoul, China: PLACES.beijing,
+  'Türkiye': PLACES.istanbul, Turkey: PLACES.istanbul, France: PLACES.paris, Japan: PLACES.tokyo, 'United States': PLACES.usa,
+  Rwanda: PLACES.kigali, 'South Africa': PLACES.capeTown, Kenya: PLACES.nairobi, Uganda: PLACES.kampala,
+};
+export function scholarshipPhoto(s) {
+  if (s?.imageUrl) return { src: s.imageUrl, alt: '' };
+  return SCHOLARSHIP_PHOTOS[s?.slug] || SCHOLARSHIP_BY_COUNTRY[s?.hostCountry] || PLACES.gradGroup;
+}
+
+// Scholarship page side box ("Need help applying?").
+export const HELP_PHOTO = { src: unsplash('photo-1655720357872-ce227e4164ba', 800), alt: 'Young people looking at a laptop together' };

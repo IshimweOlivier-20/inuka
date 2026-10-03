@@ -2,6 +2,7 @@ import { Button, Modal, Pill } from '../ui';
 import { FUNDING_LABEL, LEVEL_LABEL, deadlineTone, formatDate } from '../../utils/format';
 import { Bookmark, BookmarkCheck, Check, ExternalLink } from 'lucide-react';
 import RichText from '../../components/ui/RichText';
+import { scholarshipPhoto } from '../../config/photos';
 
 export default function ScholarshipDetail({ data, onClose, onSave, onApply, onOpenRelated }) {
   if (!data) return null;
@@ -13,6 +14,8 @@ export default function ScholarshipDetail({ data, onClose, onSave, onApply, onOp
         <Button variant="ghost" onClick={() => onSave(s)}>{s.saved ? <BookmarkCheck size={18} aria-hidden="true" /> : <Bookmark size={18} aria-hidden="true" />}{s.saved ? 'Saved' : 'Save'}</Button>
         <Button onClick={() => onApply(s)}>Apply now</Button>
       </>}>
+      <img src={scholarshipPhoto(s).src} alt="" onError={(e) => { e.currentTarget.style.display = 'none'; }}
+        className="w-full h-48 sm:h-56 object-cover rounded-lg mb-4" />
       <p className="text-ink-soft">{s.orgName}, {s.hostCountry}</p>
       <div className="flex flex-wrap gap-2 mt-3">
         <Pill tone={s.fundingType === 'fully_funded' ? 'sky' : 'brand'}>{FUNDING_LABEL[s.fundingType]}</Pill>

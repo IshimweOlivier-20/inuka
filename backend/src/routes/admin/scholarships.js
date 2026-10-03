@@ -32,11 +32,12 @@ const schema = z.object({
   documentsRequired: z.array(z.enum(Object.keys(CONDITIONAL_DOCS))).default([]),
   applyUrl: z.url('Please enter the official application link (https://…).'),
   logoUrl: z.url().optional().nullable().or(z.literal('')),
+  imageUrl: z.url().optional().nullable().or(z.literal('')),
   isFeatured: z.boolean().default(false),
   isActive: z.boolean().default(true),
 }).refine((s) => !s.refugeesOnly || s.openToRefugees, { message: 'A refugees-only scholarship must also be open to refugees.', path: ['openToRefugees'] });
 
-const clean = (d) => ({ ...d, hostUniversity: d.hostUniversity || null, deadlineNote: d.deadlineNote || null, logoUrl: d.logoUrl || null, deadline: d.deadline || null });
+const clean = (d) => ({ ...d, hostUniversity: d.hostUniversity || null, deadlineNote: d.deadlineNote || null, logoUrl: d.logoUrl || null, imageUrl: d.imageUrl || null, deadline: d.deadline || null });
 
 // GET /api/admin/scholarships/options — lists for the form
 router.get('/scholarships/options', (req, res) => {

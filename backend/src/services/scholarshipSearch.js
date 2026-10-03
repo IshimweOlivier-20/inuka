@@ -109,7 +109,7 @@ const SORTERS = {
 };
 
 const PUBLIC_FIELDS = ['id', 'slug', 'name', 'orgName', 'hostCountry', 'hostUniversity', 'region', 'fundingType', 'level',
-  'openToRefugees', 'refugeesOnly', 'languageOfStudy', 'deadline', 'description', 'isFeatured'];
+  'openToRefugees', 'refugeesOnly', 'languageOfStudy', 'deadline', 'description', 'isFeatured', 'imageUrl'];
 
 export async function searchScholarships(query) {
   const f = searchSchema.parse(query);

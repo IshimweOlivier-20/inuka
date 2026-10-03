@@ -1,14 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { BookOpen, ChevronDown, Laptop, ListChecks, SearchX } from 'lucide-react';
+import { BookOpen, Laptop, SearchX } from 'lucide-react';
 import PublicShell, { PageHero } from '../../components/landing/PublicShell';
-import Showcase, { CourseShowcaseCard } from '../../components/landing/Showcase';
+import { CourseDetails, CourseGridCard, CourseListCard, Pagination, ViewSwitch } from '../../components/courses/CourseCards';
+import { COURSE_PHOTOS } from '../../config/photos';
 import {
   ActiveChips, CheckOption, FilterButton, FilterGroup, FilterSheet, FilterSidebar, SortSelect,
 } from '../../components/filters/FilterPanel';
 import { useUrlFilters } from '../../components/filters/useUrlFilters';
-import IconTile from '../../components/ui/IconTile';
-import CourseImage from '../../components/ui/CourseImage';
-import { Button, EmptyState, ProgressBar } from '../../components/ui';
+import { Button, EmptyState, Modal } from '../../components/ui';
 import { CourseCardSkeleton } from '../../components/ui/Skeletons';
 import { useAuth } from '../../context/AuthContext';
 import { api, errorMessage } from '../../services/api';
@@ -102,62 +101,9 @@ function Filters({ f, facets, skills, signedIn }) {
   );
 }
 
-function CourseCard({ c, signedIn }) {
-  const [open, setOpen] = useState(false);
-  const subject = SUBJECTS[c.category];
-  const to = !signedIn ? '/register'
-    : c._status === 'not_started' ? `/courses/${c.slug}`
-      : c._status === 'completed' ? `/courses/${c.slug}` : `/lessons/${c._nextLessonId}`;
-  const action = !signedIn ? 'Start this course' : { not_started: 'Start this course', in_progress: 'Continue', completed: 'Review course' }[c._status];
-  return (
-    <li className="group bg-surface rounded-lg border border-line overflow-hidden flex flex-col hover:border-brand/30 hover:shadow-[0_14px_40px_-24px_rgba(7,44,107,0.5)] transition">
-      <CourseImage c={c} className="h-44" />
-      <div className={`px-5 pt-5 pb-4 ${subject.band}`}>
-        <div className="flex items-center gap-3">
-          <IconTile icon={subject.icon} tone={subject.tone} size="sm" />
-          <span className="text-sm font-semibold text-ink-soft">{subject.short}, course {c.track}</span>
-          <span className="ml-auto rounded-full bg-surface px-2.5 py-0.5 text-xs font-semibold text-ink-soft">{c.level}</span>
-        </div>
-        <h3 className="font-bold text-xl mt-3 leading-snug">{c.title}</h3>
-        <p className="mt-1 text-sm text-ink-soft inline-flex items-center gap-1.5">
-          <ListChecks size={16} aria-hidden="true" />{c.lessons.length} lessons, free, with certificate
-        </p>
-      </div>
-      <div className="p-5 flex-1 flex flex-col">
-        {c.skills?.length > 0 && (
-          <ul className="flex flex-wrap gap-1.5 mb-3" aria-label="Skills you will build">
-            {c.skills.map((s) => <li key={s} className="rounded-full bg-paper border border-line px-2.5 py-0.5 text-xs font-medium text-ink-soft">{s}</li>)}
-          </ul>
-        )}
-        <p className="text-[15px] text-ink-soft flex-1">{plainText(c.description)}</p>
-        {c._matchedLesson && (
-          <p className="mt-3 text-sm rounded-lg bg-brand-soft border border-brand/20 px-3 py-2">
-            Includes the lesson <strong>{c._matchedLesson}</strong>
-          </p>
-        )}
-        {signedIn && c._status !== 'not_started' && (
-          <div className="mt-4"><ProgressBar value={c._percent} label={c._status === 'completed' ? 'Completed' : 'Your progress'} /></div>
-        )}
-        <button onClick={() => setOpen(!open)} aria-expanded={open}
-          className="mt-4 inline-flex items-center gap-1 self-start min-h-11 font-semibold text-brand hover:underline">
-          {open ? 'Hide the lessons' : 'See the lessons'}
-          <ChevronDown size={18} className={`transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
-        </button>
-        {open && (
-          <ol className="mt-1 space-y-2 border-t border-line pt-3">
-            {c.lessons.map((l, i) => (
-              <li key={l.id} className="flex gap-3 text-sm">
-                <span className="w-6 h-6 shrink-0 rounded-full bg-brand-soft text-brand font-semibold flex items-center justify-center text-xs">{i + 1}</span>
-                <span><span className="font-medium text-ink">{l.title}</span>{l.summary && <span className="block text-ink-soft">{plainText(l.summary)}</span>}</span>
-              </li>
-            ))}
-          </ol>
-        )}
-        <Button to={to} variant={c._status === 'in_progress' ? 'primary' : 'outline'} className="mt-4 w-full">{action}</Button>
-      </div>
-    </li>
-  );
-}
+const PER_PAGE = 6;
+const HERO_PHOTOS = Object.values(COURSE_PHOTOS);
+const savedView = () => { try { return localStorage.getItem('inuka-course-view') === 'list' ? 'list' : 'grid'; } catch { return 'grid'; } };
 
 export default function Learn() {
   const { user } = useAuth();
@@ -167,7 +113,11 @@ export default function Learn() {
   const [progress, setProgress] = useState({}); // slug -> { status, percent, nextLessonId }
   const [error, setError] = useState('');
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [view, setView] = useState(savedView);
+  const [page, setPage] = useState(1);
+  const [details, setDetails] = useState(null);
   const resultsRef = useRef(null);
+  const changeView = (next) => { setView(next); try { localStorage.setItem('inuka-course-view', next); } catch { /* private mode */ } };
 
   useEffect(() => {
     document.title = 'Free courses — INUKA';
@@ -233,6 +183,13 @@ export default function Learn() {
     ...v.length.map((k) => ({ key: `n-${k}`, label: LENGTHS[k] || k, onRemove: () => f.toggle('length', k) })),
   ];
   const count = results.length;
+  const pages = Math.max(1, Math.ceil(count / PER_PAGE));
+  // Back to page 1 whenever the filters, search or sort change.
+  const filterKey = JSON.stringify(v);
+  useEffect(() => { setPage(1); }, [filterKey]);
+  const current = Math.min(page, pages);
+  const shown = results.slice((current - 1) * PER_PAGE, current * PER_PAGE);
+  const goTo = (n) => { setPage(n); resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
 
   return (
     <PublicShell>
@@ -244,15 +201,7 @@ export default function Learn() {
           value: v.q, onChange: (q) => f.update({ q }),
           onSubmit: () => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
         }}
-        showcase={(
-          <Showcase
-            label="Our courses"
-            items={courses}
-            getKey={(c) => c.slug}
-            getLabel={(c) => c.title}
-            renderItem={(c) => <CourseShowcaseCard c={c} to={user ? `/courses/${c.slug}` : '/register'} />}
-          />
-        )}
+        photos={HERO_PHOTOS}
       />
 
       <div ref={resultsRef} className="scroll-mt-20 max-w-[1200px] mx-auto px-5 py-10 grid lg:grid-cols-[280px_1fr] gap-8">
@@ -268,6 +217,7 @@ export default function Learn() {
             <div className="flex flex-wrap items-center gap-3">
               <FilterButton activeCount={f.activeCount} onClick={() => setSheetOpen(true)} />
               <SortSelect value={v.sort} onChange={(sort) => f.update({ sort })} options={SORTS} />
+              <ViewSwitch view={view} onChange={changeView} label="Show courses as" />
             </div>
           </div>
           {chips.length > 0 && <div className="mt-4"><ActiveChips chips={chips} onClearAll={f.clearAll} /></div>}
@@ -275,16 +225,25 @@ export default function Learn() {
 
           <div className="mt-6">
             {!courses ? (
-              <ul className="grid sm:grid-cols-2 gap-5">{[0, 1, 2, 3].map((i) => <CourseCardSkeleton key={i} />)}</ul>
+              <ul className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">{[0, 1, 2].map((i) => <CourseCardSkeleton key={i} />)}</ul>
             ) : count === 0 ? (
               <EmptyState icon={SearchX} title="No courses match these filters"
                 action={<Button variant="outline" onClick={f.clearAll}>Clear all filters</Button>}>
                 Try removing a filter, or search for a different word.
               </EmptyState>
             ) : (
-              <ul className="grid sm:grid-cols-2 gap-5 items-start">
-                {results.map((c) => <CourseCard key={c.id} c={c} signedIn={!!user} />)}
-              </ul>
+              <>
+                {view === 'list' ? (
+                  <ul className="flex flex-col gap-5">
+                    {shown.map((c) => <CourseListCard key={c.id} c={c} signedIn={!!user} onDetails={setDetails} />)}
+                  </ul>
+                ) : (
+                  <ul className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                    {shown.map((c) => <CourseGridCard key={c.id} c={c} signedIn={!!user} onDetails={setDetails} />)}
+                  </ul>
+                )}
+                <Pagination page={current} pages={pages} onChange={goTo} label="Course pages" />
+              </>
             )}
           </div>
 
@@ -299,6 +258,11 @@ export default function Learn() {
           )}
         </section>
       </div>
+
+      <Modal open={!!details} onClose={() => setDetails(null)} title={details?.title || ''}
+        footer={<><Button variant="ghost" onClick={() => setDetails(null)}>Close</Button><Button to="/register">Start this course for free</Button></>}>
+        {details && <CourseDetails c={details} />}
+      </Modal>
 
       <FilterSheet open={sheetOpen} onClose={() => setSheetOpen(false)} onClearAll={f.clearAll}
         resultLabel={`Show ${count} course${count === 1 ? '' : 's'}`}>

@@ -12,6 +12,7 @@ import { homeFor } from './config/roles';
 const Landing = lazy(() => import('./pages/public/Landing'));
 const Learn = lazy(() => import('./pages/public/Learn'));
 const Opportunities = lazy(() => import('./pages/public/Opportunities'));
+const ScholarshipPage = lazy(() => import('./pages/public/ScholarshipPage'));
 const NewsList = lazy(() => import('./pages/public/News').then((m) => ({ default: m.NewsList })));
 const Article = lazy(() => import('./pages/public/News').then((m) => ({ default: m.Article })));
 const Terms = lazy(() => import('./pages/public/Legal').then((m) => ({ default: m.Terms })));
@@ -95,6 +96,7 @@ export default function App() {
         <Route path="/" element={<GuestOnly><Landing /></GuestOnly>} />
         <Route path="/learn" element={<Learn />} />
         <Route path="/opportunities" element={<Opportunities />} />
+        <Route path="/opportunities/:slug" element={<ScholarshipPage />} />
         <Route path="/news" element={<NewsList />} />
         <Route path="/news/:slug" element={<Article />} />
         <Route path="/terms" element={<Terms />} />

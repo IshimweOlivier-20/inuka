@@ -26,12 +26,12 @@ router.get('/', async (req, res) => {
     }),
     prisma.scholarship.findMany({
       where: { ...(role !== 'admin' && { isActive: true }), OR: [{ name: has(q) }, { orgName: has(q) }, { hostCountry: has(q) }, { hostUniversity: has(q) }] },
-      orderBy: [{ isFeatured: 'desc' }, { name: 'asc' }], take: TAKE, select: { id: true, name: true, orgName: true, hostCountry: true, isActive: true },
+      orderBy: [{ isFeatured: 'desc' }, { name: 'asc' }], take: TAKE, select: { id: true, slug: true, name: true, orgName: true, hostCountry: true, isActive: true },
     }),
   ]);
 
   const courseTo = (c) => (role === 'admin' ? `/admin/courses/${c.id}` : role === 'mentor' ? `/learn?q=${encodeURIComponent(c.title)}` : `/courses/${c.slug}`);
-  const scholarshipTo = (s) => (role === 'admin' ? `/admin/scholarships/${s.id}` : role === 'mentor' ? `/opportunities?q=${encodeURIComponent(s.name)}` : `/scholarships?open=${s.id}`);
+  const scholarshipTo = (s) => (role === 'admin' ? `/admin/scholarships/${s.id}` : `/opportunities/${s.slug || s.id}`);
 
   if (role === 'admin') {
     const users = await prisma.user.findMany({

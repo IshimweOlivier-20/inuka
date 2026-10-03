@@ -107,11 +107,11 @@ export function LessonSkeleton() {
 
 export function ScholarshipCardSkeleton() {
   return (
-    <li className="bg-surface rounded-xl border border-line p-5 list-none" aria-hidden="true">
-      <div className="flex gap-3"><Skeleton height={48} width={48} /><div className="flex-1"><Skeleton height={20} /><Skeleton width="60%" /></div></div>
-      <div className="flex gap-2 mt-3"><Skeleton width={90} height={22} borderRadius="999px" /><Skeleton width={120} height={22} borderRadius="999px" /></div>
-      <Skeleton count={3} className="mt-3" />
-      <div className="flex gap-2 mt-4"><Skeleton width={80} height={44} /><Skeleton width={110} height={44} /><div className="flex-1"><Skeleton height={44} /></div></div>
+    <li className="bg-surface rounded-xl border border-line p-3 list-none" aria-hidden="true">
+      <Skeleton height={176} borderRadius="8px" />
+      <div className="px-1 pt-4"><Skeleton width="40%" height={12} /><Skeleton height={20} className="mt-2" /><Skeleton width="60%" /></div>
+      <div className="grid grid-cols-2 gap-2 mt-4 px-1"><Skeleton height={44} /><Skeleton height={44} /></div>
+      <div className="mt-4 px-1"><Skeleton height={16} /></div>
     </li>
   );
 }

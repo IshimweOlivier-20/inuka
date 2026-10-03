@@ -1,16 +1,16 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Info, SearchX } from 'lucide-react';
 import PublicShell, { PageHero } from '../../components/landing/PublicShell';
-import Showcase, { ScholarshipShowcaseCard } from '../../components/landing/Showcase';
+import { SCHOLAR_PHOTOS } from '../../config/photos';
 import ScholarshipCard from '../../components/scholarships/ScholarshipCard';
-import ScholarshipDetail from '../../components/scholarships/ScholarshipDetail';
 import {
   ActiveChips, CheckOption, FilterButton, FilterGroup, FilterSheet, FilterSidebar, LongOptionList, RadioOption, SortSelect,
 } from '../../components/filters/FilterPanel';
 import { useUrlFilters } from '../../components/filters/useUrlFilters';
 import { Button, EmptyState } from '../../components/ui';
 import { ScholarshipCardSkeleton } from '../../components/ui/Skeletons';
+import { Pagination, ViewSwitch } from '../../components/ui/ListControls';
 import { useAuth } from '../../context/AuthContext';
 import { api, errorMessage } from '../../services/api';
 
@@ -38,7 +38,8 @@ const L = {
   language: { English: 'English', French: 'French' },
 };
 const SORTS = [['deadline', 'Deadline (soonest first)'], ['relevant', 'Most relevant'], ['newest', 'Newest added'], ['name', 'Name (A to Z)']];
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 9;
+const savedView = () => { try { return localStorage.getItem('inuka-scholarship-view') === 'list' ? 'list' : 'grid'; } catch { return 'grid'; } };
 
 function toParams(v) {
   const p = {};
@@ -118,46 +119,52 @@ export default function Opportunities() {
   const { values: v } = f;
   const [data, setData] = useState(null); // { total, results, facets, summary, page }
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [view, setView] = useState(savedView);
+  const changeView = (next) => { setView(next); try { localStorage.setItem('inuka-scholarship-view', next); } catch { /* private mode */ } };
   const [error, setError] = useState('');
-  const [detail, setDetail] = useState(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const resultsRef = useRef(null);
   const request = useRef(0);
 
-  const [featured, setFeatured] = useState(null); // hero slider: featured open scholarships, soonest deadline first
   useEffect(() => { document.title = 'Scholarships and opportunities — INUKA'; }, []);
-  useEffect(() => {
-    api.get('/public/scholarships', { params: { sort: 'relevant', pageSize: 6 } })
-      .then((r) => setFeatured(r.data.results))
-      .catch(() => setFeatured([]));
-  }, []);
 
   const key = JSON.stringify(v);
+  // New filters, search or sort: back to page 1.
+  const firstRun = useRef(true);
+  useEffect(() => {
+    if (firstRun.current) { firstRun.current = false; return; }
+    setPage(1);
+  }, [key]);
   useEffect(() => {
     const id = ++request.current;
     setLoading(true);
-    api.get('/public/scholarships', { params: { ...toParams(v), pageSize: PAGE_SIZE } })
-      .then((r) => { if (id === request.current) { setData(r.data); setError(''); } })
+    api.get('/public/scholarships', { params: { ...toParams(v), pageSize: PAGE_SIZE, page } })
+      .then(async (r) => {
+        // Signed in: mark the ones already saved.
+        if (user) {
+          try {
+            const ids = new Set((await api.get('/scholarships/saved')).data.scholarships.map((x) => x.id));
+            r.data.results = r.data.results.map((x) => ({ ...x, saved: ids.has(x.id) }));
+          } catch { /* not important */ }
+        }
+        if (id === request.current) { setData(r.data); setError(''); }
+      })
       .catch((e) => { if (id === request.current) setError(errorMessage(e)); })
       .finally(() => { if (id === request.current) setLoading(false); });
-  }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [key, page]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const loadMore = async () => {
-    setLoadingMore(true);
+  const goTo = (n) => { setPage(n); resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+  const pages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
+
+  const openDetail = (s) => navigate(`/opportunities/${s.slug || s.id}`);
+  // Save from the card: signed-in users save right here; visitors are asked to sign in.
+  const toggleSave = async (s) => {
+    if (!user) { navigate('/login', { state: { from: '/opportunities' } }); return; }
     try {
-      const r = await api.get('/public/scholarships', { params: { ...toParams(v), pageSize: PAGE_SIZE, page: data.page + 1 } });
-      setData((d) => ({ ...r.data, results: [...d.results, ...r.data.results] }));
-    } catch (e) { setError(errorMessage(e)); } finally { setLoadingMore(false); }
-  };
-
-  // Saving and applying happen in the student area, where the document checklist lives.
-  const goToStudentArea = useCallback((s) => {
-    const target = `/scholarships?open=${s.id}`;
-    if (user) navigate(target); else navigate('/login', { state: { from: target } });
-  }, [user, navigate]);
-  const openDetail = async (s) => {
-    try { setDetail((await api.get(`/public/scholarships/${s.id}`)).data); } catch (e) { setError(errorMessage(e)); }
+      if (s.saved) await api.delete(`/scholarships/save/${s.id}`); else await api.post('/scholarships/save', { scholarshipId: s.id });
+      setData((d) => ({ ...d, results: d.results.map((x) => (x.id === s.id ? { ...x, saved: !s.saved } : x)) }));
+    } catch (e) { setError(errorMessage(e)); }
   };
 
   const chips = [
@@ -179,22 +186,14 @@ export default function Opportunities() {
   return (
     <PublicShell>
       <PageHero
-        title="Scholarships and opportunities"
+        title={<>Scholarships <span className="text-accent">and</span> opportunities</>}
         intro="Fully funded and partial scholarships in Africa and around the world, including many open to refugees. Search for free."
         search={{
           label: 'Search scholarships', placeholder: 'Scholarship, country or university',
           value: v.q, onChange: (q) => f.update({ q }),
           onSubmit: () => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
         }}
-        showcase={(
-          <Showcase
-            label="Featured scholarships"
-            items={featured}
-            getKey={(s) => s.id}
-            getLabel={(s) => s.name}
-            renderItem={(s) => <ScholarshipShowcaseCard s={s} onOpen={openDetail} />}
-          />
-        )}
+        photos={SCHOLAR_PHOTOS}
       />
 
       <div ref={resultsRef} className="scroll-mt-20 max-w-[1200px] mx-auto px-5 py-10 grid lg:grid-cols-[280px_1fr] gap-8">
@@ -210,6 +209,7 @@ export default function Opportunities() {
             <div className="flex flex-wrap items-center gap-3">
               <FilterButton activeCount={f.activeCount} onClick={() => setSheetOpen(true)} />
               <SortSelect value={v.sort} onChange={(sort) => f.update({ sort })} options={SORTS} />
+              <ViewSwitch view={view} onChange={changeView} label="Show scholarships as" />
             </div>
           </div>
           {chips.length > 0 && <div className="mt-4"><ActiveChips chips={chips} onClearAll={f.clearAll} /></div>}
@@ -224,7 +224,7 @@ export default function Opportunities() {
 
           <div className={`mt-6 transition-opacity ${loading && data ? 'opacity-50' : ''}`} aria-busy={loading}>
             {!data ? (
-              <ul className="grid sm:grid-cols-2 gap-5">{[0, 1, 2, 3].map((i) => <ScholarshipCardSkeleton key={i} />)}</ul>
+              <ul className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">{[0, 1, 2].map((i) => <ScholarshipCardSkeleton key={i} />)}</ul>
             ) : data.results.length === 0 ? (
               <EmptyState icon={SearchX} title="No scholarships match these filters"
                 action={<Button variant="outline" onClick={f.clearAll}>Clear all filters</Button>}>
@@ -232,15 +232,10 @@ export default function Opportunities() {
               </EmptyState>
             ) : (
               <>
-                <ul className="grid sm:grid-cols-2 gap-5">
-                  {data.results.map((s) => <ScholarshipCard key={s.id} s={s} onOpen={openDetail} onSave={goToStudentArea} onApply={goToStudentArea} />)}
+                <ul className={view === 'list' ? 'flex flex-col gap-5' : 'grid sm:grid-cols-2 xl:grid-cols-3 gap-5'}>
+                  {data.results.map((s) => <ScholarshipCard key={s.id} s={s} view={view} onOpen={openDetail} onSave={toggleSave} onApply={(s) => navigate(`/opportunities/${s.slug || s.id}?apply=1`)} />)}
                 </ul>
-                <div className="mt-8 flex flex-col items-center gap-3">
-                  <p className="text-sm text-ink-soft">Showing {data.results.length} of {total}</p>
-                  {data.results.length < total && (
-                    <Button variant="outline" onClick={loadMore} loading={loadingMore} className="min-w-52">Show more scholarships</Button>
-                  )}
-                </div>
+                <Pagination page={Math.min(page, pages)} pages={pages} onChange={goTo} label="Scholarship pages" />
               </>
             )}
           </div>
@@ -250,7 +245,6 @@ export default function Opportunities() {
       <FilterSheet open={sheetOpen} onClose={() => setSheetOpen(false)} onClearAll={f.clearAll} resultLabel={resultLabel}>
         <Filters f={f} facets={data?.facets} sheet />
       </FilterSheet>
-      {detail && <ScholarshipDetail data={detail} onClose={() => setDetail(null)} onSave={goToStudentArea} onApply={goToStudentArea} onOpenRelated={openDetail} />}
     </PublicShell>
   );
 }

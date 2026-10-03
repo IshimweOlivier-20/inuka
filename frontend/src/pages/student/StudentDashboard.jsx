@@ -91,7 +91,7 @@ export default function StudentDashboard() {
             <div><dt className="text-sm text-ink-soft">Applied</dt><dd className="text-2xl font-display font-bold">{d.scholarships.applied}</dd></div>
           </dl>
           {next && (
-            <p className="mt-4 text-sm">Next deadline: <Link to={`/scholarships?open=${next.id}`} className="font-semibold text-brand hover:underline">{next.name}</Link> — <span className={next.daysLeft < 30 ? 'text-danger font-semibold' : ''}>{next.daysLeft} days left</span></p>
+            <p className="mt-4 text-sm">Next deadline: <Link to={`/opportunities/${next.id}`} className="font-semibold text-brand hover:underline">{next.name}</Link> — <span className={next.daysLeft < 30 ? 'text-danger font-semibold' : ''}>{next.daysLeft} days left</span></p>
           )}
           <Button to="/scholarships" variant="outline" className="w-full mt-4">Find more scholarships</Button>
         </Card>

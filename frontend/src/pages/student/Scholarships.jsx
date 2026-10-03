@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Alert, Button, EmptyState } from '../../components/ui';
 import ScholarshipCard from '../../components/scholarships/ScholarshipCard';
-import ScholarshipDetail from '../../components/scholarships/ScholarshipDetail';
 import DocumentChecklist from '../../components/scholarships/DocumentChecklist';
 import ApplicationsTable from '../../components/scholarships/ApplicationsTable';
 import { api, errorMessage } from '../../services/api';
@@ -19,7 +18,7 @@ export default function Scholarships() {
   const [list, setList] = useState(null);
   const [error, setError] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [detail, setDetail] = useState(null);
+  const navigate = useNavigate();
   const [checklist, setChecklist] = useState(null);
   const debounce = useRef();
 
@@ -42,18 +41,18 @@ export default function Scholarships() {
   }, [load, filters.q]);
 
   const fetchDetail = async (s) => (await api.get(`/scholarships/${s.id}`)).data;
-  const openDetail = async (s) => { try { setDetail(await fetchDetail(s)); } catch (e) { setError(errorMessage(e)); } };
+  // "Learn more" opens the scholarship's own page.
+  const openDetail = (s) => navigate(`/opportunities/${s.slug || s.id}`);
 
   // Deep link from the dashboard: /scholarships?open=<id>
   useEffect(() => {
     const id = params.get('open');
-    if (id) { openDetail({ id }); params.delete('open'); setParams(params, { replace: true }); }
+    if (id) navigate(`/opportunities/${id}`, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const patchSaved = (id, saved) => {
     setList((l) => l && (tab === 'saved' && !saved ? l.filter((s) => s.id !== id) : l.map((s) => (s.id === id ? { ...s, saved } : s))));
-    setDetail((d) => d && d.scholarship.id === id ? { ...d, scholarship: { ...d.scholarship, saved } } : d);
     setChecklist((c) => c && c.scholarship.id === id ? { ...c, scholarship: { ...c.scholarship, saved } } : c);
   };
   const toggleSave = async (s) => {
@@ -66,7 +65,6 @@ export default function Scholarships() {
   const apply = async (s) => {
     try {
       const d = await fetchDetail(s);
-      setDetail(null);
       setChecklist(d);
     } catch (e) { setError(errorMessage(e)); }
   };
@@ -137,7 +135,6 @@ export default function Scholarships() {
         </div>
       )}
 
-      {detail && <ScholarshipDetail data={detail} onClose={() => setDetail(null)} onSave={toggleSave} onApply={apply} onOpenRelated={openDetail} />}
       <DocumentChecklist open={!!checklist} scholarship={checklist?.scholarship} checklist={checklist?.checklist}
         onClose={() => setChecklist(null)} onContinue={continueToApply} onSave={saveFromChecklist} />
     </div>

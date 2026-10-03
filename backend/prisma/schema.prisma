@@ -308,6 +308,7 @@ model Scholarship {
   documentsRequired Json        @map("documents_required") // conditional doc keys
   applyUrl          String      @map("apply_url")
   logoUrl           String?     @map("logo_url")
+  imageUrl          String?     @map("image_url") // photo on the scholarship card (optional; a matching photo is used if empty)
   isFeatured        Boolean     @default(false) @map("is_featured")
   isActive          Boolean     @default(true) @map("is_active")
   createdAt         DateTime    @default(now()) @map("created_at")

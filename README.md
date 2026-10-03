@@ -534,3 +534,53 @@ Every course card (home page "Featured courses", the Courses page, the student "
 All are free under the Unsplash License. They are set in `frontend/src/config/photos.js` (`COURSE_PHOTOS`, by course
 slug). To use your own picture for a course, paste its link in **Admin → Courses → Thumbnail image link**; that always
 wins over these photos. No database change or re-seed is needed.
+
+## 30. Courses page redesign
+
+- **Hero**: the course photos slide (fade) behind the title and search box. The course slider card on the right is gone.
+- **Course cards**: white cards (no coloured band) with the course photo, a yellow "Free" badge, the course letter,
+  a round subject icon on the photo's edge, subject and level, the title, and a footer with the number of lessons
+  and **View details**. Visitors get a details window (description, skills, all lessons, "Start this course for
+  free"); signed-in students go straight to the course (or "Continue" / "Review" when they have started it).
+- **Grid / List switch** at the top right (next to "Sort by"). The choice is remembered on that device.
+- **Page numbers** (1 2 ›) under the cards: 6 courses per page. Change `PER_PAGE` in `pages/public/Learn.jsx`.
+- Files: `components/courses/CourseCards.jsx` (cards, switch, page numbers, details) and `PageHero` in
+  `components/landing/PublicShell.jsx` (new `photos` option for a sliding photo background).
+
+## 31. Scholarships page hero and navy page buttons
+
+- **Scholarships page hero**: graduation photos of young Africans fade behind the title and search box (set in
+  `SCHOLAR_PHOTOS`, `frontend/src/config/photos.js`). The "Featured scholarships" card slider is removed
+  (`components/landing/Showcase.jsx` was deleted, nothing uses it any more).
+- **Courses page**: the page numbers and the Grid / List switch now use the navy primary colour instead of blue.
+
+## 32. Scholarship cards with photos, Grid / List and page numbers
+
+- **Every scholarship has a photo**: the place where you would study (Big Ben for Chevening, Oxford for
+  Commonwealth, Heidelberg for DAAD, Seoul, Beijing, Istanbul, Paris, Tokyo, a US campus, Kigali, UCT, Cape Town,
+  Nairobi, Kampala) or young African graduates for programmes across Africa (Mastercard, DAFI, African Union,
+  Aga Khan, Intra-Africa, AfDB). Set in `SCHOLARSHIP_PHOTOS` in `frontend/src/config/photos.js`.
+- **Your own photo**: Admin → Scholarships → *Card photo link*. New scholarships without one get a photo for their
+  country, otherwise a graduation photo. **Database change**: run `npx prisma migrate deploy` in `backend`
+  (migration `20261003000000_scholarship_image` adds the `image_url` column).
+- **New card**: photo with a **Save** button (bookmark icon) at the top right, country, name and organisation,
+  then **Learn more** and **Apply now** side by side, then the deadline and the days left.
+  Funding, "Open to refugees", study level and language are shown when you click **Learn more** (the details
+  window now also shows the photo). The student "Scholarships" page uses the same card.
+- **Grid / List switch** and **page numbers** (1 2 3 ›, 9 per page) on the public Scholarships page. The "Show more"
+  button is gone. The switch and page numbers live in `components/ui/ListControls.jsx` (shared with Courses).
+
+## 33. A page for every scholarship
+
+- **`/opportunities/<slug>`** (e.g. `/opportunities/chevening`) replaces the old pop-up window
+  (`pages/public/ScholarshipPage.jsx`; `components/scholarships/ScholarshipDetail.jsx` was deleted).
+  - Hero with the scholarship's photo, country (yellow), name, organisation, **Apply now** and **Save**.
+  - Main column: About, Who can apply and What it covers (green-tick lists), How to apply (numbered steps).
+  - Side panel: deadline and days left, then **key facts as a list with icons** (Funding, Refugees, Study level,
+    Language, Country, University, Region) instead of coloured tags; Apply now, Save for later, Official website.
+  - "Need help applying?" box with a photo and a **Find a mentor** button; "You may also like" cards.
+- **Save / Apply**: visitors are asked to sign in and come back to the same page. Signed-in users save right away
+  (also from the cards on the Scholarships page, which now show what is already saved). "Apply now" (on the page
+  or on a card) opens the document checklist, then the official website.
+- "Learn more" everywhere (public page, student Scholarships page, dashboard, the top search) opens this page.
+- Cards: the "days left" is plain coloured text (no background). Scholarships page title: the word "and" is yellow.

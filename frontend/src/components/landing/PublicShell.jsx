@@ -29,8 +29,17 @@ export function PublicHeader({ title, intro, children }) {
 
 // Blue hero for public catalogue pages: title, search, quick facts on the left.
 // On the right: `showcase` (a slider of real courses or scholarships).
-export function PageHero({ title, intro, search, facts, showcase }) {
+export function PageHero({ title, intro, search, facts, showcase, photos }) {
   const [value, setValue] = useState(search?.value || '');
+  const [slide, setSlide] = useState(0);
+  const [failed, setFailed] = useState({});
+  // Background photos fade from one to the next every 6 seconds (not when the user prefers less motion).
+  useEffect(() => {
+    if (!photos?.length || photos.length < 2) return undefined;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined;
+    const t = setInterval(() => setSlide((i) => (i + 1) % photos.length), 6000);
+    return () => clearInterval(t);
+  }, [photos?.length]);
   useEffect(() => { setValue(search?.value || ''); }, [search?.value]);
   // Update results while typing (after a short pause), and jump to them on Enter.
   useEffect(() => {
@@ -45,8 +54,19 @@ export function PageHero({ title, intro, search, facts, showcase }) {
   };
 
   return (
-    <section className="bg-brand text-white overflow-hidden">
-      <div className="max-w-[1200px] mx-auto px-5 pt-10 pb-12 md:py-14 grid md:grid-cols-[1.15fr_1fr] gap-8 md:gap-10 items-center">
+    <section className={`relative isolate bg-brand text-white overflow-hidden ${photos ? 'min-h-[380px] md:min-h-[440px] flex items-center' : ''}`}>
+      {photos && (
+        <div className="absolute inset-0 -z-10" aria-hidden="true">
+          {photos.map((p, i) => !failed[i] && (
+            <figure key={p.src} className={`hero-photo absolute inset-0 transition-opacity duration-[1400ms] ${i === slide ? 'is-active opacity-100' : 'opacity-0'}`}>
+              <img src={p.src} alt="" loading={i === 0 ? 'eager' : 'lazy'} onError={() => setFailed((f) => ({ ...f, [i]: true }))}
+                className="w-full h-full object-cover" style={{ objectPosition: p.focus || 'center' }} />
+            </figure>
+          ))}
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,41,77,0.88)_0%,rgba(7,41,77,0.7)_45%,rgba(7,41,77,0.35)_100%)] max-md:bg-[rgba(7,41,77,0.75)]" />
+        </div>
+      )}
+      <div className={`w-full max-w-[1200px] mx-auto px-5 pt-10 pb-12 md:py-14 grid gap-8 md:gap-10 items-center ${showcase ? 'md:grid-cols-[1.15fr_1fr]' : ''}`}>
         <div className="hero-copy">
           <h1 className="text-white text-3xl sm:text-[2.6rem] font-bold leading-[1.12]">{title}</h1>
           <p className="mt-4 text-white/85 max-w-[46ch]">{intro}</p>

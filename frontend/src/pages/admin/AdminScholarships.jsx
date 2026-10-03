@@ -95,7 +95,7 @@ export function AdminScholarships() {
 const EMPTY = {
   name: '', orgName: '', description: '', hostCountry: '', hostUniversity: '', region: 'Global', fundingType: 'fully_funded', level: 'undergraduate',
   openToRefugees: false, refugeesOnly: false, languageOfStudy: 'English', deadline: '', deadlineNote: '',
-  eligibility: '', coverage: '', applicationSteps: '', documentsRequired: [], applyUrl: '', logoUrl: '', isFeatured: false, isActive: true,
+  eligibility: '', coverage: '', applicationSteps: '', documentsRequired: [], applyUrl: '', logoUrl: '', imageUrl: '', isFeatured: false, isActive: true,
 };
 const toLines = (a) => (Array.isArray(a) ? a.join('\n') : '');
 const fromLines = (t) => t.split('\n').map((x) => x.trim()).filter(Boolean);
@@ -115,7 +115,7 @@ export function AdminScholarshipForm() {
     api.get('/admin/scholarships/options').then((r) => setOpts(r.data));
     if (!isNew) {
       api.get(`/admin/scholarships/${id}`).then(({ data: { scholarship: s } }) => setF({
-        ...EMPTY, ...s, hostUniversity: s.hostUniversity || '', deadlineNote: s.deadlineNote || '', logoUrl: s.logoUrl || '',
+        ...EMPTY, ...s, hostUniversity: s.hostUniversity || '', deadlineNote: s.deadlineNote || '', logoUrl: s.logoUrl || '', imageUrl: s.imageUrl || '',
         deadline: s.deadline ? s.deadline.slice(0, 10) : '', eligibility: toLines(s.eligibility), coverage: toLines(s.coverage),
         applicationSteps: toLines(s.applicationSteps), documentsRequired: Array.isArray(s.documentsRequired) ? s.documentsRequired : [],
       })).catch((e) => setMsg({ tone: 'error', text: errorMessage(e) }));
@@ -162,6 +162,8 @@ export function AdminScholarshipForm() {
           <RichEditor showLabel variant="compact" label="Description" value={f.description} onChange={(html) => setF((x) => ({ ...x, description: html }))} placeholder="What the scholarship is, who it is for and what makes it special." />
           <Field label="Official application link" type="url" value={f.applyUrl} onChange={set('applyUrl')} />
           <Field label="Logo image link (optional)" type="url" value={f.logoUrl} onChange={set('logoUrl')} />
+          <Field label="Card photo link (optional)" type="url" value={f.imageUrl} onChange={set('imageUrl')}
+            hint="A wide photo for the scholarship card, e.g. the university or city. If empty, INUKA picks a matching photo." />
         </Card>
         <Card className="space-y-4">
           <h2 className="text-lg font-semibold">Deadline and refugees</h2>
