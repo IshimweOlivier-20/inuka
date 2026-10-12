@@ -51,12 +51,15 @@ export function Field({ label, error, hint, as = 'input', children, className = 
 }
 
 export function Alert({ tone = 'error', children }) {
+  // Status colours (see index.css): error/urgent = red, warning = amber, success = green, info = blue.
   const tones = {
-    error: 'bg-red-50 text-red-800 border-red-200',
-    success: 'bg-brand-soft text-brand border-brand/20',
-    info: 'bg-brand-soft text-brand-deep border-brand/20',
+    error: 'bg-danger-soft text-danger-ink border-danger/30',
+    urgent: 'bg-danger-soft text-danger-ink border-danger/30',
+    warning: 'bg-warning-soft text-warning-ink border-warning/30',
+    success: 'bg-success-soft text-success-ink border-success/30',
+    info: 'bg-info-soft text-info-ink border-info/25',
   };
-  return <div role={tone === 'error' ? 'alert' : 'status'} className={`rounded-lg border px-4 py-3 text-sm ${tones[tone]}`}>{children}</div>;
+  return <div role={tone === 'error' || tone === 'urgent' ? 'alert' : 'status'} className={`rounded-lg border px-4 py-3 text-sm ${tones[tone] || tones.info}`}>{children}</div>;
 }
 
 export function Card({ className = '', children, ...props }) {
@@ -77,13 +80,21 @@ export function ProgressBar({ value, label, tone = 'accent' }) {
 
 export function Pill({ tone = 'grey', children }) {
   const tones = {
+    // status colours
+    success: 'bg-success-soft text-success-ink',
+    warning: 'bg-warning-soft text-warning-ink',
+    danger: 'bg-danger-soft text-danger-ink',
+    urgent: 'bg-danger-soft text-danger-ink',
+    info: 'bg-info-soft text-info-ink',
+    // brand / neutral
+    red: 'bg-danger-soft text-danger-ink',
     sky: 'bg-brand-soft text-brand',
-    red: 'bg-red-100 text-red-800',
     cyan: 'bg-brand-soft text-cyan border border-cyan/30',
-    grey: 'bg-gray-100 text-ink-soft',
+    grey: 'bg-brand-soft/60 text-ink-soft',
     brand: 'bg-brand-soft text-brand',
+    accent: 'bg-accent text-night',
   };
-  return <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap ${tones[tone]}`}>{children}</span>;
+  return <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap ${tones[tone] || tones.grey}`}>{children}</span>;
 }
 
 export function Modal({ open, onClose, title, children, footer, wide }) {

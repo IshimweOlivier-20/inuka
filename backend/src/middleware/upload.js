@@ -35,6 +35,24 @@ export const mediaUpload = multer({
   },
 });
 
+// Course files uploaded by admins: lesson audio, worksheets (PDF, Word, PowerPoint, Excel) and images, up to 25 MB.
+export const COURSE_FILE_TYPES = {
+  'audio/mpeg': 'mp3', 'audio/mp3': 'mp3', 'audio/mp4': 'm4a', 'audio/x-m4a': 'm4a', 'audio/aac': 'aac', 'audio/ogg': 'ogg', 'audio/wav': 'wav', 'audio/x-wav': 'wav', 'audio/webm': 'webm',
+  'application/pdf': 'pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'pptx',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+  'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif',
+};
+export const courseFileUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 25 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (!COURSE_FILE_TYPES[file.mimetype]) return cb(new HttpError(400, 'Please choose an audio file (MP3, M4A, OGG, WAV), a PDF, Word, PowerPoint or Excel file, or an image.'));
+    cb(null, true);
+  },
+});
+
 const MAGIC = {
   'image/jpeg': (b) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff,
   'image/png': (b) => b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47,

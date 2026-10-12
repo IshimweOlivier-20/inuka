@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { prisma } from '../../lib/prisma.js';
 import { HttpError } from '../../middleware/errorHandler.js';
 import { THEMES, themeOf } from '../../services/aiService.js';
+import { sendEmailSafe } from '../../services/emailService.js';
 
 const router = Router();
 const DAY = 24 * 60 * 60 * 1000;
@@ -66,18 +67,33 @@ async function audienceWhere(audience, country) {
 
 // POST /api/admin/announcements { message, link?, audience, country? } — in-app notification to a group
 router.post('/announcements', async (req, res) => {
-  const { message, link, audience, country } = z.object({
+  const { message, link, audience, country, email } = z.object({
     message: z.string().trim().min(5, 'Please write the announcement.').max(5000)
       .refine((m) => m.replace(/<[^>]+>/g, '').trim().length <= 400, 'Please keep announcements under 400 characters of text.'),
     link: z.string().trim().regex(/^(\/|https:\/\/)/, 'Links must start with / (a page on INUKA) or https://').optional().or(z.literal('')),
     audience: z.enum(['all_students', 'refugees', 'mentors', 'everyone', 'country']),
     country: z.string().trim().optional(),
+    email: z.boolean().default(true), // also send it by email
   }).parse(req.body);
   if (audience === 'country' && !country) throw new HttpError(400, 'Please choose a country.');
-  const users = await prisma.user.findMany({ where: await audienceWhere(audience, country), select: { id: true } });
+  const users = await prisma.user.findMany({ where: await audienceWhere(audience, country), select: { id: true, email: true, firstName: true } });
   if (!users.length) throw new HttpError(400, 'Nobody is in this group yet.');
   await prisma.notification.createMany({ data: users.map((u) => ({ userId: u.id, type: 'announcement', message, link: link || null })) });
-  res.status(201).json({ sent: users.length, audience: audience === 'country' ? `Students in ${country}` : AUDIENCES[audience] });
+  if (email) {
+    // Emails go out in the background, a few at a time, so the admin does not wait.
+    const site = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, '');
+    const text = message.replace(/<\/(p|li|h\d)>/gi, '\n').replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\n{3,}/g, '\n\n').trim();
+    (async () => {
+      for (const u of users) {
+        await sendEmailSafe({
+          to: u.email, subject: 'News from INUKA',
+          text: `Hi ${u.firstName},\n\n${text}\n\nThe INUKA team`,
+          ...(link && { action: { label: 'Open INUKA', url: link.startsWith('http') ? link : `${site}${link}` } }),
+        });
+      }
+    })();
+  }
+  res.status(201).json({ sent: users.length, emailed: email, audience: audience === 'country' ? `Students in ${country}` : AUDIENCES[audience] });
 });
 
 // GET /api/admin/announcements — recent announcements with how many people received and read them

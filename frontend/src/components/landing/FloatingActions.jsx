@@ -80,7 +80,7 @@ export default function FloatingActions() {
   };
 
   return (
-    <div ref={boxRef} className="fixed right-4 sm:right-6 bottom-5 sm:bottom-6 z-30 flex flex-col items-center gap-3 sm:gap-4">
+    <div ref={boxRef} className="fixed right-4 sm:right-6 bottom-[5.25rem] sm:bottom-[6.25rem] z-30 flex flex-col items-center gap-3 sm:gap-4">
       {/* Back to top + scroll progress ring */}
       <button type="button" onClick={toTop} aria-label={`Back to top (${Math.round(progress * 100)}% of the page read)`}
         tabIndex={showTop ? 0 : -1} aria-hidden={!showTop}

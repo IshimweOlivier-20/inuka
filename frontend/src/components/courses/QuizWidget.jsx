@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Alert, Button } from '../ui';
+import QuestionInput, { isAnswered } from './QuestionInput';
 import { api, errorMessage } from '../../services/api';
 
 export default function QuizWidget({ lessonId, quizzes, passMark, onPassed }) {
@@ -8,6 +9,7 @@ export default function QuizWidget({ lessonId, quizzes, passMark, onPassed }) {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const byId = Object.fromEntries((result?.results || []).map((r) => [r.quizId, r]));
+  const done = quizzes.filter((q) => isAnswered(q, answers[q.id])).length;
 
   const submit = async () => {
     setError(''); setBusy(true);
@@ -24,37 +26,22 @@ export default function QuizWidget({ lessonId, quizzes, passMark, onPassed }) {
       <h2 id="quiz-title" className="text-xl font-semibold">Check what you learned</h2>
       <p className="text-ink-soft text-sm mt-1">Score {passMark}% or more to finish this lesson. You can try as many times as you need.</p>
       <ol className="mt-5 space-y-6">
-        {quizzes.map((q, qi) => {
-          const r = byId[q.id];
-          return (
-            <li key={q.id}>
-              <fieldset>
-                <legend className="font-medium mb-2">{qi + 1}. {q.question}</legend>
-                <div className="grid sm:grid-cols-2 gap-2">
-                  {q.options.map((o) => {
-                    const chosen = answers[q.id] === o;
-                    let cls = chosen ? 'border-brand bg-brand-soft' : 'border-line bg-surface hover:border-brand';
-                    if (r) cls = o === r.correctAnswer ? 'border-success bg-brand-soft' : chosen ? 'border-danger bg-red-50' : 'border-line bg-surface opacity-70';
-                    return (
-                      <label key={o} className={`flex items-center gap-3 min-h-12 px-4 rounded-lg border-2 cursor-pointer ${cls}`}>
-                        <input type="radio" name={q.id} value={o} checked={chosen} disabled={!!result} className="w-5 h-5 accent-brand"
-                          onChange={() => setAnswers({ ...answers, [q.id]: o })} />
-                        <span>{o}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-                {r && <p className={`mt-2 text-sm ${r.correct ? 'text-brand' : 'text-red-800'}`}>{r.correct ? 'Correct. ' : `The answer is “${r.correctAnswer}”. `}{r.explanation}</p>}
-              </fieldset>
-            </li>
-          );
-        })}
+        {quizzes.map((q, qi) => (
+          <li key={q.id}>
+            <QuestionInput q={q} n={qi + 1} value={answers[q.id]} onChange={(v) => setAnswers((a) => ({ ...a, [q.id]: v }))} result={byId[q.id]} disabled={!!result} />
+          </li>
+        ))}
       </ol>
       {error && <div className="mt-4"><Alert>{error}</Alert></div>}
       <div className="mt-6">
-        {!result && <Button onClick={submit} loading={busy} disabled={Object.keys(answers).length < quizzes.length}>Check my answers</Button>}
+        {!result && (
+          <div className="flex flex-wrap items-center gap-3">
+            <Button onClick={submit} loading={busy} disabled={done < quizzes.length}>Check my answers</Button>
+            {done < quizzes.length && <span className="text-sm text-ink-soft">{done} of {quizzes.length} answered</span>}
+          </div>
+        )}
         {result && (
-          <div className={`rounded-xl p-4 ${result.passed ? 'bg-brand-soft' : 'bg-brand-soft'}`} role="status">
+          <div className={`rounded-xl p-4 ${result.passed ? 'bg-success-soft text-success-ink' : 'bg-warning-soft text-warning-ink'}`} role="status">
             <p className="font-display text-2xl font-bold">{result.score}%</p>
             <p>{result.passed ? 'Well done! You passed. Mark this lesson complete to continue.' : `Not yet — you need ${passMark}%. Read the lesson again, then try once more.`}</p>
             {!result.passed && <Button variant="outline" onClick={retry} className="mt-3">Try again</Button>}

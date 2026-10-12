@@ -7,6 +7,7 @@ import { MyLearningSkeleton, Skeleton } from '../../components/ui/Skeletons';
 import { Award, BookOpen, Flame } from 'lucide-react';
 import IconTile from '../../components/ui/IconTile';
 import { BadgeMedal } from '../../utils/badgeIcons';
+import LearningStats from '../../components/courses/LearningStats';
 
 export default function MyLearning() {
   const [d, setD] = useState(null);
@@ -37,6 +38,8 @@ export default function MyLearning() {
           <Heatmap days={d.streak.calendar} />
         </Card>
       </div>
+
+      <LearningStats />
 
       <Card>
         <h2 className="text-lg font-semibold mb-4">Your courses</h2>

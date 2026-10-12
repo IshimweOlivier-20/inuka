@@ -6,7 +6,7 @@ import { prisma } from '../lib/prisma.js';
 import { HttpError } from '../middleware/errorHandler.js';
 import { requireAuth } from '../middleware/auth.js';
 import { loginLimiter } from '../middleware/rateLimiter.js';
-import { sendEmail } from '../services/emailService.js';
+import { emailEnabled, sendEmail } from '../services/emailService.js';
 import { assertImage, photoUpload } from '../middleware/upload.js';
 import { savePhoto } from '../services/storageService.js';
 import { OAuth2Client } from 'google-auth-library';
@@ -70,7 +70,8 @@ async function sendVerification(user) {
   await sendEmail({
     to: user.email,
     subject: 'Welcome to INUKA — please confirm your email',
-    text: `Hi ${user.firstName},\n\nWelcome to INUKA! Confirm your email address to start learning:\n${url}\n\nThis link works for 48 hours.\n\nRise. Learn. Succeed.\nThe INUKA team`,
+    text: `Hi ${user.firstName},\n\nWelcome to INUKA! Confirm your email address to start learning.\n\nThis link works for 48 hours.\n\nRise. Learn. Succeed.\nThe INUKA team`,
+    action: { label: 'Confirm my email', url },
   });
   return url;
 }
@@ -109,7 +110,7 @@ router.post('/register', photoUpload.single('photo'), async (req, res) => {
   });
 
   const verifyUrl = await sendVerification(user);
-  const devHint = process.env.NODE_ENV !== 'production' && !process.env.SENDGRID_API_KEY ? { devVerifyUrl: verifyUrl } : {};
+  const devHint = process.env.NODE_ENV !== 'production' && !emailEnabled() ? { devVerifyUrl: verifyUrl } : {};
 
   if (!user.isVerified) {
     return res.status(201).json({ needsVerification: true, email: user.email, ...devHint });
@@ -134,7 +135,7 @@ router.post('/resend-verification', async (req, res) => {
   let devHint = {};
   if (user && !user.isVerified) {
     const url = await sendVerification(user);
-    if (process.env.NODE_ENV !== 'production' && !process.env.SENDGRID_API_KEY) devHint = { devVerifyUrl: url };
+    if (process.env.NODE_ENV !== 'production' && !emailEnabled()) devHint = { devVerifyUrl: url };
   }
   res.json({ ok: true, ...devHint });
 });
@@ -252,7 +253,8 @@ router.post('/forgot-password', async (req, res) => {
     await sendEmail({
       to: user.email,
       subject: 'Reset your INUKA password',
-      text: `Hi ${user.firstName},\n\nClick this link to choose a new password:\n${FRONTEND_URL}/reset-password?token=${token}\n\nThe link works for 1 hour. If you did not ask for this, you can ignore this email.`,
+      text: `Hi ${user.firstName},\n\nSomeone (hopefully you) asked to reset your INUKA password. Press the button to choose a new one.\n\nThe link works for 1 hour. If you did not ask for this, you can ignore this email.`,
+      action: { label: 'Choose a new password', url: `${FRONTEND_URL}/reset-password?token=${token}` },
     });
   }
   // Same answer either way, so nobody can check which emails have accounts.

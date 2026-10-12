@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { prisma } from '../../lib/prisma.js';
 import { HttpError } from '../../middleware/errorHandler.js';
 import { notify } from '../../utils/notify.js';
-import { sendEmail } from '../../services/emailService.js';
+import { emailEnabled, sendEmail } from '../../services/emailService.js';
 import { deletePhoto } from '../../services/storageService.js';
 import { issueAuthToken, publicUser } from '../../utils/tokens.js';
 import bcrypt from 'bcrypt';
@@ -83,7 +83,7 @@ router.post('/users', async (req, res) => {
     to: user.email, subject: 'Your INUKA account is ready',
     text: `Hi ${user.firstName},\n\nThe INUKA team created an account for you as ${roleName}.\n\nChoose your password here (the link works for 3 days):\n${link}\n\nThen sign in with ${user.email}.${data.role === 'mentor' ? '\n\nAfter signing in, please add your photo and your weekly availability in your mentor dashboard.' : ''}\n\nRise. Learn. Succeed.\nThe INUKA team`,
   });
-  const devHint = process.env.NODE_ENV !== 'production' && !process.env.SENDGRID_API_KEY ? { devSetPasswordUrl: link } : {};
+  const devHint = process.env.NODE_ENV !== 'production' && !emailEnabled() ? { devSetPasswordUrl: link } : {};
   res.status(201).json({ user: publicUser(user), ...devHint });
 });
 

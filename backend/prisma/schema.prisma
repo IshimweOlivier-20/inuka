@@ -96,6 +96,7 @@ model User {
   quizAttempts      QuizAttempt[]
   badges            UserBadge[]
   certificates      Certificate[]
+  examAttempts      ExamAttempt[]
   savedScholarships SavedScholarship[]
   applications      Application[]
   studentBookings   Booking[]          @relation("StudentBookings")
@@ -152,6 +153,7 @@ model Course {
   lessons      Lesson[]
   enrollments  Enrollment[]
   certificates Certificate[]
+  exam         Exam?
 
   @@index([category])
   @@map("courses")
@@ -166,6 +168,10 @@ model Lesson {
   audioUrl    String?  @map("audio_url")
   orderIndex  Int      @map("order_index")
   isPublished Boolean  @default(true) @map("is_published")
+  estimatedMinutes Int? @map("estimated_minutes") // shown to students ("About 10 minutes")
+  passMark    Int?     @map("pass_mark") // quiz pass mark for this lesson (default 60%)
+  aiActivity  Json?    @map("ai_activity") // INUKA AI activity: { type: writing|voice, kind, task, minWords, maxWords }
+  resources   Json     @default("[]") // downloadable files: [{ name, url }]
   course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   quizzes  Quiz[]
@@ -176,12 +182,15 @@ model Lesson {
 }
 
 model Quiz {
-  id            String        @id @default(uuid())
-  lessonId      String        @map("lesson_id")
-  question      String
-  options       Json // string[]
-  correctAnswer String        @map("correct_answer")
-  explanation   String?
+  id             String        @id @default(uuid())
+  lessonId       String        @map("lesson_id")
+  type           String        @default("single") // single | multiple | true_false | short
+  question       String
+  options        Json // string[] (empty for "short")
+  correctAnswer  String        @map("correct_answer") // first correct answer (kept for older code)
+  correctAnswers Json          @default("[]") @map("correct_answers") // all correct answers / accepted short answers
+  imageUrl       String?       @map("image_url")
+  explanation    String?
   orderIndex    Int           @default(0) @map("order_index")
   lesson        Lesson        @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   attempts      QuizAttempt[]
@@ -566,6 +575,7 @@ model Subscriber {
   id        String   @id @default(uuid())
   email     String   @unique
   source    String   @default("home")
+  token     String   @unique @default(uuid()) // for the "unsubscribe" link in alert emails
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("subscribers")
@@ -582,4 +592,71 @@ model ContactMessage {
 
   @@index([createdAt])
   @@map("contact_messages")
+}
+
+// Reminder and alert emails already sent (so nobody gets the same one twice).
+// key examples: "deadline:7:<userId>:<scholarshipId>", "session:24h:<bookingId>:student", "alert:scholarship:<id>"
+model SentReminder {
+  key    String   @id
+  sentAt DateTime @default(now()) @map("sent_at")
+
+  @@map("sent_reminders")
+}
+
+// ---------- Final course exam ----------
+model Exam {
+  id                     String         @id @default(uuid())
+  courseId               String         @unique @map("course_id")
+  title                  String         @default("Final exam")
+  instructions           String?
+  passMark               Int            @default(70) @map("pass_mark") // %
+  timeLimitMinutes       Int            @default(30) @map("time_limit_minutes") // 0 = no limit
+  questionCount          Int            @default(0) @map("question_count") // 0 = all questions, else a random set
+  shuffle                Boolean        @default(true) // shuffle questions and answers
+  maxAttempts            Int            @default(3) @map("max_attempts") // 0 = unlimited
+  retryAfterHours        Int            @default(24) @map("retry_after_hours") // wait after a failed attempt
+  showAnswers            Boolean        @default(true) @map("show_answers") // show correct answers after submitting
+  requiredForCertificate Boolean        @default(true) @map("required_for_certificate")
+  isPublished            Boolean        @default(false) @map("is_published")
+  createdAt              DateTime       @default(now()) @map("created_at")
+  course                 Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  questions              ExamQuestion[]
+  attempts               ExamAttempt[]
+
+  @@map("exams")
+}
+
+model ExamQuestion {
+  id             String  @id @default(uuid())
+  examId         String  @map("exam_id")
+  type           String  @default("single") // single | multiple | true_false | short
+  question       String
+  options        Json    @default("[]")
+  correctAnswers Json    @default("[]") @map("correct_answers")
+  imageUrl       String? @map("image_url")
+  explanation    String?
+  points         Int     @default(1)
+  orderIndex     Int     @default(0) @map("order_index")
+  exam           Exam    @relation(fields: [examId], references: [id], onDelete: Cascade)
+
+  @@index([examId])
+  @@map("exam_questions")
+}
+
+model ExamAttempt {
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  examId      String    @map("exam_id")
+  questions   Json // [{ id, options (shuffled) }] — the set this student got
+  answers     Json      @default("{}") // { questionId: answer }
+  score       Int? // % (null while in progress)
+  passed      Boolean?
+  startedAt   DateTime  @default(now()) @map("started_at")
+  expiresAt   DateTime? @map("expires_at")
+  submittedAt DateTime? @map("submitted_at")
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exam        Exam      @relation(fields: [examId], references: [id], onDelete: Cascade)
+
+  @@index([userId, examId])
+  @@map("exam_attempts")
 }

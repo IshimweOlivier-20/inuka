@@ -2,6 +2,7 @@
 // One set of routes for every content type: /api/admin/content/:type
 import { Router } from 'express';
 import { z } from 'zod';
+import { alertPost, queueAlert } from '../../services/alerts.js';
 import { prisma } from '../../lib/prisma.js';
 import { HttpError } from '../../middleware/errorHandler.js';
 import { assertImage, mediaUpload } from '../../middleware/upload.js';
@@ -80,6 +81,7 @@ router.post('/content/:type', async (req, res) => {
     data.slug = slug;
   }
   const item = await prisma[t.model].create({ data: { ...data, ...(hasSample(t.model) && { isSample: false }) } });
+  if (t.model === 'post') queueAlert(alertPost, item); // email "scholarship alerts" subscribers about new guides and news (once)
   res.status(201).json({ item });
 });
 
@@ -88,6 +90,7 @@ router.put('/content/:type/:id', async (req, res) => {
   const data = blanksToNull(t.schema.parse(req.body));
   // Editing a placeholder turns it into real content (placeholders are hidden in production).
   const item = await prisma[t.model].update({ where: { id: req.params.id }, data: { ...data, ...(hasSample(t.model) && { isSample: false }) } });
+  if (t.model === 'post') queueAlert(alertPost, item); // e.g. a draft that is now published
   res.json({ item });
 });
 

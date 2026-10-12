@@ -5,7 +5,7 @@ import rateLimit from 'express-rate-limit';
 import { prisma } from '../lib/prisma.js';
 import { HttpError } from '../middleware/errorHandler.js';
 import { searchScholarships } from '../services/scholarshipSearch.js';
-import { MEDIA_NAME, PHOTO_NAME, mediaDir, photoDir } from '../services/storageService.js';
+import { COURSE_FILE_NAME, MEDIA_NAME, PHOTO_NAME, contentTypeOf, readPublicImage } from '../services/storageService.js';
 import { sendEmail } from '../services/emailService.js';
 
 const router = Router();
@@ -16,16 +16,39 @@ const visible = () => ({ isPublished: true, ...(isProd() && { isSample: false })
 let cache = { at: 0, data: null };
 
 // ---------- Profile photos ----------
-router.get('/photos/:name', (req, res) => {
-  if (!PHOTO_NAME.test(req.params.name)) throw new HttpError(404, 'Photo not found.');
+// Works with local disk and S3 storage (see services/storageService.js).
+async function sendImage(res, folder, name, label) {
+  const buf = await readPublicImage(folder, name);
+  if (!buf) throw new HttpError(404, `${label} not found.`);
   res.set('Cache-Control', 'public, max-age=604800, immutable'); // names are random and never reused
-  res.sendFile(req.params.name, { root: photoDir }, (err) => { if (err && !res.headersSent) res.status(404).json({ error: 'Photo not found.' }); });
+  res.type(contentTypeOf(name)).send(buf);
+}
+router.get('/photos/:name', async (req, res) => {
+  if (!PHOTO_NAME.test(req.params.name)) throw new HttpError(404, 'Photo not found.');
+  await sendImage(res, 'photos', req.params.name, 'Photo');
+});
+// Course files (lesson audio, worksheets). Supports "Range" so audio players can jump to any point.
+router.get('/files/:name', async (req, res) => {
+  if (!COURSE_FILE_NAME.test(req.params.name)) throw new HttpError(404, 'File not found.');
+  const buf = await readPublicImage('files', req.params.name);
+  if (!buf) throw new HttpError(404, 'File not found.');
+  res.set('Cache-Control', 'public, max-age=604800, immutable');
+  res.set('Accept-Ranges', 'bytes');
+  res.type(contentTypeOf(req.params.name));
+  const m = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || '');
+  if (m) {
+    const start = m[1] ? Number(m[1]) : Math.max(0, buf.length - Number(m[2]));
+    const end = m[1] && m[2] ? Math.min(Number(m[2]), buf.length - 1) : buf.length - 1;
+    if (start >= buf.length || start > end) { res.status(416).set('Content-Range', `bytes */${buf.length}`).end(); return; }
+    res.status(206).set('Content-Range', `bytes ${start}-${end}/${buf.length}`).send(buf.subarray(start, end + 1));
+    return;
+  }
+  res.send(buf);
 });
 
-router.get('/media/:name', (req, res) => {
+router.get('/media/:name', async (req, res) => {
   if (!MEDIA_NAME.test(req.params.name)) throw new HttpError(404, 'Image not found.');
-  res.set('Cache-Control', 'public, max-age=604800, immutable');
-  res.sendFile(req.params.name, { root: mediaDir }, (err) => { if (err && !res.headersSent) res.status(404).json({ error: 'Image not found.' }); });
+  await sendImage(res, 'media', req.params.name, 'Image');
 });
 
 router.get('/landing', async (req, res) => {
@@ -121,6 +144,14 @@ router.post('/subscribe', subscribeLimiter, async (req, res) => {
   res.status(201).json({ ok: true });
 });
 
+// GET /api/public/unsubscribe?token=… — stop scholarship alert emails (link in every alert email)
+router.get('/unsubscribe', async (req, res) => {
+  const token = String(req.query.token || '');
+  const sub = token && await prisma.subscriber.findUnique({ where: { token } });
+  if (sub) await prisma.subscriber.delete({ where: { id: sub.id } });
+  res.json({ ok: true, email: sub?.email || null });
+});
+
 // "Submit your query" form on the home page. Saved for the admin (Website content → Messages) and emailed to
 // CONTACT_EMAIL if set. Ticking "send me scholarship alerts" also adds the email to the subscribers list.
 const contactLimiter = rateLimit({ windowMs: 60 * 60 * 1000, limit: 5, message: { error: 'You have sent several messages already. Please try again in an hour.' } });
@@ -144,9 +175,9 @@ router.post('/contact', contactLimiter, async (req, res) => {
   if (data.alerts) await prisma.subscriber.upsert({ where: { email }, update: {}, create: { email, source: 'contact' } });
   if (message) {
     await prisma.contactMessage.create({ data: { name, email, message } });
-    const to = process.env.CONTACT_EMAIL;
+    const to = process.env.CONTACT_EMAIL || process.env.SMTP_USER; // INUKA's own inbox if no separate address is set
     if (to) {
-      sendEmail({ to, subject: `New question on INUKA from ${email}`, text: `${email} wrote:\n\n${message}\n\nReply to them directly by email. You can also see all messages in the admin dashboard: Website content → Messages.` })
+      sendEmail({ to, subject: `New question on INUKA from ${name}`, headers: { 'Reply-To': email }, text: `${name} (${email}) wrote:\n\n${message}\n\nPress Reply to answer them directly. You can also see all messages in the admin dashboard: Website content → Messages.` })
         .catch((e) => console.error('Contact email failed', e));
     }
   }

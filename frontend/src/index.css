@@ -24,9 +24,24 @@
   --color-ink: #0B1B33;         /* body text */
   --color-ink-soft: #5F6670;    /* secondary / paragraph text (soft grey, like the reference) */
   --color-line: #E5E9F0;
-  --color-success: #2E9E5B;     /* ticks, completed states (green) */
-  --color-warning: #F59E0B;
+  /* Status colours: use them the same way everywhere.
+       success = done, accepted, open, plenty of time      (green)
+       warning = needs attention soon, waiting, pending    (amber)
+       danger  = urgent, error, closing in under 14 days, rejected, suspended (red)
+       info    = neutral news, in progress, submitted      (blue)
+     Each has a light "-soft" background for badges and alerts, and "-ink" for readable text on it. */
+  --color-success: #2E9E5B;
+  --color-success-ink: #1B6E3F;
+  --color-success-soft: #E7F5ED;
+  --color-warning: #D97706;
+  --color-warning-ink: #92500A;
+  --color-warning-soft: #FEF4DC;
   --color-danger: #DC2626;
+  --color-danger-ink: #A11B1B;
+  --color-danger-soft: #FDECEC;
+  --color-info: #2F6FEB;
+  --color-info-ink: #1D4FB8;
+  --color-info-soft: #EAF1FE;
 
   --font-display: "Roboto", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Open Sans", ui-sans-serif, system-ui, sans-serif;
@@ -132,6 +147,14 @@
   --color-accent-soft: #10253A;
   --skeleton-base: #1C2740;
   --skeleton-shine: #26344F;
+  --color-success-ink: #7FD6A3;
+  --color-success-soft: #12301F;
+  --color-warning-ink: #F6C46A;
+  --color-warning-soft: #33250C;
+  --color-danger-ink: #F5A3A3;
+  --color-danger-soft: #3A1517;
+  --color-info-ink: #9DBCF5;
+  --color-info-soft: #13254A;
 }
 /* Blue text needs to be lighter on dark backgrounds */
 [data-theme=dark] .text-brand,

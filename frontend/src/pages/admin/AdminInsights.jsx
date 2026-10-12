@@ -85,7 +85,7 @@ export function AdminAnnouncements() {
   const toast = useToast();
   const [editorKey, setEditorKey] = useState(0);
   const [d, setD] = useState(null);
-  const [f, setF] = useState({ message: '', link: '', audience: 'all_students', country: '' });
+  const [f, setF] = useState({ message: '', link: '', audience: 'all_students', country: '', email: true });
   const [msg, setMsg] = useState(null);
   const [busy, setBusy] = useState(false);
   const load = () => api.get('/admin/announcements').then((r) => setD(r.data)).catch((e) => setMsg({ tone: 'error', text: errorMessage(e) }));
@@ -108,14 +108,14 @@ export function AdminAnnouncements() {
     setBusy(true);
     try {
       const { data } = await api.post('/admin/announcements', f);
-      toast.success(`Sent to ${data.sent} ${data.sent === 1 ? 'person' : 'people'} (${data.audience}). They see it under the bell icon.`);
+      toast.success(`Sent to ${data.sent} ${data.sent === 1 ? 'person' : 'people'} (${data.audience}). They see it under the bell icon${data.emailed ? ' and get an email' : ''}.`);
       setF({ ...f, message: '', link: '' }); setEditorKey((k) => k + 1); load();
     } catch (err) { setMsg({ tone: 'error', text: errorMessage(err) }); } finally { setBusy(false); }
   };
 
   return (
     <div className="space-y-6">
-      <PageTitle title="Announcements" intro="Send a short message to all students or to one group. It appears in their notifications (the bell at the top)." />
+      <PageTitle title="Announcements" intro="Send a short message to all students or to one group. It appears in their notifications (the bell at the top) and, if you choose, by email." />
       <div className="grid lg:grid-cols-[1fr_1fr] gap-6 items-start">
         <Card>
           <form onSubmit={send} className="space-y-4" noValidate>
@@ -132,6 +132,10 @@ export function AdminAnnouncements() {
                 {d?.countries.map((c) => <option key={c.country} value={c.country}>{c.country} ({c.students})</option>)}
               </Field>
             )}
+            <label className="flex items-center gap-2 text-[15px] min-h-11">
+              <input type="checkbox" checked={f.email} onChange={(e) => setF({ ...f, email: e.target.checked })} className="w-5 h-5 accent-[var(--color-brand)]" />
+              Also send it by email
+            </label>
             <Button type="submit" loading={busy}><Megaphone size={18} aria-hidden="true" />Send announcement</Button>
           </form>
         </Card>

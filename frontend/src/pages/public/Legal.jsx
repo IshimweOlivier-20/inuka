@@ -119,7 +119,7 @@ export function Privacy() {
             <li><strong>Mentors' profiles</strong> (name, photo, title, bio, languages) are shown to students so they can choose who to book.</li>
             <li><strong>A small INUKA team</strong> can see account information to keep the website safe and help you when you ask.</li>
           </ul>
-          <p>We use trusted services to run INUKA, such as our web hosting and our email service (SendGrid). They only use your information to provide that service to us.</p>
+          <p>We use trusted services to run INUKA, such as our web hosting and our email provider (used only to send you INUKA emails). They only use your information to provide that service to us.</p>
         </>],
         ['sensitive', 'Refugee status', <>
           <p>Telling us whether you are a refugee or displaced person is always optional, and you can choose "Prefer not to say". We only use it to show you suitable scholarships. We never share it with anyone outside the INUKA team. You can change or remove it at any time in your Profile.</p>

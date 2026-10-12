@@ -36,7 +36,7 @@ async function seedCourses() {
         await prisma.quiz.createMany({
           data: l.quiz.map((q, qi) => ({
             lessonId: lesson.id, question: q.question, options: q.options,
-            correctAnswer: q.answer, explanation: q.explanation, orderIndex: qi,
+            correctAnswer: q.answer, correctAnswers: [q.answer], explanation: q.explanation, orderIndex: qi,
           })),
         });
       }
@@ -57,7 +57,9 @@ async function seedScholarships() {
   const list = load('scholarships.json');
   for (const s of list) {
     const data = { ...s, deadline: s.deadline ? new Date(s.deadline) : null };
-    await prisma.scholarship.upsert({ where: { slug: s.slug }, update: data, create: data });
+    const row = await prisma.scholarship.upsert({ where: { slug: s.slug }, update: data, create: data });
+    // Seeded scholarships count as already announced (no "new scholarship" alert emails for them).
+    await prisma.sentReminder.upsert({ where: { key: `alert:scholarship:${row.id}` }, update: {}, create: { key: `alert:scholarship:${row.id}` } });
   }
   console.log(`✓ ${list.length} scholarships`);
 }
@@ -67,7 +69,8 @@ async function seedHomeContent() {
   // Posts are updated by slug. Other content is only inserted into empty tables,
   // so anything you add or edit yourself (e.g. in Prisma Studio) is never overwritten.
   for (const p of home.posts) {
-    await prisma.post.upsert({ where: { slug: p.slug }, update: p, create: p });
+    const row = await prisma.post.upsert({ where: { slug: p.slug }, update: p, create: p });
+    await prisma.sentReminder.upsert({ where: { key: `alert:post:${row.id}` }, update: {}, create: { key: `alert:post:${row.id}` } });
   }
   const fill = async (model, rows, label) => {
     if ((await prisma[model].count()) > 0) return console.log(`• ${label}: already has content, skipped`);

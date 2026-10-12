@@ -46,8 +46,8 @@ export default function AdminDashboard() {
 
       <ul className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4" aria-label="Key numbers">
         <Stat icon={Users} tone="brand" value={n(d.users.students)} label="Registered students" note={`${n(d.users.refugees)} refugees`} to="/admin/users?role=student" />
-        <Stat icon={HeartHandshake} tone="cyan" value={n(d.mentorship.approved)} label="Active mentors" note={`${n(d.mentorship.pending)} waiting for approval`} to="/admin/mentors" />
-        <Stat icon={GraduationCap} tone="deep" value={n(d.scholarships.active)} label="Scholarships listed" note={`${n(d.scholarships.closingSoon)} close within 30 days`} to="/admin/scholarships" />
+        <Stat icon={HeartHandshake} tone="cyan" value={n(d.mentorship.approved)} label="Active mentors" note={`${n(d.mentorship.pending)} waiting for approval`} noteTone={d.mentorship.pending > 0 ? 'warning' : 'success'} to="/admin/mentors" />
+        <Stat icon={GraduationCap} tone="deep" value={n(d.scholarships.active)} label="Scholarships listed" note={`${n(d.scholarships.closingSoon)} close within 30 days`} noteTone={d.scholarships.closingSoon > 0 ? 'danger' : undefined} to="/admin/scholarships" />
         <Stat icon={CalendarCheck} tone="accent" value={n(d.mentorship.sessionsCompleted)} label="Sessions completed" note={`${n(d.mentorship.bookingsUpcoming)} coming up`} />
       </ul>
 
@@ -72,15 +72,15 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
-        <Card>
+        <Card className="min-w-0">
           <h2 className="text-lg font-semibold flex items-center gap-2 mb-4"><BookOpen size={20} className="text-brand" aria-hidden="true" />Most popular courses</h2>
           <RankBars rows={d.learning.popularCourses.map((c) => ({ label: c.title, value: c._count.enrollments, sub: 'students' }))} empty="No students have started a course yet." />
         </Card>
-        <Card>
+        <Card className="min-w-0">
           <h2 className="text-lg font-semibold flex items-center gap-2 mb-4"><GraduationCap size={20} className="text-brand" aria-hidden="true" />Most bookmarked scholarships</h2>
           <RankBars rows={d.scholarships.bookmarked.map((s) => ({ label: s.name, value: s._count.saves, sub: 'saves' }))} empty="No scholarship saved yet." />
         </Card>
-        <Card>
+        <Card className="min-w-0">
           <h2 className="text-lg font-semibold flex items-center gap-2"><HeartHandshake size={20} className="text-brand" aria-hidden="true" />Mentors to approve</h2>
           {d.mentorship.pendingMentors.length ? (
             <ul className="mt-3 divide-y divide-line">
@@ -127,14 +127,16 @@ export default function AdminDashboard() {
   );
 }
 
-function Stat({ icon, tone, value, label, note, to }) {
+// noteTone: status colour for the small line under the number (warning = needs attention, danger = urgent).
+const NOTE_TONE = { warning: 'text-warning-ink font-semibold', danger: 'text-danger-ink font-semibold', success: 'text-success-ink' };
+function Stat({ icon, tone, value, label, note, noteTone, to }) {
   const body = (
     <>
       <IconTile icon={icon} tone={tone} />
       <div>
         <p className="font-display text-3xl font-bold leading-none">{value}</p>
         <p className="font-semibold mt-1.5">{label}</p>
-        <p className="text-sm text-ink-soft">{note}</p>
+        <p className={`text-sm ${NOTE_TONE[noteTone] || 'text-ink-soft'}`}>{note}</p>
       </div>
     </>
   );

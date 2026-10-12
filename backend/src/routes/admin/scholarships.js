@@ -1,6 +1,7 @@
 // Admin: scholarship listings (spec 16.2) — add, edit, remove expired, flag refugee-friendly.
 import { Router } from 'express';
 import { z } from 'zod';
+import { alertScholarship, queueAlert } from '../../services/alerts.js';
 import { prisma } from '../../lib/prisma.js';
 import { HttpError } from '../../middleware/errorHandler.js';
 import { CONDITIONAL_DOCS } from '../../lib/constants.js';
@@ -77,12 +78,14 @@ router.post('/scholarships', async (req, res) => {
   let slug = slugify(data.name) || 'scholarship';
   if (await prisma.scholarship.findUnique({ where: { slug } })) slug = `${slug}-${Date.now().toString(36)}`;
   const s = await prisma.scholarship.create({ data: { ...data, slug } });
+  queueAlert(alertScholarship, s); // email "scholarship alerts" subscribers (once)
   res.status(201).json({ scholarship: s });
 });
 
 router.put('/scholarships/:id', async (req, res) => {
   const data = clean(schema.parse(req.body));
   const s = await prisma.scholarship.update({ where: { id: req.params.id }, data });
+  queueAlert(alertScholarship, s); // only sends if it is newly shown and never announced before
   res.json({ scholarship: s });
 });
 
@@ -91,6 +94,7 @@ router.patch('/scholarships/:id', async (req, res) => {
   const data = z.object({ isActive: z.boolean().optional(), isFeatured: z.boolean().optional(), openToRefugees: z.boolean().optional() }).parse(req.body);
   if (data.openToRefugees === false) data.refugeesOnly = false;
   const s = await prisma.scholarship.update({ where: { id: req.params.id }, data });
+  if (data.isActive) queueAlert(alertScholarship, s);
   res.json({ scholarship: s });
 });
 

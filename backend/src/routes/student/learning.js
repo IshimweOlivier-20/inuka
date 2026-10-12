@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { activityFor } from '../../services/lessonAi.js';
 import { z } from 'zod';
 import { prisma } from '../../lib/prisma.js';
 import { HttpError } from '../../middleware/errorHandler.js';
@@ -6,7 +7,12 @@ import { requireAuth } from '../../middleware/auth.js';
 import { QUIZ_PASS_MARK } from '../../lib/constants.js';
 import { logStudyToday, getStreak } from '../../utils/streakUpdater.js';
 import { checkLearningBadges } from '../../utils/badgeChecker.js';
+import { checkCertificate } from '../../services/certificates.js';
+import { isCorrect, answered, publicQuestion, correctText, correctOf } from '../../utils/questions.js';
+import { examStatus } from './exams.js';
 import { notify } from '../../utils/notify.js';
+
+const passMarkOf = (lesson) => lesson?.passMark ?? QUIZ_PASS_MARK; // each lesson can have its own pass mark
 
 const router = Router();
 router.use(requireAuth);
@@ -74,7 +80,7 @@ router.get('/courses', async (req, res) => {
 router.get('/courses/:slug', async (req, res) => {
   const course = await prisma.course.findFirst({
     where: { OR: [{ slug: req.params.slug }, { id: req.params.slug }], isPublished: true },
-    include: { lessons: { where: { isPublished: true }, orderBy: { orderIndex: 'asc' }, select: { id: true, title: true, summary: true, orderIndex: true } } },
+    include: { lessons: { where: { isPublished: true }, orderBy: { orderIndex: 'asc' }, select: { id: true, title: true, summary: true, orderIndex: true, estimatedMinutes: true, _count: { select: { quizzes: true } } } } },
   });
   if (!course) throw new HttpError(404, 'We could not find that course.');
   const progress = await prisma.progress.findMany({ where: { userId: req.user.id, lessonId: { in: course.lessons.map((l) => l.id) } } });
@@ -86,8 +92,11 @@ router.get('/courses/:slug', async (req, res) => {
     prevDone = item.completed;
     return item;
   });
-  const certificate = await prisma.certificate.findUnique({ where: { userId_courseId: { userId: req.user.id, courseId: course.id } } });
-  res.json({ course: { ...course, lessons }, certificate });
+  const [certificate, exam] = await Promise.all([
+    prisma.certificate.findUnique({ where: { userId_courseId: { userId: req.user.id, courseId: course.id } } }),
+    examStatus(req.user.id, course),
+  ]);
+  res.json({ course: { ...course, lessons }, certificate, exam });
 });
 
 // GET /api/lessons/:id — lesson content and quiz questions (answers hidden)
@@ -96,7 +105,7 @@ router.get('/lessons/:id', async (req, res) => {
     where: { id: req.params.id },
     include: {
       course: { include: { lessons: { where: { isPublished: true }, orderBy: { orderIndex: 'asc' }, select: { id: true, title: true, orderIndex: true } } } },
-      quizzes: { orderBy: { orderIndex: 'asc' }, select: { id: true, question: true, options: true } },
+      quizzes: { orderBy: { orderIndex: 'asc' } },
     },
   });
   if (!lesson || !lesson.isPublished) throw new HttpError(404, 'We could not find that lesson.');
@@ -114,33 +123,67 @@ router.get('/lessons/:id', async (req, res) => {
   });
   const progress = await prisma.progress.findUnique({ where: { userId_lessonId: { userId: req.user.id, lessonId: lesson.id } } });
 
-  const { course, ...rest } = lesson;
+  const { course, quizzes, ...rest } = lesson;
   res.json({
-    lesson: rest,
+    lesson: { ...rest, resources: Array.isArray(rest.resources) ? rest.resources : [], quizzes: quizzes.map((q) => publicQuestion(q)) }, // answers stay on the server
     course: { id: course.id, slug: course.slug, title: course.title, category: course.category, track: course.track },
     position: { index: idx, total: siblings.length, percent: Math.round((siblings.filter((l) => done.has(l.id)).length / siblings.length) * 100) },
     prevLessonId: siblings[idx - 1]?.id ?? null,
     nextLessonId: siblings[idx + 1]?.id ?? null,
     progress: { completed: !!progress?.isCompleted, bestScore: progress?.bestScore ?? null },
-    passMark: QUIZ_PASS_MARK,
+    passMark: passMarkOf(lesson),
+    aiActivity: activityFor(course.slug, lesson.title, lesson.aiActivity), // INUKA AI writing review or speaking practice, if this lesson has one
   });
+});
+
+// GET /api/learning-stats — My Learning (spec §9): lessons finished per week (last 8 weeks) and quiz history.
+router.get('/learning-stats', async (req, res) => {
+  const weeks = 8;
+  const monday = (d) => { const x = new Date(d); x.setHours(0, 0, 0, 0); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; };
+  const start = monday(new Date(Date.now() - (weeks - 1) * 7 * 864e5));
+  const [done, attempts] = await Promise.all([
+    prisma.progress.findMany({ where: { userId: req.user.id, isCompleted: true, completedAt: { gte: start } }, select: { completedAt: true, timeSpentSeconds: true } }),
+    prisma.quizAttempt.findMany({
+      where: { userId: req.user.id }, orderBy: { attemptedAt: 'desc' }, take: 600,
+      select: { attemptedAt: true, score: true, quiz: { select: { lesson: { select: { id: true, title: true, passMark: true, course: { select: { title: true, slug: true } } } } } } },
+    }),
+  ]);
+  const buckets = Array.from({ length: weeks }, (_, i) => ({ weekStart: new Date(start.getTime() + i * 7 * 864e5), lessons: 0, minutes: 0 }));
+  for (const p of done) {
+    const i = Math.floor((monday(p.completedAt) - start) / (7 * 864e5));
+    if (buckets[i]) { buckets[i].lessons += 1; buckets[i].minutes += Math.round((p.timeSpentSeconds || 0) / 60); }
+  }
+  // One row per attempt: answers of one attempt share the same time and lesson.
+  const seen = new Map();
+  for (const a of attempts) {
+    const lesson = a.quiz.lesson;
+    const key = `${lesson.id}|${a.attemptedAt.toISOString()}`;
+    if (!seen.has(key)) seen.set(key, { lessonId: lesson.id, lesson: lesson.title, course: lesson.course.title, at: a.attemptedAt, score: a.score, passed: a.score >= passMarkOf(lesson) });
+  }
+  res.json({ weekly: buckets, quizHistory: [...seen.values()].slice(0, 25), passMark: QUIZ_PASS_MARK });
 });
 
 // POST /api/quizzes/:lessonId/attempt — submit all answers for a lesson quiz
 router.post('/quizzes/:lessonId/attempt', async (req, res) => {
-  const { answers } = z.object({ answers: z.record(z.string(), z.string()) }).parse(req.body);
+  // An answer is text, or a list of options for "several correct answers" questions.
+  const { answers } = z.object({ answers: z.record(z.string(), z.union([z.string().max(2000), z.array(z.string().max(500)).max(10)])) }).parse(req.body);
+  const lessonRow = await prisma.lesson.findUnique({ where: { id: req.params.lessonId }, select: { passMark: true } });
   const quizzes = await prisma.quiz.findMany({ where: { lessonId: req.params.lessonId }, orderBy: { orderIndex: 'asc' } });
   if (!quizzes.length) throw new HttpError(404, 'This lesson has no quiz.');
-  if (quizzes.some((q) => !answers[q.id])) throw new HttpError(400, 'Please answer every question before you submit.');
+  if (quizzes.some((q) => !answered(q, answers[q.id]))) throw new HttpError(400, 'Please answer every question before you submit.');
 
   const results = quizzes.map((q) => ({
-    quizId: q.id, selected: answers[q.id], correct: answers[q.id] === q.correctAnswer,
-    correctAnswer: q.correctAnswer, explanation: q.explanation,
+    quizId: q.id, selected: answers[q.id], correct: isCorrect(q, answers[q.id]),
+    correctAnswer: correctText(q), correctAnswers: q.type === 'short' ? [] : correctOf(q), explanation: q.explanation,
   }));
   const score = Math.round((results.filter((r) => r.correct).length / quizzes.length) * 100);
+  const passMark = passMarkOf(lessonRow);
 
   await prisma.quizAttempt.createMany({
-    data: results.map((r) => ({ userId: req.user.id, quizId: r.quizId, selectedAnswer: r.selected, isCorrect: r.correct, score })),
+    data: results.map((r) => ({
+      userId: req.user.id, quizId: r.quizId, isCorrect: r.correct, score,
+      selectedAnswer: Array.isArray(r.selected) ? JSON.stringify(r.selected) : r.selected,
+    })),
   });
   const existing = await prisma.progress.findUnique({ where: { userId_lessonId: { userId: req.user.id, lessonId: req.params.lessonId } } });
   await prisma.progress.upsert({
@@ -148,7 +191,7 @@ router.post('/quizzes/:lessonId/attempt', async (req, res) => {
     update: { bestScore: Math.max(score, existing?.bestScore ?? 0) },
     create: { userId: req.user.id, lessonId: req.params.lessonId, bestScore: score },
   });
-  res.json({ score, passed: score >= QUIZ_PASS_MARK, passMark: QUIZ_PASS_MARK, results });
+  res.json({ score, passed: score >= passMark, passMark, results });
 });
 
 // POST /api/progress/complete — mark a lesson complete (quiz must be passed first, if the lesson has one)
@@ -161,8 +204,8 @@ router.post('/progress/complete', async (req, res) => {
   if (!lesson) throw new HttpError(404, 'We could not find that lesson.');
 
   const existing = await prisma.progress.findUnique({ where: { userId_lessonId: { userId, lessonId } } });
-  if (lesson._count.quizzes > 0 && (existing?.bestScore ?? 0) < QUIZ_PASS_MARK) {
-    throw new HttpError(400, `Score at least ${QUIZ_PASS_MARK}% on the quiz to complete this lesson.`);
+  if (lesson._count.quizzes > 0 && (existing?.bestScore ?? 0) < passMarkOf(lesson)) {
+    throw new HttpError(400, `Score at least ${passMarkOf(lesson)}% on the quiz to complete this lesson.`);
   }
   const firstTime = !existing?.isCompleted;
   await prisma.progress.upsert({
@@ -172,6 +215,7 @@ router.post('/progress/complete', async (req, res) => {
   });
 
   let certificate = null;
+  let examUnlocked = false;
   if (firstTime) {
     await logStudyToday(userId);
     const lessons = await prisma.lesson.findMany({ where: { courseId: lesson.courseId, isPublished: true }, select: { id: true } });
@@ -185,16 +229,17 @@ router.post('/progress/complete', async (req, res) => {
       create: { userId, courseId: lesson.courseId, completionPercentage: percent, ...(percent === 100 && { completedAt: new Date() }) },
     });
     if (percent === 100) {
-      certificate = await prisma.certificate.upsert({
-        where: { userId_courseId: { userId, courseId: course.id } },
-        update: {},
-        create: { userId, courseId: course.id },
-      });
-      await notify(userId, 'course_completed', `Congratulations! You completed ${course.title}. Download your certificate!`, '/my-learning');
+      // Certificate now — or after the final exam, if the course has one that is required.
+      const result = await checkCertificate(userId, course.id);
+      certificate = result.certificate;
+      if (result.waitingForExam) {
+        examUnlocked = true;
+        await notify(userId, 'exam_unlocked', `You finished every lesson of ${course.title}. The final exam is open: pass it to get your certificate.`, `/courses/${course.slug}/exam`, { email: false });
+      }
     }
   }
   const newBadges = firstTime ? await checkLearningBadges(userId) : [];
-  res.json({ ok: true, newBadges, certificate });
+  res.json({ ok: true, newBadges, certificate, examUnlocked });
 });
 
 router.get('/streak', async (req, res) => res.json(await getStreak(req.user.id)));

@@ -20,13 +20,18 @@ export const APP_STATUS = {
   awaiting_response: 'Awaiting Response', accepted: 'Accepted', rejected: 'Rejected',
 };
 
-// Deadline colour rule: red < 30 days, blue 30–90 days, light blue > 90 days
+// Deadline colour (status colours): under 14 days = urgent (red), under 30 days = warning (amber),
+// more time = success (green); unknown or passed = grey.
 export function deadlineTone(deadline) {
   const d = daysUntil(deadline);
   if (d === null) return { tone: 'grey', text: 'Deadline varies' };
   if (d < 0) return { tone: 'grey', text: 'Deadline passed' };
   const text = d === 0 ? 'Closes today' : d === 1 ? '1 day left' : `${d} days left`;
-  return { tone: d < 30 ? 'red' : d <= 90 ? 'brand' : 'sky', text };
+  return { tone: d < 14 ? 'danger' : d < 30 ? 'warning' : 'success', text };
 }
+// Application status colours, used for the badges on "My applications".
+export const APP_STATUS_TONE = {
+  not_started: 'grey', in_progress: 'info', submitted: 'info', awaiting_response: 'warning', accepted: 'success', rejected: 'danger',
+};
 
 export { QUOTES, quoteOfTheDay } from './quotes';

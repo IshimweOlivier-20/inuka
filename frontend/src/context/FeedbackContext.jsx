@@ -3,7 +3,7 @@ import { CircleAlert, CircleCheck, Info, TriangleAlert, X } from 'lucide-react';
 
 // Two helpers used everywhere:
 //   const confirm = useConfirm();  if (!(await confirm({ title, message, confirmLabel, tone: 'danger' }))) return;
-//   const toast = useToast();      toast.success('Saved.')   toast.error('Something went wrong.')   toast.info('…')
+//   const toast = useToast();      toast.success('Saved.')   toast.error('Something went wrong.')   toast.warning('…')   toast.info('…')
 const ConfirmContext = createContext(async () => true);
 const ToastContext = createContext({ success() {}, error() {}, info() {} });
 
@@ -22,7 +22,7 @@ export function FeedbackProvider({ children }) {
     setToasts((t) => [...t.slice(-3), { id, tone, text }]);
     setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), tone === 'error' ? 7000 : 4500);
   }, []);
-  const toast = useRef({ success: (m) => push('success', m), error: (m) => push('error', m), info: (m) => push('info', m) }).current;
+  const toast = useRef({ success: (m) => push('success', m), error: (m) => push('error', m), warning: (m) => push('warning', m), info: (m) => push('info', m) }).current;
 
   return (
     <ConfirmContext.Provider value={confirm}>
@@ -38,9 +38,10 @@ export function FeedbackProvider({ children }) {
 }
 
 const TONES = {
-  success: ['bg-surface border-brand/30', CircleCheck, 'text-brand'],
-  error: ['bg-surface border-danger/40', CircleAlert, 'text-danger'],
-  info: ['bg-surface border-line', Info, 'text-brand'],
+  success: ['bg-surface border-success/40 shadow-[inset_4px_0_0_var(--color-success)]', CircleCheck, 'text-success'],
+  error: ['bg-surface border-danger/40 shadow-[inset_4px_0_0_var(--color-danger)]', CircleAlert, 'text-danger'],
+  warning: ['bg-surface border-warning/40 shadow-[inset_4px_0_0_var(--color-warning)]', TriangleAlert, 'text-warning'],
+  info: ['bg-surface border-info/30 shadow-[inset_4px_0_0_var(--color-info)]', Info, 'text-info'],
 };
 
 function Toast({ tone, text, onClose }) {

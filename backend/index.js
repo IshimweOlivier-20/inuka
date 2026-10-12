@@ -1,4 +1,6 @@
 import 'dotenv/config';
+import { verifyEmail } from './src/services/emailService.js';
+import { startReminders } from './src/services/reminders.js';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -12,10 +14,12 @@ import accountRoutes from './src/routes/account.js';
 import searchRoutes from './src/routes/search.js';
 // Student dashboard
 import learningRoutes from './src/routes/student/learning.js';
+import examRoutes from './src/routes/student/exams.js';
 import scholarshipRoutes, { applications } from './src/routes/student/scholarships.js';
 import documentRoutes from './src/routes/student/documents.js';
 import mentorshipRoutes from './src/routes/student/mentorship.js';
 import aiRoutes from './src/routes/student/ai.js';
+import assistantRoutes from './src/routes/assistant.js';
 // Mentor and admin dashboards
 import mentorRoutes from './src/routes/mentor/index.js';
 import adminRoutes from './src/routes/admin/index.js';
@@ -44,8 +48,10 @@ app.use('/api/applications', applications);
 app.use('/api/documents', documentRoutes);
 app.use('/api', mentorshipRoutes); // /api/mentors, /api/bookings
 app.use('/api', aiRoutes); // /api/ai/...
+app.use('/api/assistant', assistantRoutes); // chat bubble for everyone (free)
 app.use('/api/mentor', mentorRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api', examRoutes); // /api/courses/:slug/exam, /api/exam-attempts/...
 app.use('/api', learningRoutes);
 app.use('/api', accountRoutes);
 
@@ -53,4 +59,8 @@ app.use('/api', notFound);
 app.use(errorHandler);
 
 const port = Number(process.env.PORT || 3000);
-app.listen(port, () => console.log(`✓ INUKA API running on http://localhost:${port}`));
+app.listen(port, () => {
+  console.log(`✓ INUKA API running on http://localhost:${port}`);
+  verifyEmail().then((r) => console.log(r.ok ? `✓ Email: sending through ${process.env.SMTP_HOST}` : `• Email: ${r.reason}`));
+  startReminders(); // reminder emails (scholarship deadlines, mentor sessions)
+});

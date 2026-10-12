@@ -10,6 +10,7 @@ import { DashboardSkeleton } from '../../components/ui/Skeletons';
 import { BookOpen, CalendarClock, Flame, GraduationCap, HeartHandshake, Laptop, Sparkles, Sprout, UserRound, Video } from 'lucide-react';
 import IconTile from '../../components/ui/IconTile';
 import { BadgeMedal } from '../../utils/badgeIcons';
+import RecommendedScholarships from '../../components/scholarships/RecommendedScholarships';
 
 export default function StudentDashboard() {
   const { user } = useAuth();
@@ -91,7 +92,7 @@ export default function StudentDashboard() {
             <div><dt className="text-sm text-ink-soft">Applied</dt><dd className="text-2xl font-display font-bold">{d.scholarships.applied}</dd></div>
           </dl>
           {next && (
-            <p className="mt-4 text-sm">Next deadline: <Link to={`/opportunities/${next.id}`} className="font-semibold text-brand hover:underline">{next.name}</Link> — <span className={next.daysLeft < 30 ? 'text-danger font-semibold' : ''}>{next.daysLeft} days left</span></p>
+            <p className="mt-4 text-sm">Next deadline: <Link to={`/opportunities/${next.id}`} className="font-semibold text-brand hover:underline">{next.name}</Link> — <span className={`font-semibold ${next.daysLeft < 14 ? 'text-danger' : next.daysLeft < 30 ? 'text-warning' : 'text-success'}`}>{next.daysLeft} days left</span></p>
           )}
           <Button to="/scholarships" variant="outline" className="w-full mt-4">Find more scholarships</Button>
         </Card>
@@ -107,6 +108,8 @@ export default function StudentDashboard() {
           </div>
         </Card>
       </div>
+
+      <RecommendedScholarships />
     </div>
   );
 }

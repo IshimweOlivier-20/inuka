@@ -5,6 +5,7 @@ import { HttpError } from '../../middleware/errorHandler.js';
 import { requireAuth } from '../../middleware/auth.js';
 import { ALWAYS_REQUIRED_DOCS, CONDITIONAL_DOCS } from '../../lib/constants.js';
 import { awardBadge } from '../../utils/badgeChecker.js';
+import { matchScholarships } from '../../services/scholarshipMatch.js';
 
 const router = Router();
 router.use(requireAuth);
@@ -103,6 +104,12 @@ router.post('/save', async (req, res) => {
 router.delete('/save/:id', async (req, res) => {
   await prisma.savedScholarship.deleteMany({ where: { userId: req.user.id, scholarshipId: req.params.id } });
   res.json({ ok: true });
+});
+
+// GET /api/scholarships/matches?limit=6 — best scholarships for this student's profile, with reasons
+router.get('/matches', async (req, res) => {
+  const limit = Math.min(Math.max(Number(req.query.limit) || 6, 1), 20);
+  res.json(await matchScholarships(req.user, { limit }));
 });
 
 router.get('/:id', async (req, res) => {

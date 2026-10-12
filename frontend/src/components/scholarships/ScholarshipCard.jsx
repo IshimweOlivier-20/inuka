@@ -9,7 +9,8 @@ import { scholarshipPhoto } from '../../config/photos';
 // then "Learn more" and "Apply now" side by side, then the deadline and the days left.
 // Funding, refugee and level details are shown in the full details window ("Learn more").
 // `view="list"` puts the photo on the left and adds a short description.
-const DAYS_TONE = { red: 'text-danger', brand: 'text-brand', sky: 'text-success', grey: 'text-ink-soft' };
+// Status colours: urgent (under 14 days) red, soon (under 30) amber, plenty of time green.
+const DAYS_TONE = { danger: 'text-danger', warning: 'text-warning', success: 'text-success', grey: 'text-ink-soft' };
 
 function Photo({ s, onSave, className }) {
   const [broken, setBroken] = useState(false);
@@ -46,6 +47,12 @@ function Deadline({ s }) {
 function Heading({ s, onOpen }) {
   return (
     <>
+      {s.match != null && (
+        <p className="mb-2 flex flex-wrap items-center gap-1.5 text-xs">
+          <span className="rounded-full bg-success-soft text-success-ink font-bold px-2.5 py-0.5">{s.match}% match</span>
+          {s.reasons?.slice(0, 2).map((r) => <span key={r} className="text-success-ink">✓ {r}</span>)}
+        </p>
+      )}
       <p className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-ink-soft">
         <MapPin size={13} aria-hidden="true" />{s.hostCountry}
       </p>

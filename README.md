@@ -121,7 +121,7 @@ Refresh the home page to see the change. You can also use pgAdmin.
 to a future date schedules the article.
 
 **Email sign-ups** from the "Get scholarship alerts" box are saved in the `subscribers` table.
-Sending the alert emails comes in a later phase.
+Alert emails go out automatically when an admin adds a new scholarship or publishes a guide/news article (see section 36).
 
 **Course skill tags** (used by the "Skills you will build" filter on `/learn`) are in the `skills` column of the `courses` table. Edit them in Prisma Studio.
 
@@ -156,7 +156,7 @@ Inuka/
 │   │   ├── mentor/               # Mentor dashboard: /api/mentor/...
 │   │   └── admin/                # Admin dashboard: /api/admin/...
 │   ├── src/middleware/           # JWT auth, roles, rate limit, upload validation, errors
-│   ├── src/services/             # email (SendGrid), file storage, scholarship search
+│   ├── src/services/             # email (Nodemailer), reminders, alerts, file storage (disk/S3), AI, scholarship search
 │   ├── src/utils/                # streaks, badges, tokens, notifications
 │   ├── uploads/                  # uploaded documents (development)
 │   ├── .env                      # your settings (copy from .env.example)
@@ -190,15 +190,16 @@ add its route in the matching block of `frontend/src/App.jsx`, and add a sidebar
 | Public pages for visitors | ✅ `/learn` and `/opportunities` each have a blue hero (search box and a slider of real courses or featured scholarships) and professional filters: a sidebar with counts next to every option, removable filter chips, sorting, a slide-up filter sheet on phones, and filters saved in the page address so a search can be shared. Scholarship filters: refugee eligibility, funding, study level, deadline, what it covers, region, study destination, language. Course filters: subject, level, skills, length, and (when signed in) my progress. `/news` also public. Navbar: Courses, Opportunities, News, About ▾ (edit `NAV_ITEMS` in `frontend/src/config/site.js`). |
 | §6 Student dashboard | ✅ Done: collapsible sidebar (remembered on the device) with all 8 links including `/logout`, bottom tabs on phones; welcome banner with date and a daily quote from 100 (`frontend/src/utils/quotes.js`); progress bar; Continue Learning card with thumbnail; English and Computer levels calculated from quiz scores; scholarship card; mentorship card with the next session and a Join button that opens 15 minutes before; streak, latest badge; quick actions |
 | §7–8 Courses, lessons, quizzes (60% pass mark), lesson locking, listen-aloud audio | ✅ Done — 5 lessons have full content; the other 67 have titles and need content |
-| §9 My Learning (tracks, streak heatmap, badges, certificates) | ✅ Done (weekly bar chart and quiz history table: Phase 2) |
+| §9 My Learning (tracks, streak heatmap, badges, certificates, weekly bar chart, quiz history) | ✅ Done |
 | §10 Scholarships: search, filters, save, detail, **Document Checklist modal**, application tracker | ✅ Done |
-| §14 Profile + Document Vault | ✅ Done (local disk storage; S3 in Phase 4) |
-| §15 In-app notifications | ✅ Done (email reminders: Phase 4) |
+| §14 Profile + Document Vault | ✅ Done (local disk or Amazon S3: `STORAGE_DRIVER`) |
+| §15 Notifications | ✅ Done: in-app + email (Nodemailer), deadline and session reminders, announcements by email, scholarship alerts |
 | §17 Database schema | ✅ All tables |
 | §12 Mentorship | ✅ Done: mentor directory with filters, ratings and "Available this week"; booking (topic, real free times for 14 days in the student's time zone, 200-word message); accept/decline with message; video link; Join button from 15 minutes before; cancel; mark as done; session notes (shown in My Learning); 1–5 star reviews; First Mentor Session badge; emails and notifications for every step; mentor calendar, history and availability editing |
 | §13 INUKA AI chatbot | ✅ Done: full page `/ai` with saved conversations, floating bubble on every student page, greeting and the 5 quick-start buttons, the hardcoded system prompt from §13.5, 30 messages per student per hour. Needs an API key (see section 15) |
 | §16 Admin dashboard | ✅ Done: overview (§16.1) and every capability in §16.2: users, mentor approval with feedback, course/lesson/quiz editor, scholarship listings, analytics with drop-off points, anonymised AI query themes, announcements |
-| §11 University directory, §19.4 PWA/offline, i18n (French) | ⏳ Phase 4 |
+| §19.4 PWA / offline | ✅ Done: installable app, lessons readable offline |
+| §11 University directory, i18n (French) | ⏳ Not built yet |
 
 ## 8. Before launch: verify the scholarship data
 
@@ -323,7 +324,7 @@ messages. Each student can send 30 messages per hour.
 ## 16. Emails for mentorship
 
 Booking requests, confirmations, declines and cancellations are emailed to the student and the mentor through
-SendGrid (printed in the backend terminal while `SENDGRID_API_KEY` is empty). Times in emails use
+Nodemailer (printed in the backend terminal while `SMTP_USER`/`SMTP_PASS` are empty). Times in emails use
 `APP_TIMEZONE` (default `Africa/Kigali`); on the website everyone sees times in their own time zone.
 
 ## 17. Light and dark mode
@@ -340,7 +341,7 @@ Tailwind's `dark:` prefix works, for example `dark:bg-black`.
 
 In **Users → Add account**, an admin can create a student, mentor or admin. Nobody types a password for them:
 the person receives an email with a link to choose their own password (valid 3 days). In development, without
-SendGrid, the link is shown on the screen instead. Mentors created this way are approved straight away and add
+email set up (SMTP), the link is shown on the screen instead. Mentors created this way are approved straight away and add
 their photo and weekly availability after signing in.
 
 ## 19. Writing content: the text editor
@@ -584,3 +585,155 @@ wins over these photos. No database change or re-seed is needed.
   or on a card) opens the document checklist, then the official website.
 - "Learn more" everywhere (public page, student Scholarships page, dashboard, the top search) opens this page.
 - Cards: the "days left" is plain coloured text (no background). Scholarships page title: the word "and" is yellow.
+
+## 34. White sidebar, status colours, and INUKA AI for everyone (free)
+
+**Dashboard sidebar** (`components/layout/AppLayout.jsx`): white background, grey links, navy on hover. The active
+link has a light navy background, navy bold text and a **yellow bar** on the left. "Log out" turns red on hover.
+
+**Status colours** — use the same ones everywhere (tokens in `src/index.css`, each with a `-soft` background and
+`-ink` text colour, also in dark mode):
+
+| Colour | Meaning | Examples |
+|---|---|---|
+| green `success` | done, accepted, active, plenty of time | "Active" users, accepted applications, deadline 30+ days |
+| amber `warning` | needs attention soon, waiting | mentors waiting for approval, "Email not confirmed", "Awaiting response", deadline in 14–29 days |
+| red `danger` / `urgent` | urgent, error, rejected | suspended, rejected, deadline in under 14 days, errors |
+| blue `info` | neutral, in progress | "In progress", "Submitted", information notes |
+
+Use them with `<Pill tone="success|warning|danger|info">`, `<Alert tone="success|warning|error|info">` and
+`toast.success / toast.warning / toast.error / toast.info`. "My applications" now shows a coloured status badge and
+a coloured left edge per application; the admin dashboard colours "waiting for approval" (amber) and "close within
+30 days" (red).
+
+**INUKA AI — chatbot + AI agent, free for everyone**
+- **Chat button** (bottom right, yellow "AI" badge) on every public page *and* every dashboard (students, mentors,
+  admins). Visitors can use it without an account; their chat stays while they move between pages (this tab only).
+  Students keep their saved conversations on the full **INUKA AI** page as before.
+- **It is an agent**: instead of guessing, it looks things up on INUKA with tools
+  (`backend/src/services/agent.js`): search scholarships (country, level, fully funded, open to refugees, closing
+  soon), scholarship details, upcoming deadlines, free courses — and for signed-in students: their course progress,
+  saved scholarships, document checklist for a scholarship, mentors, and it can **save a scholarship** when asked.
+  Answers include links (e.g. to `/opportunities/chevening`).
+- **Always free**:
+  - *AI mode*: set a FREE key in `backend/.env` — `AI_PROVIDER=gemini` + key from aistudio.google.com/apikey
+    (or `groq`, or `ollama` on your own computer, no key). Restart the backend.
+  - *Basic mode*: with no key (or if the AI service is down) the assistant still answers using the same tools and
+    simple rules — no outside service, no cost. The chat shows "Free · Basic mode" or "Free · AI answers by …".
+- Limits: 40 messages per hour per person (visitors: per internet address), 30 per hour on the student INUKA AI page.
+- New API: `GET /api/assistant/status`, `POST /api/assistant/chat` (`backend/src/routes/assistant.js`).
+
+## 35. INUKA AI — checked against the INUKA document (section 13, 18.5 and the course plan)
+
+| Requirement in the document | Where it is |
+|---|---|
+| Conversational AI for guidance, chatbot 24/7 | Chat bubble on every page + `/ai` page (students). Always on: AI mode or free basic mode. |
+| AI calls proxied through the Node.js backend, key protected | All calls go `browser → /api/ai/…, /api/assistant/… → backend → AI service`. Keys only in `backend/.env`. |
+| OpenAI GPT-4o, or Amazon Bedrock as alternative | `AI_PROVIDER=openai` (GPT-4o) or **`AI_PROVIDER=bedrock`** (new: uses `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`; default model `amazon.nova-lite-v1:0`, change with `AI_MODEL`). Free options: `gemini`, `groq`, `ollama`. |
+| 13.5 System prompt hardcoded, sent with every call | `SYSTEM_PROMPT` in `backend/src/services/aiService.js` (exact text), sent with every call: chat, agent, writing review, speaking practice. |
+| 13.2 Floating bubble bottom-right, minimised; full page `/ai` in the sidebar | `components/ai/ChatBubble.jsx`; sidebar "INUKA AI". |
+| 13.3 Sprout avatar (animated), header "INUKA AI — Your Learning Guide", greeting, 5 quick-start buttons | Exact wording and buttons in `components/ai/ChatPanel.jsx` / `ChatBubble.jsx`. |
+| 13.4 Capabilities (scholarships, essays, documents, grammar, course advice, forms, refugee rights, computer help) | System prompt + agent tools (`services/agent.js`): scholarship search/details/deadlines, **profile matching**, courses, mentors, progress, saved list, document checklist, save. |
+| 13.6 Conversations saved per user, scroll back; admin sees only anonymised themes | Saved in `chat_messages`; `/ai` lists them; Admin → Analytics shows theme counts only. |
+| 18.5 `POST /api/ai/chat`, `GET /api/ai/history` | Both exist (**`/api/ai/history` is new**: all conversations with messages; `?conversationId=` for one). |
+| English Writing L8 "Final Writing Task + AI Feedback" | **New** box in the lesson: paste text → INUKA AI review (score, strengths, what to improve, small fixes, next step). |
+| Essays L10 "Full Essay Practice" (400 words + AI feedback) | **New**, same box, checks thesis, paragraphs, PEEL examples, conclusion. |
+| Scholarship Writing L8 "Full Draft Review" | **New**, same box, reviews like a scholarship reader (goals, why this scholarship, community, real story). |
+| Speaking L4 "Introducing Yourself — practice conversation with AI voice" | **New** speaking partner: INUKA AI asks questions out loud, the student answers with the microphone (or types), gets tips and a model introduction at the end. Uses the browser's free speech features (Chrome/Edge/Android for the microphone). |
+| AI-powered scholarship matching from the student profile | **New** `GET /api/scholarships/matches`: scores open scholarships by study level, refugee status, country/region, language, funding and time left, with reasons. Shown as **"Recommended for you"** on the student dashboard, the **"For you"** tab on Scholarships, and used by INUKA AI ("Find a Scholarship"). |
+
+All of this is **free**: with a free AI key (Gemini/Groq/Ollama) you get full AI answers; with no key INUKA uses its
+built-in basic mode — the writing checker (spelling, capital letters, sentence length, repeated words, linking words,
+structure), a scripted speaking partner, and rule-based answers using the same tools. Writing reviews are also saved
+on the student's INUKA AI page. Activities are matched by course and lesson title in
+`backend/src/services/lessonAi.js` (`AI_ACTIVITIES`) — edit there to add AI activities to other lessons.
+After updating: run `npm install` in `backend` (adds the Amazon Bedrock library).
+
+
+## 36. Emails with Nodemailer, reminders, alerts, S3, offline app, My Learning charts
+
+**Emails (Nodemailer / SMTP)** — `backend/src/services/emailService.js`. Every email has a branded HTML version
+(navy header, yellow button) and a plain-text version. Set in `backend/.env`:
+
+```
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_SECURE=true
+SMTP_USER=hello.inuka@gmail.com
+SMTP_PASS=your16letterapppassword
+EMAIL_FROM="INUKA <hello.inuka@gmail.com>"
+```
+
+Gmail: turn on **2-Step Verification**, then create an **App password** at myaccount.google.com/apppasswords and use
+it as `SMTP_PASS` (not your normal password). Gmail sends about 500 emails a day; for more, use any SMTP service
+(Brevo, Zoho, Mailgun…). Check the setup with `npm run email:test -- your.email@example.com` (in `backend`).
+The backend also prints `✓ Email: sending through smtp.gmail.com` when it starts. Without SMTP settings, emails are
+printed in the terminal (development).
+
+**What is emailed**
+- Account: confirm email (button), reset password (button), account created by an admin.
+- Mentorship: request, confirmed, declined, cancelled, video link added, session done (rate it), session notes.
+- Learning: course completed (certificate). Badges stay in the app only.
+- **Reminders** (`services/reminders.js`, checked every 15 minutes, each sent only once): saved scholarships 7 days and
+  1 day before the deadline (not if already applied); mentor sessions 24 hours and 1 hour before (student and mentor).
+  `REMINDERS=off` turns them off.
+- **Announcements**: the admin form has "Also send it by email" (on by default).
+- **Scholarship alerts** (`services/alerts.js`): subscribers get an email when an admin adds a new scholarship or
+  publishes a guide/news article — once per item, with an **Unsubscribe** link (`/unsubscribe` page).
+- Home page "Submit your query": emailed to `CONTACT_EMAIL` (or `SMTP_USER`), with Reply-To set to the sender.
+
+Database change: run `npx prisma migrate deploy` (migration `20261012000000_reminders_alerts`).
+
+**Amazon S3 storage** — `STORAGE_DRIVER=s3` plus `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`,
+`AWS_S3_BUCKET`. The bucket stays private (encrypted); INUKA's backend serves documents only to their owner and
+photos/images to everyone.
+
+**Installable app + offline (spec §19.4)** — `frontend/public/manifest.webmanifest` and `frontend/public/sw.js`.
+On phones, "Add to Home screen" installs INUKA. Lessons and courses a student has opened can be read again without
+internet ("You are offline" bar). Sign-in, documents and AI need internet. Signing out removes the saved lessons.
+Works on the built site (`npm run build`), not in `npm run dev`.
+
+**My Learning** — new "Lessons per week" bar chart (last 8 weeks) and "Quiz history" table.
+
+## 37. Course builder: lessons, quizzes and final exams
+
+**Database change:** run `npx prisma migrate deploy` in `backend` (migration `20261012100000_course_tools_exams`).
+Existing quiz questions keep working (their single answer is copied to the new list of correct answers).
+
+**Courses** (Admin → Courses)
+- Reorder courses (↑ ↓ = order on the website) and **Duplicate** a course (a hidden copy with all lessons, quizzes and exam).
+- Edit subject (English / Computer skills), course letter (A–Z), level, skills, description, and **upload the course picture**.
+- Numbers on top: students started, finished all lessons, passed the exam, certificates. Each lesson row shows how many
+  finished it and the average quiz score.
+
+**Lessons** (open a lesson)
+- Time to study ("About 15 minutes"), its own **quiz pass mark** (empty = 60%).
+- **Upload listening audio** (MP3/M4A) — students get an audio player.
+- **Files to download**: upload worksheets, slides or readings (PDF, Word, PowerPoint, Excel, pictures; 25 MB) or add links.
+- **INUKA AI activity**: writing feedback (paragraph / essay / personal statement, task, word limits) or speaking practice,
+  or none. Lessons without a setting keep INUKA's built-in activities.
+- **Duplicate** a lesson.
+
+**Questions** (lesson quizzes and exams use the same editor)
+- Four types: one correct answer, several correct answers, true or false, short typed answer (several accepted answers;
+  capital letters, accents and full stops do not matter).
+- A picture on any question, an explanation, reorder ↑ ↓, and "x% right" labels from students' answers.
+- **Paste many**: write questions as text (`Q:` question, `-` wrong answer, `*` correct answer, `A: True`, `A: answer`,
+  `E:` explanation), press **Check** to preview, then **Add**.
+
+**Final exam** (course page → Create final exam, `/admin/courses/:id/exam`)
+- Settings: title, instructions, pass mark, time limit, random set of questions per student, shuffle, number of tries,
+  hours to wait after a failed try, show correct answers after submitting, required for the certificate, published.
+- Questions: add, paste many, or **Copy lesson quiz questions** in one click; points per question.
+- Results: every attempt (score, time taken), pass rate, average, hardest questions first, and **Another try** for a student.
+
+**Students**
+- Lesson page: time, audio player, files to download, the new question types.
+- When a course has a published exam that is required, finishing the last lesson **opens the exam** (no certificate yet).
+  The exam page (`/courses/:slug/exam`) shows the rules, a timer, question numbers, and saves answers as the student goes —
+  if the connection or phone stops, opening the page again continues the exam. When the time is up the answers are
+  sent automatically. Passing it gives the certificate (notification + email).
+
+API: `/api/admin/files`, `/api/admin/courses/:id/(move|duplicate|stats|exam…)`, `/api/admin/lessons/:id/(duplicate|quizzes/import)`,
+`/api/admin/exam-questions/:id`, `/api/admin/exam-attempts/:id`; students: `/api/courses/:slug/exam`, `/api/courses/:slug/exam/start`,
+`/api/exam-attempts/:id` (GET, `PUT …/answers`, `POST …/submit`).

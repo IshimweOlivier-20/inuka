@@ -44,7 +44,7 @@ export default function MentorDashboard() {
       ) : (
         <>
           {!m.isApproved && (
-            <Alert tone="info">
+            <Alert tone="warning">
               Your profile is waiting for approval by the INUKA team. Students will see you once it is approved.
               {m.rejectionNote && <> Note from the team: {m.rejectionNote}</>}
             </Alert>

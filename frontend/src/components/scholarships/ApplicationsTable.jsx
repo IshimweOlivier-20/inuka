@@ -1,11 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Alert, Button, EmptyState } from '../ui';
+import { Alert, Button, EmptyState, Pill } from '../ui';
 import { api, errorMessage } from '../../services/api';
-import { APP_STATUS, formatDate } from '../../utils/format';
+import { APP_STATUS, APP_STATUS_TONE, formatDate } from '../../utils/format';
 import { ListRowsSkeleton } from '../ui/Skeletons';
 import { ExternalLink, FileText } from 'lucide-react';
 
 // Spec 10.4 — students update their own status and notes.
+// Coloured left edge per status: green accepted, amber awaiting, red rejected, blue in progress / submitted.
+const STRIPE = {
+  success: 'shadow-[inset_4px_0_0_var(--color-success)]', warning: 'shadow-[inset_4px_0_0_var(--color-warning)]',
+  danger: 'shadow-[inset_4px_0_0_var(--color-danger)]', info: 'shadow-[inset_4px_0_0_var(--color-info)]',
+};
+
 export default function ApplicationsTable() {
   const [apps, setApps] = useState(null);
   const [error, setError] = useState('');
@@ -31,9 +37,9 @@ export default function ApplicationsTable() {
       {msg && <Alert tone="success">{msg}</Alert>}
       <ul className="space-y-3">
         {apps.map((a) => (
-          <li key={a.id} className="bg-surface rounded-xl border border-line p-4 grid gap-3 md:grid-cols-[1.4fr_1fr_1.4fr_auto] md:items-center">
+          <li key={a.id} className={`bg-surface rounded-xl border border-line p-4 grid gap-3 md:grid-cols-[1.4fr_1fr_1.4fr_auto] md:items-center ${STRIPE[APP_STATUS_TONE[a.status]] || ''}`}>
             <div>
-              <p className="font-semibold">{a.scholarship.name}</p>
+              <p className="font-semibold flex flex-wrap items-center gap-2">{a.scholarship.name}<Pill tone={APP_STATUS_TONE[a.status]}>{APP_STATUS[a.status]}</Pill></p>
               <p className="text-sm text-ink-soft">{a.scholarship.hostUniversity || a.scholarship.orgName} — started {formatDate(a.dateApplied)}</p>
             </div>
             <label className="text-sm">

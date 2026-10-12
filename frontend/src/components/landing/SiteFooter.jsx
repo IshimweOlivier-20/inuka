@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import Logo from '../layout/Logo';
 import { SectionLink } from './common';
 import { SITE } from '../../config/site';
+import ChatBubble from '../ai/ChatBubble';
 import FloatingActions from './FloatingActions';
 import { ICONS } from './socialIcons';
 
@@ -29,6 +30,7 @@ export default function SiteFooter() {
   return (
     <>
     <FloatingActions />
+    <ChatBubble className="right-4 sm:right-6 bottom-5 sm:bottom-6" />
     <footer className="bg-night text-white font-body border-t border-white/10">
       <div className="max-w-[1200px] mx-auto px-5 pt-14 pb-12">
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1.6fr]">

@@ -55,9 +55,9 @@ export default function AdminUsers() {
                 {data.users.map((u) => (
                   <tr key={u.id} className="hover:bg-paper/60">
                     <td className="px-4 py-3"><Link to={`/admin/users/${u.id}`} className="flex items-center gap-3 group"><Avatar user={u} /><span className="min-w-0"><span className="block font-semibold group-hover:underline">{u.firstName} {u.lastName}</span><span className="block text-ink-soft truncate">{u.email}</span></span></Link></td>
-                    <td className="px-4 py-3 whitespace-nowrap"><Pill tone={ROLE_TONE[u.role]}>{cap(u.role)}</Pill>{u.role === 'mentor' && !u.mentor?.isApproved && <span className="ml-1"><Pill>Not approved</Pill></span>}{u.refugeeStatus === 'yes' && <span className="ml-1"><Pill tone="sky">Refugee</Pill></span>}</td>
+                    <td className="px-4 py-3 whitespace-nowrap"><Pill tone={ROLE_TONE[u.role]}>{cap(u.role)}</Pill>{u.role === 'mentor' && !u.mentor?.isApproved && <span className="ml-1"><Pill tone="warning">Not approved</Pill></span>}{u.refugeeStatus === 'yes' && <span className="ml-1"><Pill tone="sky">Refugee</Pill></span>}</td>
                     <td className="px-4 py-3 text-ink-soft">{u.countryResidence || '—'}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">{!u.isActive ? <Pill tone="red">Suspended</Pill> : !u.isVerified ? <Pill>Email not confirmed</Pill> : <Pill tone="brand">Active</Pill>}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">{!u.isActive ? <Pill tone="danger">Suspended</Pill> : !u.isVerified ? <Pill tone="warning">Email not confirmed</Pill> : <Pill tone="success">Active</Pill>}</td>
                     <td className="px-4 py-3 text-ink-soft whitespace-nowrap">{formatDate(u.createdAt)}</td>
                     <td className="px-4 py-3 text-right"><Button variant="ghost" to={`/admin/users/${u.id}`} className="px-3">Open</Button></td>
                   </tr>
@@ -127,7 +127,7 @@ function EditUser({ id }) {
         <div className="min-w-0">
           <h1 className="text-2xl sm:text-[1.75rem] font-bold">{name}</h1>
           <p className="text-ink-soft">{u.email} · joined {formatDate(u.createdAt)}</p>
-          <p className="mt-1.5 flex flex-wrap gap-1.5"><Pill tone={ROLE_TONE[u.role]}>{cap(u.role)}</Pill>{!u.isActive && <Pill tone="red">Suspended</Pill>}{!u.isVerified && <Pill>Email not confirmed</Pill>}</p>
+          <p className="mt-1.5 flex flex-wrap gap-1.5"><Pill tone={ROLE_TONE[u.role]}>{cap(u.role)}</Pill>{!u.isActive && <Pill tone="danger">Suspended</Pill>}{!u.isVerified && <Pill tone="warning">Email not confirmed</Pill>}</p>
         </div>
       </div>
       <dl className="grid grid-cols-3 sm:grid-cols-6 gap-3 text-center">

@@ -13,6 +13,7 @@ const Landing = lazy(() => import('./pages/public/Landing'));
 const Learn = lazy(() => import('./pages/public/Learn'));
 const Opportunities = lazy(() => import('./pages/public/Opportunities'));
 const ScholarshipPage = lazy(() => import('./pages/public/ScholarshipPage'));
+const Unsubscribe = lazy(() => import('./pages/public/Unsubscribe'));
 const NewsList = lazy(() => import('./pages/public/News').then((m) => ({ default: m.NewsList })));
 const Article = lazy(() => import('./pages/public/News').then((m) => ({ default: m.Article })));
 const Terms = lazy(() => import('./pages/public/Legal').then((m) => ({ default: m.Terms })));
@@ -29,6 +30,7 @@ const ResetPassword = lazy(() => import('./pages/auth/AccountPages').then((m) =>
 const StudentDashboard = lazy(() => import('./pages/student/StudentDashboard'));
 const Courses = lazy(() => import('./pages/student/Courses'));
 const CourseDetail = lazy(() => import('./pages/student/CourseDetail'));
+const ExamPage = lazy(() => import('./pages/student/ExamPage'));
 const LessonPage = lazy(() => import('./pages/student/LessonPage'));
 const Scholarships = lazy(() => import('./pages/student/Scholarships'));
 const MyLearning = lazy(() => import('./pages/student/MyLearning'));
@@ -51,6 +53,7 @@ const AdminCourses = lazy(() => import('./pages/admin/AdminCourses').then((m) =>
 const AdminCourse = lazy(() => import('./pages/admin/AdminCourses').then((m) => ({ default: m.AdminCourse })));
 const AdminNewLesson = lazy(() => import('./pages/admin/AdminCourses').then((m) => ({ default: m.AdminNewLesson })));
 const AdminLesson = lazy(() => import('./pages/admin/AdminLesson'));
+const AdminExam = lazy(() => import('./pages/admin/AdminExam'));
 const AdminScholarships = lazy(() => import('./pages/admin/AdminScholarships').then((m) => ({ default: m.AdminScholarships })));
 const AdminScholarshipForm = lazy(() => import('./pages/admin/AdminScholarships').then((m) => ({ default: m.AdminScholarshipForm })));
 const AdminAnalytics = lazy(() => import('./pages/admin/AdminInsights').then((m) => ({ default: m.AdminAnalytics })));
@@ -97,6 +100,7 @@ export default function App() {
         <Route path="/learn" element={<Learn />} />
         <Route path="/opportunities" element={<Opportunities />} />
         <Route path="/opportunities/:slug" element={<ScholarshipPage />} />
+        <Route path="/unsubscribe" element={<Unsubscribe />} />
         <Route path="/news" element={<NewsList />} />
         <Route path="/news/:slug" element={<Article />} />
         <Route path="/terms" element={<Terms />} />
@@ -117,6 +121,7 @@ export default function App() {
           <Route path="/dashboard" element={<StudentDashboard />} />
           <Route path="/courses" element={<Courses />} />
           <Route path="/courses/:slug" element={<CourseDetail />} />
+          <Route path="/courses/:slug/exam" element={<ExamPage />} />
           <Route path="/lessons/:id" element={<LessonPage />} />
           <Route path="/scholarships" element={<Scholarships />} />
           <Route path="/my-learning" element={<MyLearning />} />
@@ -143,6 +148,7 @@ export default function App() {
           <Route path="/admin/courses/:id" element={<AdminCourse />} />
           <Route path="/admin/courses/:id/lessons/new" element={<AdminNewLesson />} />
           <Route path="/admin/lessons/:id" element={<AdminLesson />} />
+          <Route path="/admin/courses/:id/exam" element={<AdminExam />} />
           <Route path="/admin/scholarships" element={<AdminScholarships />} />
           <Route path="/admin/scholarships/:id" element={<AdminScholarshipForm />} />
           <Route path="/admin/analytics" element={<AdminAnalytics />} />

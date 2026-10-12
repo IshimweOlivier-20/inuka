@@ -9,7 +9,7 @@ import { ScholarshipGridSkeleton } from '../../components/ui/Skeletons';
 import { Bookmark, SearchX } from 'lucide-react';
 
 const EMPTY = { q: '', region: '', level: '', funding: '', refugees: '', language: '', deadline: '', sort: 'deadline' };
-const TABS = [['discover', 'Discover'], ['saved', 'Saved'], ['applications', 'My applications']];
+const TABS = [['discover', 'Discover'], ['foryou', 'For you'], ['saved', 'Saved'], ['applications', 'My applications']];
 
 export default function Scholarships() {
   const [params, setParams] = useSearchParams();
@@ -27,6 +27,9 @@ export default function Scholarships() {
     try {
       if (tab === 'saved') {
         setList((await api.get('/scholarships/saved')).data.scholarships);
+      } else if (tab === 'foryou') {
+        // Best matches for the student's profile, with the reasons (spec: auto-suggest from the profile)
+        setList((await api.get('/scholarships/matches', { params: { limit: 12 } })).data.matches);
       } else if (tab === 'discover') {
         const q = Object.fromEntries(Object.entries(filters).filter(([, v]) => v));
         setList((await api.get('/scholarships', { params: q })).data.scholarships);
@@ -120,7 +123,9 @@ export default function Scholarships() {
 
           <div>
             {!list ? <ScholarshipGridSkeleton /> : list.length === 0 ? (
-              tab === 'saved'
+              tab === 'foryou'
+                ? <EmptyState icon={SearchX} title="No matches yet" action={<Button to="/profile">Complete my profile</Button>}>Add your education level, refugee status and country so INUKA can suggest scholarships for you.</EmptyState>
+                : tab === 'saved'
                 ? <EmptyState icon={Bookmark} title="No saved scholarships yet" action={<Button onClick={() => setParams({ tab: 'discover' })}>Discover scholarships</Button>}>Tap “Save” on any scholarship to keep it here, sorted by deadline.</EmptyState>
                 : <EmptyState icon={SearchX} title="No scholarships match these filters" action={<Button variant="outline" onClick={() => setFilters(EMPTY)}>Clear all filters</Button>}>Try removing a filter or searching for a different word.</EmptyState>
             ) : (

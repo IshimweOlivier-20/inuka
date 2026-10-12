@@ -22,7 +22,7 @@ function daysText(deadline) {
   const d = daysUntil(deadline);
   if (d === null) return { text: 'Deadline varies', cls: 'text-ink-soft' };
   if (d < 0) return { text: 'Deadline passed', cls: 'text-ink-soft' };
-  return { text: d === 0 ? 'Closes today' : d === 1 ? '1 day left' : `${d} days left`, cls: d < 30 ? 'text-danger' : 'text-success' };
+  return { text: d === 0 ? 'Closes today' : d === 1 ? '1 day left' : `${d} days left`, cls: d < 14 ? 'text-danger' : d < 30 ? 'text-warning' : 'text-success' };
 }
 
 function Section({ title, children }) {
