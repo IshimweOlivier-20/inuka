@@ -32,10 +32,16 @@ export default function MentorSessions() {
   if (!sessions) return <ListRowsSkeleton rows={4} />;
 
   const now = Date.now();
-  const isUpcoming = (s) => ['pending', 'confirmed'].includes(s.status) && new Date(s.scheduledAt).getTime() > now - 3600e3;
+  const viewOf = (s) => {
+    const t = new Date(s.scheduledAt).getTime();
+    if (s.status === 'completed') return 'completed';
+    if (['cancelled', 'declined'].includes(s.status) || (s.status === 'pending' && t < now)) return 'cancelled';
+    return t + 3600e3 > now ? 'upcoming' : 'completed';
+  };
+  const count = (v) => sessions.filter((s) => viewOf(s) === v).length;
   const list = day ? sessions.filter((s) => dayKey(s.scheduledAt) === day)
-    : view === 'upcoming' ? sessions.filter(isUpcoming).reverse()
-      : sessions.filter((s) => !isUpcoming(s));
+    : view === 'upcoming' ? sessions.filter((s) => viewOf(s) === 'upcoming').reverse()
+      : sessions.filter((s) => viewOf(s) === view);
   const reviews = sessions.filter((s) => s.review);
   const avg = reviews.length ? reviews.reduce((a, s) => a + s.review.rating, 0) / reviews.length : 0;
 
@@ -49,7 +55,7 @@ export default function MentorSessions() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl sm:text-[1.75rem] font-bold">Sessions</h1>
+        <h1 className="text-xl sm:text-2xl font-bold">Sessions</h1>
         <p className="text-ink-soft mt-1">Your calendar, session notes and the ratings students gave you.</p>
       </div>
       {notice && <Alert tone="success">{notice}</Alert>}
@@ -95,16 +101,18 @@ export default function MentorSessions() {
           {day ? (
             <h2 className="text-lg font-semibold">{new Date(day).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}</h2>
           ) : (
-            <div role="tablist" className="flex gap-1 border-b border-line">
-              {[['upcoming', 'Upcoming'], ['past', 'Past']].map(([k, l]) => (
+            <div role="tablist" className="grid grid-cols-3 border-b border-line">
+              {[['upcoming', 'Upcoming'], ['completed', 'Completed'], ['cancelled', 'Cancelled']].map(([k, l]) => (
                 <button key={k} role="tab" aria-selected={view === k} onClick={() => setView(k)}
-                  className={`min-h-11 px-4 font-medium border-b-2 -mb-px ${view === k ? 'border-brand text-brand' : 'border-transparent text-ink-soft hover:text-ink'}`}>{l}</button>
+                  className={`min-h-12 font-medium border-b-[3px] -mb-px ${view === k ? 'border-brand text-brand font-semibold' : 'border-transparent text-ink-soft hover:text-ink'}`}>
+                  {l}{k !== 'cancelled' && count(k) > 0 && <span className="ml-1.5 text-xs opacity-70">{count(k)}</span>}
+                </button>
               ))}
             </div>
           )}
           {list.length === 0 ? (
-            <EmptyState icon={CalendarDays} title={day ? 'No sessions on this day' : view === 'upcoming' ? 'No upcoming sessions' : 'No past sessions yet'}>
-              {view === 'upcoming' && !day ? 'When students book you and you accept, sessions appear here.' : 'Finished sessions, your notes and ratings appear here.'}
+            <EmptyState icon={CalendarDays} title={day ? 'No sessions on this day' : { upcoming: 'No upcoming sessions', completed: 'No completed sessions yet', cancelled: 'No cancelled sessions' }[view]}>
+              {day ? 'Choose another day, or show all days.' : { upcoming: 'When students book you, their requests and your confirmed sessions appear here.', completed: 'Finished sessions, your notes and ratings appear here.', cancelled: 'Sessions that were cancelled, declined or never confirmed appear here.' }[view]}
             </EmptyState>
           ) : (
             <ul className="mt-4 space-y-3">

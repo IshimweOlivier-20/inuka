@@ -8,6 +8,7 @@ import { notify } from '../../utils/notify.js';
 import { awardBadge } from '../../utils/badgeChecker.js';
 import { sendEmail } from '../../services/emailService.js';
 import { formatWhen, SESSION_MINUTES } from '../../utils/slots.js';
+import { systemMessage } from '../../services/chat.js';
 
 const router = Router();
 router.use(requireAuth, requireRole('mentor'));
@@ -115,7 +116,8 @@ router.post('/bookings/:id/accept', async (req, res) => {
   await prisma.booking.update({ where: { id: b.id }, data: { status: 'confirmed', videoLink: videoLink || null } });
   const when = formatWhen(b.scheduledAt);
   const name = `${req.user.firstName} ${req.user.lastName}`;
-  await notify(b.studentId, 'booking_confirmed', `Your session with ${name} is confirmed for ${when}.`, '/mentorship');
+  await notify(b.studentId, 'booking_confirmed', `Your session with ${name} is confirmed for ${when}.`, `/mentorship/sessions/${b.id}`);
+  await systemMessage({ ...b, mentor: m }, `${req.user.firstName} confirmed the session: ${b.topic}, ${when}.${message ? ` Message: ${message}` : ''}`);
   mail({
     to: b.student.email, subject: `Confirmed: your session with ${name}`,
     text: `Hi ${b.student.firstName},\n\nGood news! ${name} confirmed your session.\n\nTopic: ${b.topic}\nWhen: ${when}\n${videoLink ? `Video link: ${videoLink}\n` : 'Your mentor will share the video link before the session.\n'}${message ? `\nMessage from your mentor: ${message}\n` : ''}\nThe Join button on your INUKA dashboard opens 15 minutes before the session.\n\nRise. Learn. Succeed.\nThe INUKA team`,
@@ -132,7 +134,9 @@ router.post('/bookings/:id/decline', async (req, res) => {
   if (b.status !== 'pending') throw new HttpError(400, 'This request has already been answered.');
   await prisma.booking.update({ where: { id: b.id }, data: { status: 'declined' } });
   const when = formatWhen(b.scheduledAt);
-  await notify(b.studentId, 'booking_declined', `${req.user.firstName} cannot do the session on ${when}. Please choose another time or mentor.`, '/mentorship');
+  await prisma.booking.update({ where: { id: b.id }, data: { cancelReason: message || null, cancelledBy: 'mentor' } });
+  await notify(b.studentId, 'booking_declined', `${req.user.firstName} cannot do the session on ${when}. Please choose another time or mentor.`, '/mentorship?tab=sessions&view=cancelled');
+  await systemMessage({ ...b, mentor: m }, `${req.user.firstName} declined the session of ${when}.${message ? ` Message: ${message}` : ''}`);
   mail({
     to: b.student.email, subject: `About your session request to ${req.user.firstName}`,
     text: `Hi ${b.student.firstName},\n\n${req.user.firstName} ${req.user.lastName} cannot do the session on ${when}.${message ? `\n\nMessage from the mentor: ${message}` : ''}\n\nPlease choose another time or another mentor on INUKA.\n\nThe INUKA team`,
@@ -147,6 +151,7 @@ router.patch('/bookings/:id', async (req, res) => {
   const b = await myBooking(req, m);
   if (b.status !== 'confirmed') throw new HttpError(400, 'You can add a link to confirmed sessions only.');
   await prisma.booking.update({ where: { id: b.id }, data: { videoLink: videoLink || null } });
+  if (videoLink) await systemMessage({ ...b, mentor: m }, `${req.user.firstName} added the video link for the session of ${formatWhen(b.scheduledAt)}.`);
   if (videoLink) await notify(b.studentId, 'booking_link', `${req.user.firstName} added the video link for your session on ${formatWhen(b.scheduledAt)}.`, '/mentorship');
   res.json({ ok: true });
 });
@@ -160,7 +165,25 @@ router.post('/bookings/:id/complete', async (req, res) => {
   await prisma.booking.update({ where: { id: b.id }, data: { status: 'completed' } });
   await prisma.mentor.update({ where: { id: m.id }, data: { sessionsCount: { increment: 1 } } });
   await awardBadge(b.studentId, 'first_mentor_session');
+  await systemMessage({ ...b, mentor: m }, `Session completed: ${b.topic}.`);
   await notify(b.studentId, 'session_completed', `How was your session with ${req.user.firstName}? Rate it to help other students.`, '/mentorship?tab=past');
+  res.json({ ok: true });
+});
+
+// POST /api/mentor/bookings/:id/cancel { reason } — the mentor cannot come after confirming
+router.post('/bookings/:id/cancel', async (req, res) => {
+  const { reason } = z.object({ reason: z.string().trim().min(3, 'Please tell the student why.').max(500) }).parse(req.body);
+  const m = await myMentor(req);
+  const b = await myBooking(req, m);
+  if (!['pending', 'confirmed'].includes(b.status) || b.scheduledAt < new Date()) throw new HttpError(400, 'This session can no longer be cancelled.');
+  await prisma.booking.update({ where: { id: b.id }, data: { status: 'cancelled', cancelReason: reason, cancelledBy: 'mentor' } });
+  const when = formatWhen(b.scheduledAt);
+  await notify(b.studentId, 'booking_cancelled', `${req.user.firstName} cancelled the session on ${when}. Please book another time.`, '/mentorship?tab=sessions&view=cancelled');
+  await systemMessage({ ...b, mentor: m }, `${req.user.firstName} cancelled the session of ${when}. Reason: ${reason}`);
+  mail({
+    to: b.student.email, subject: `Your session with ${req.user.firstName} was cancelled`,
+    text: `Hi ${b.student.firstName},\n\n${req.user.firstName} ${req.user.lastName} had to cancel your session "${b.topic}" on ${when}.\nReason: ${reason}\n\nPlease book another time on INUKA.\n\nThe INUKA team`,
+  });
   res.json({ ok: true });
 });
 

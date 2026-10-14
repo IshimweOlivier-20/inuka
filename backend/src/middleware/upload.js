@@ -62,3 +62,21 @@ const MAGIC = {
 export function assertImage(file) {
   if (file && !MAGIC[file.mimetype]?.(file.buffer)) throw new HttpError(400, 'This file is not a valid photo. Please choose a JPG, PNG or WebP image.');
 }
+
+// Files in student–mentor messages: pictures, PDF, Word, and voice notes, up to 10 MB.
+export const CHAT_FILE_TYPES = {
+  'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif',
+  'application/pdf': 'pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+  'audio/webm': 'webm', 'audio/ogg': 'ogg', 'audio/mp4': 'm4a', 'audio/mpeg': 'mp3', 'audio/x-m4a': 'm4a',
+};
+export const chatUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const type = file.mimetype.split(';')[0];
+    if (!CHAT_FILE_TYPES[type]) return cb(new HttpError(400, 'You can send pictures, PDF or Word files, and voice notes.'));
+    file.mimetype = type;
+    cb(null, true);
+  },
+});

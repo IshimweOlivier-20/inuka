@@ -150,13 +150,21 @@ async function seedTestMentor() {
       passwordHash: await bcrypt.hash(password, 12),
     },
   });
+  // Weekly hours (UTC): Monday–Friday 07:00–10:00 and 12:00–16:00, Saturday 08:00–11:00 (09:00… in Kigali time).
+  const hours = [1, 2, 3, 4, 5].flatMap((d) => [{ dayOfWeek: d, startTime: '07:00', endTime: '10:00' }, { dayOfWeek: d, startTime: '12:00', endTime: '16:00' }])
+    .concat([{ dayOfWeek: 6, startTime: '08:00', endTime: '11:00' }]);
+  const existing = await prisma.mentor.findUnique({ where: { userId: user.id }, include: { _count: { select: { slots: true } } } });
+  if (existing && existing._count.slots <= 2) { // older test data had only two 1-hour slots a week
+    await prisma.mentorSlot.deleteMany({ where: { mentorId: existing.id } });
+    await prisma.mentorSlot.createMany({ data: hours.map((h) => ({ ...h, mentorId: existing.id })) });
+  }
   await prisma.mentor.upsert({
     where: { userId: user.id },
     update: { expertise: ['University Admissions', 'Scholarship Guidance'] }, // fixes older test data
     create: {
       userId: user.id, title: 'University admissions mentor', bio: 'Test mentor profile for development.',
       expertise: ['University Admissions', 'Scholarship Guidance'], languages: ['English', 'Kinyarwanda'], isApproved: true,
-      slots: { create: [{ dayOfWeek: 2, startTime: '14:00', endTime: '15:00' }, { dayOfWeek: 4, startTime: '16:00', endTime: '17:00' }] },
+      slots: { create: hours },
     },
   });
   console.log(`✓ test mentor account: ${email} (development only)`);

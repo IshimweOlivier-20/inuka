@@ -31,7 +31,7 @@ export default function MentorDashboard() {
     <div className="space-y-6">
       <section className="rounded-2xl bg-brand text-white p-6 md:p-8">
         <p className="text-white/70 text-sm">{formatDate(new Date())}</p>
-        <h1 className="text-white text-2xl md:text-3xl font-semibold mt-1">Welcome back, {user.firstName}</h1>
+        <h1 className="text-white text-xl md:text-2xl font-semibold mt-1">Welcome back, {user.firstName}</h1>
         <p className="mt-2 text-white/85 max-w-2xl">Thank you for guiding young people towards university. One conversation can change a whole application.</p>
       </section>
 
@@ -140,7 +140,7 @@ function Stat({ icon, tone, value, label }) {
     <li className="bg-surface rounded-xl border border-line p-5 flex items-center gap-4">
       <IconTile icon={icon} tone={tone} />
       <div>
-        <p className="font-display text-3xl font-bold leading-none">{value}</p>
+        <p className="font-display text-2xl font-bold leading-none">{value}</p>
         <p className="font-semibold mt-1.5">{label}</p>
       </div>
     </li>

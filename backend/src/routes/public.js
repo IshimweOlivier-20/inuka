@@ -7,6 +7,7 @@ import { HttpError } from '../middleware/errorHandler.js';
 import { searchScholarships } from '../services/scholarshipSearch.js';
 import { COURSE_FILE_NAME, MEDIA_NAME, PHOTO_NAME, contentTypeOf, readPublicImage } from '../services/storageService.js';
 import { sendEmail } from '../services/emailService.js';
+import { optionalAuth, requireAuth } from '../middleware/auth.js';
 
 const router = Router();
 const isProd = () => process.env.NODE_ENV === 'production';
@@ -81,26 +82,79 @@ router.get('/landing', async (req, res) => {
 });
 
 // News & Guides
+const postList = { id: true, slug: true, title: true, category: true, excerpt: true, coverEmoji: true, coverUrl: true, readMinutes: true, publishedAt: true, authorName: true, isSample: true, _count: { select: { likes: true, comments: true } } };
+const withCounts = ({ _count, ...p }) => ({ ...p, likes: _count?.likes ?? 0, comments: _count?.comments ?? 0 });
+
+// GET /api/public/posts?category=&q=&sort=latest|popular
 router.get('/posts', async (req, res) => {
-  const { category } = z.object({ category: z.enum(['news', 'guide', 'story']).optional() }).parse(req.query);
+  const { category, q, sort } = z.object({
+    category: z.enum(['news', 'guide', 'story']).optional().catch(undefined),
+    q: z.string().trim().max(100).optional(),
+    sort: z.enum(['latest', 'popular']).default('latest').catch('latest'),
+  }).parse(req.query);
+  const words = (q || '').split(/\s+/).filter(Boolean);
   const posts = await prisma.post.findMany({
-    where: { ...visible(), publishedAt: { lte: new Date() }, ...(category && { category }) },
-    orderBy: { publishedAt: 'desc' },
-    select: { id: true, slug: true, title: true, category: true, excerpt: true, coverEmoji: true, readMinutes: true, publishedAt: true, authorName: true, isSample: true },
+    where: {
+      ...visible(), publishedAt: { lte: new Date() }, ...(category && { category }),
+      ...(words.length && { AND: words.map((w) => ({ OR: [{ title: { contains: w, mode: 'insensitive' } }, { excerpt: { contains: w, mode: 'insensitive' } }, { contentHtml: { contains: w, mode: 'insensitive' } }] })) }),
+    },
+    orderBy: sort === 'popular' ? [{ likes: { _count: 'desc' } }, { publishedAt: 'desc' }] : { publishedAt: 'desc' },
+    select: postList,
   });
-  res.json({ posts });
+  const counts = await prisma.post.groupBy({ by: ['category'], where: { ...visible(), publishedAt: { lte: new Date() } }, _count: { _all: true } });
+  res.json({ posts: posts.map(withCounts), counts: Object.fromEntries(counts.map((c) => [c.category, c._count._all])) });
 });
 
-router.get('/posts/:slug', async (req, res) => {
-  const post = await prisma.post.findFirst({ where: { slug: req.params.slug, ...visible() } });
+// Who wrote a comment: name, photo and role (so "Mentor" and "INUKA team" can be shown).
+const commenter = { select: { id: true, firstName: true, lastName: true, profilePhotoUrl: true, role: true } };
+
+router.get('/posts/:slug', optionalAuth, async (req, res) => {
+  const post = await prisma.post.findFirst({ where: { slug: req.params.slug, ...visible() }, include: { _count: { select: { likes: true, comments: true } } } });
   if (!post) throw new HttpError(404, 'We could not find this article.');
-  const more = await prisma.post.findMany({
-    where: { ...visible(), id: { not: post.id }, publishedAt: { lte: new Date() } },
-    orderBy: { publishedAt: 'desc' },
-    take: 3,
-    select: { slug: true, title: true, category: true, coverEmoji: true, readMinutes: true },
-  });
-  res.json({ post, more });
+  const [more, comments, mine] = await Promise.all([
+    prisma.post.findMany({
+      where: { ...visible(), id: { not: post.id }, publishedAt: { lte: new Date() } },
+      orderBy: [{ category: post.category === 'news' ? 'desc' : 'asc' }, { publishedAt: 'desc' }], take: 3, select: postList,
+    }),
+    prisma.postComment.findMany({ where: { postId: post.id }, orderBy: { createdAt: 'desc' }, take: 200, include: { user: commenter } }),
+    req.user ? prisma.postLike.findUnique({ where: { postId_userId: { postId: post.id, userId: req.user.id } } }) : null,
+  ]);
+  res.json({ post: { ...withCounts(post), likedByMe: !!mine }, more: more.map(withCounts), comments });
+});
+
+// POST /api/public/posts/:slug/like — like, or unlike if already liked
+router.post('/posts/:slug/like', requireAuth, async (req, res) => {
+  const post = await prisma.post.findFirst({ where: { slug: req.params.slug, ...visible() }, select: { id: true } });
+  if (!post) throw new HttpError(404, 'We could not find this article.');
+  const key = { postId_userId: { postId: post.id, userId: req.user.id } };
+  const had = await prisma.postLike.findUnique({ where: key });
+  if (had) await prisma.postLike.delete({ where: key });
+  else await prisma.postLike.create({ data: { postId: post.id, userId: req.user.id } });
+  const likes = await prisma.postLike.count({ where: { postId: post.id } });
+  res.json({ liked: !had, likes });
+});
+
+const commentLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, limit: 10, standardHeaders: 'draft-7', legacyHeaders: false, keyGenerator: (req) => req.user?.id || req.ip,
+  handler: (req, res) => res.status(429).json({ error: 'You have written many comments in a short time. Please wait a few minutes.' }),
+});
+
+// POST /api/public/posts/:slug/comments { text }
+router.post('/posts/:slug/comments', requireAuth, commentLimiter, async (req, res) => {
+  const { text } = z.object({ text: z.string().trim().min(2, 'Please write your comment.').max(1500, 'Please keep your comment under 1500 characters.') }).parse(req.body);
+  const post = await prisma.post.findFirst({ where: { slug: req.params.slug, ...visible() }, select: { id: true } });
+  if (!post) throw new HttpError(404, 'We could not find this article.');
+  const comment = await prisma.postComment.create({ data: { postId: post.id, userId: req.user.id, text }, include: { user: commenter } });
+  res.status(201).json({ comment });
+});
+
+// DELETE /api/public/post-comments/:id — your own comment (admins can remove any)
+router.delete('/post-comments/:id', requireAuth, async (req, res) => {
+  const c = await prisma.postComment.findUnique({ where: { id: req.params.id } });
+  if (!c) throw new HttpError(404, 'This comment was already removed.');
+  if (c.userId !== req.user.id && req.user.role !== 'admin') throw new HttpError(403, 'You can only remove your own comments.');
+  await prisma.postComment.delete({ where: { id: c.id } });
+  res.json({ ok: true });
 });
 
 // ---------- Public course catalogue (/learn) ----------

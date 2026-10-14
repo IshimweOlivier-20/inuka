@@ -9,7 +9,9 @@ import { generalLimiter } from './src/middleware/rateLimiter.js';
 import { errorHandler, notFound } from './src/middleware/errorHandler.js';
 // Shared (everyone)
 import publicRoutes from './src/routes/public.js';
-import authRoutes from './src/routes/auth.js';
+import authRoutes, { googleProblem } from './src/routes/auth.js';
+import { watchFile } from 'node:fs';
+import dotenv from 'dotenv';
 import accountRoutes from './src/routes/account.js';
 import searchRoutes from './src/routes/search.js';
 // Student dashboard
@@ -20,6 +22,7 @@ import documentRoutes from './src/routes/student/documents.js';
 import mentorshipRoutes from './src/routes/student/mentorship.js';
 import aiRoutes from './src/routes/student/ai.js';
 import assistantRoutes from './src/routes/assistant.js';
+import messageRoutes from './src/routes/messages.js';
 // Mentor and admin dashboards
 import mentorRoutes from './src/routes/mentor/index.js';
 import adminRoutes from './src/routes/admin/index.js';
@@ -47,6 +50,7 @@ app.use('/api/scholarships', scholarshipRoutes);
 app.use('/api/applications', applications);
 app.use('/api/documents', documentRoutes);
 app.use('/api', mentorshipRoutes); // /api/mentors, /api/bookings
+app.use('/api', messageRoutes); // /api/conversations, /api/messages/unread
 app.use('/api', aiRoutes); // /api/ai/...
 app.use('/api/assistant', assistantRoutes); // chat bubble for everyone (free)
 app.use('/api/mentor', mentorRoutes);
@@ -63,4 +67,16 @@ app.listen(port, () => {
   console.log(`✓ INUKA API running on http://localhost:${port}`);
   verifyEmail().then((r) => console.log(r.ok ? `✓ Email: sending through ${process.env.SMTP_HOST}` : `• Email: ${r.reason}`));
   startReminders(); // reminder emails (scholarship deadlines, mentor sessions)
+  const g = googleProblem();
+  console.log(g ? `• Google sign-in: off — ${g}` : '✓ Google sign-in: on');
 });
+
+// While developing: when backend/.env is saved, read it again (no restart needed for keys like GOOGLE_CLIENT_ID,
+// SMTP_*, AI_*). "node --watch" restarts on code changes only, not on .env changes.
+if (process.env.NODE_ENV !== 'production') {
+  watchFile('.env', { interval: 1500 }, () => {
+    dotenv.config({ override: true, quiet: true });
+    const g = googleProblem();
+    console.log(`↻ backend/.env reloaded. ${g ? `Google sign-in: off — ${g}` : 'Google sign-in: on'}`);
+  });
+}

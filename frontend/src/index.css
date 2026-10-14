@@ -185,3 +185,17 @@ html.theme-switching, html.theme-switching * { transition: background-color .25s
 @keyframes toast-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
 .toast-in { animation: toast-in .25s ease-out both; }
 
+
+/* ---------- Dashboards ---------- */
+/* Slightly smaller type and spacing than the public website, so pages feel calm and fit more. */
+html.dash { font-size: 15px; }
+html.dash body { line-height: 1.6; }
+
+/* Sidebar: the active link is a tab in the page colour that comes out of the dark panel,
+   with curved corners above and below (like a notch). */
+.side-tab::before, .side-tab::after {
+  content: ""; position: absolute; right: 0; width: 22px; height: 22px; pointer-events: none;
+  background: transparent;
+}
+.side-tab::before { top: -22px; border-bottom-right-radius: 22px; box-shadow: 8px 8px 0 8px var(--color-paper); }
+.side-tab::after { bottom: -22px; border-top-right-radius: 22px; box-shadow: 8px -8px 0 8px var(--color-paper); }

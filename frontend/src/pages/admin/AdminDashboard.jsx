@@ -38,7 +38,7 @@ export default function AdminDashboard() {
       <section className="rounded-2xl bg-brand-deep text-white p-6 md:p-8 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-white/70 text-sm">{formatDate(new Date())}</p>
-          <h1 className="text-white text-2xl md:text-3xl font-semibold mt-1">Hello {user.firstName}, here is INUKA today</h1>
+          <h1 className="text-white text-xl md:text-2xl font-semibold mt-1">Hello {user.firstName}, here is INUKA today</h1>
           <p className="mt-2 text-white/80">{n(d.users.newThisWeek)} new {d.users.newThisWeek === 1 ? 'account' : 'accounts'} and {n(d.users.activeThisWeek)} active {d.users.activeThisWeek === 1 ? 'learner' : 'learners'} in the last 7 days.</p>
         </div>
         {d.mentorship.pending > 0 && <Button to="/admin/mentors" variant="accent">{d.mentorship.pending} {d.mentorship.pending === 1 ? 'mentor' : 'mentors'} to approve</Button>}
@@ -134,7 +134,7 @@ function Stat({ icon, tone, value, label, note, noteTone, to }) {
     <>
       <IconTile icon={icon} tone={tone} />
       <div>
-        <p className="font-display text-3xl font-bold leading-none">{value}</p>
+        <p className="font-display text-2xl font-bold leading-none">{value}</p>
         <p className="font-semibold mt-1.5">{label}</p>
         <p className={`text-sm ${NOTE_TONE[noteTone] || 'text-ink-soft'}`}>{note}</p>
       </div>

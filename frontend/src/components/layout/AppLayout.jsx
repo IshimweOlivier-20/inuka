@@ -9,6 +9,7 @@ import ThemeToggle from './ThemeToggle';
 import { useAuth } from '../../context/AuthContext';
 import { PageSkeleton } from '../ui/Skeletons';
 import { LogOut, Menu, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { useUnreadMessages } from '../../hooks/useUnreadMessages';
 import { MOBILE_TABS, ROLE_LABEL, ROLE_NAV, homeFor } from '../../config/roles';
 
 // true/false as the device goes online/offline
@@ -40,40 +41,52 @@ export default function AppLayout() {
   const role = user?.role || 'student';
   const NAV = ROLE_NAV[role] || ROLE_NAV.student;
   const isStudent = role === 'student';
+  const unread = useUnreadMessages(role === 'student' || role === 'mentor');
 
+  // Dashboards use a slightly smaller type scale than the public website.
+  useEffect(() => {
+    document.documentElement.classList.add('dash');
+    return () => document.documentElement.classList.remove('dash');
+  }, []);
+
+  // Active link = a tab in the page colour that "comes out" of the dark sidebar (curved corners, see .side-tab in index.css).
   const linkCls = ({ isActive }) =>
-    `flex items-center gap-3 min-h-11 px-4 rounded-lg font-medium transition-colors ${collapsed ? 'md:justify-center md:px-0' : ''} ${isActive
-      ? 'bg-brand-soft text-brand font-semibold shadow-[inset_4px_0_0_var(--color-accent)]'
-      : 'text-ink-soft hover:bg-brand-soft hover:text-brand'}`;
+    `side-link group relative flex items-center gap-3.5 min-h-12 pl-4 pr-3 rounded-l-full font-medium transition-colors ${collapsed ? 'md:justify-center md:pl-0 md:pr-0 md:ml-1.5' : ''} ${isActive
+      ? 'side-tab bg-paper text-brand font-semibold'
+      : 'text-white/75 hover:text-white hover:bg-white/10 rounded-r-full mr-3'}`;
 
   return (
-    <div className={`min-h-screen transition-[padding] ${collapsed ? 'md:pl-[76px]' : 'md:pl-60'}`}>
+    <div className={`min-h-screen transition-[padding] ${collapsed ? 'md:pl-[96px]' : 'md:pl-[264px]'}`}>
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-2 focus:p-3 focus:bg-surface">Skip to content</a>
 
-      {/* Desktop sidebar / mobile drawer */}
-      <aside className={`fixed inset-y-0 left-0 z-40 w-60 ${collapsed ? 'md:w-[76px]' : ''} bg-surface border-r border-line flex flex-col transition-[transform,width] md:translate-x-0 ${menuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className={`px-5 py-5 ${collapsed ? 'md:px-0 md:text-center' : ''}`}>
-          <span className={collapsed ? 'md:hidden' : ''}><Logo /></span>
-          {collapsed && <span className="hidden md:inline-flex" aria-label="INUKA"><Logo markOnly /></span>}
-          {!isStudent && <p className={`mt-2 text-xs font-semibold uppercase tracking-wider text-ink-soft ${label}`}>{ROLE_LABEL[role]} dashboard</p>}
+      {/* Desktop sidebar (floating dark panel) / mobile drawer */}
+      <aside className={`side fixed z-40 inset-y-0 left-0 md:inset-y-3 md:left-3 w-64 ${collapsed ? 'md:w-[80px]' : 'md:w-[244px]'} bg-night md:rounded-[28px] flex flex-col shadow-[0_20px_50px_-20px_rgba(7,41,77,0.55)] transition-[transform,width] duration-300 md:translate-x-0 ${menuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className={`flex items-center gap-2 pl-6 pr-4 pt-6 pb-5 ${collapsed ? 'md:justify-center md:px-0' : ''}`}>
+          <span className={collapsed ? 'md:hidden' : ''}><Logo light size="md" /></span>
+          {collapsed && <span className="hidden md:inline-flex" aria-label="INUKA"><Logo light markOnly size="sm" /></span>}
         </div>
-        <nav className="flex-1 px-3 space-y-1" aria-label="Main">
+        {!isStudent && <p className={`-mt-3 mb-3 pl-6 text-[11px] font-semibold tracking-wide text-accent ${label}`}>{ROLE_LABEL[role]} dashboard</p>}
+        <nav className="flex-1 pl-3 space-y-1.5 overflow-y-auto overflow-x-hidden py-6" aria-label="Main">
           {NAV.map((n) => (
             <NavLink key={n.to} to={n.to} end={n.end} className={linkCls} onClick={() => setMenuOpen(false)} title={collapsed ? n.label : undefined}>
-              <n.icon size={20} strokeWidth={2} aria-hidden="true" className="shrink-0" /><span className={label}>{n.label}</span>
+              <span className="relative shrink-0">
+                <n.icon size={20} strokeWidth={2} aria-hidden="true" />
+                {n.badge && unread > 0 && collapsed && <span className="hidden md:block absolute -top-1 -right-1.5 w-2.5 h-2.5 rounded-full bg-accent ring-2 ring-night" aria-hidden="true" />}
+              </span>
+              <span className={`${label} flex-1 text-[0.95rem]`}>{n.label}</span>
+              {n.badge && unread > 0 && <span className={`min-w-5 h-5 px-1.5 rounded-full bg-accent text-night text-[11px] font-bold flex items-center justify-center ${collapsed ? 'md:hidden' : ''}`} aria-label={`${unread} unread`}>{unread > 99 ? '99+' : unread}</span>}
             </NavLink>
           ))}
         </nav>
-        <div className="p-3 border-t border-line space-y-1">
-          <button type="button" onClick={toggleCollapsed} aria-expanded={!collapsed} title={collapsed ? 'Expand sidebar' : undefined}
-            className={`hidden md:flex w-full items-center gap-3 min-h-11 px-4 rounded-lg text-ink-soft hover:bg-brand-soft hover:text-brand font-medium ${collapsed ? 'justify-center px-0' : ''}`}>
-            {collapsed ? <PanelLeftOpen size={20} aria-hidden="true" /> : <PanelLeftClose size={20} aria-hidden="true" />}
-            <span className={label}>{collapsed ? 'Expand sidebar' : 'Collapse sidebar'}</span>
-          </button>
+        <div className="px-3 pb-4 pt-3 space-y-1">
           <Link to="/logout" title={collapsed ? 'Log out' : undefined}
-            className={`w-full flex items-center gap-3 min-h-11 px-4 rounded-lg text-ink-soft hover:bg-[#FDECEC] hover:text-danger font-medium ${collapsed ? 'md:justify-center md:px-0' : ''}`}>
-            <LogOut size={20} aria-hidden="true" className="shrink-0" /><span className={label}>Log out</span>
+            className={`flex items-center gap-3.5 min-h-12 px-4 rounded-full text-white/75 hover:text-white hover:bg-white/10 font-medium ${collapsed ? 'md:justify-center md:px-0' : ''}`}>
+            <LogOut size={20} aria-hidden="true" className="shrink-0" /><span className={`${label} text-[0.95rem]`}>Log out</span>
           </Link>
+          <button type="button" onClick={toggleCollapsed} aria-expanded={!collapsed} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            className={`hidden md:flex mt-2 w-11 h-11 rounded-full bg-paper text-brand items-center justify-center shadow-md hover:bg-accent transition-colors ${collapsed ? 'mx-auto' : 'ml-auto mr-1'}`}>
+            {collapsed ? <PanelLeftOpen size={19} aria-hidden="true" /> : <PanelLeftClose size={19} aria-hidden="true" />}
+          </button>
         </div>
       </aside>
       {menuOpen && <div className="fixed inset-0 z-30 bg-black/40 md:hidden" onClick={() => setMenuOpen(false)} aria-hidden />}
@@ -104,7 +117,7 @@ export default function AppLayout() {
       </main>
 
       {/* INUKA AI floating bubble (free) on every dashboard page except the full chat (spec 13.2) */}
-      {pathname !== '/ai' && <ChatBubble className={isStudent ? 'right-4 bottom-20 md:bottom-6' : 'right-4 bottom-6'} />}
+      {pathname !== '/ai' && !/^\/(messages|mentorship\/(book|sessions))/.test(pathname) && <ChatBubble className={isStudent ? 'right-4 bottom-20 md:bottom-6' : 'right-4 bottom-6'} />}
 
       {/* Mobile bottom tab bar (students) */}
       {isStudent && (

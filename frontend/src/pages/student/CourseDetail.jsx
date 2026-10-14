@@ -21,7 +21,7 @@ export default function CourseDetail() {
   return (
     <div className="max-w-3xl">
       <Link to="/courses" className="text-sm text-brand hover:underline">← All courses</Link>
-      <h1 className="text-2xl sm:text-[1.75rem] font-bold mt-2">{course.title}</h1>
+      <h1 className="text-xl sm:text-2xl font-bold mt-2">{course.title}</h1>
       <RichText html={course.description} className="text-ink-soft mt-2" />
       <div className="mt-5"><ProgressBar value={Math.round((done / course.lessons.length) * 100)} label={`${done} of ${course.lessons.length} lessons completed`} /></div>
       {certificate && <div className="mt-5"><Alert tone="success"><PartyPopper size={18} className="inline -mt-1 mr-1" aria-hidden="true" />You finished this course. Your certificate is in <Link to="/my-learning" className="underline font-semibold">My Learning</Link>.</Alert></div>}

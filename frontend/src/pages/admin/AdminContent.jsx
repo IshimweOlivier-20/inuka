@@ -7,6 +7,7 @@ import { ListRowsSkeleton } from '../../components/ui/Skeletons';
 import { ActionBar, BackLink, PageTitle } from '../../components/admin/AdminUI';
 import { useConfirm, useToast } from '../../context/FeedbackContext';
 import { plainText } from '../../utils/sanitize';
+import UploadButton, { ACCEPT } from '../../components/admin/UploadButton';
 import { api, errorMessage } from '../../services/api';
 import { formatDate } from '../../utils/format';
 
@@ -15,9 +16,10 @@ const TYPES = {
   posts: {
     label: 'News & guides', one: 'article', where: 'News page (/news) and the home page',
     title: (i) => i.title, sub: (i) => `${i.category} · ${formatDate(i.publishedAt)} · ${i.authorName}`,
-    empty: { title: '', category: 'guide', excerpt: '', contentHtml: '', authorName: 'INUKA Team', readMinutes: 3, publishedAt: new Date().toISOString().slice(0, 10), isPublished: true },
+    empty: { title: '', category: 'guide', coverUrl: '', excerpt: '', contentHtml: '', authorName: 'INUKA Team', readMinutes: 3, publishedAt: new Date().toISOString().slice(0, 10), isPublished: true },
     fields: [
       ['title', 'Title', 'text'], ['category', 'Type', 'select', [['guide', 'Guide'], ['news', 'News'], ['story', 'Student story']]],
+      ['coverUrl', 'Article picture (shown on the card and at the top of the article)', 'image'],
       ['excerpt', 'Short summary (shown on cards)', 'rich'], ['contentHtml', 'Article', 'html'],
       ['authorName', 'Author', 'text'], ['readMinutes', 'Minutes to read', 'number'],
       ['publishedAt', 'Publish date (a future date schedules it)', 'date'], ['isPublished', 'Show on the website', 'checkbox'],
@@ -184,6 +186,22 @@ export function AdminContentItem() {
           const set = (e) => setF({ ...f, [k]: kind === 'checkbox' ? e.target.checked : e.target.value });
           if (kind === 'checkbox') return <label key={k} className="flex items-center gap-3 min-h-11"><input type="checkbox" className="w-5 h-5 accent-[#07294D]" checked={!!f[k]} onChange={set} />{label}</label>;
           if (kind === 'select') return <Field key={k} as="select" label={label} value={f[k]} onChange={set}>{options.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</Field>;
+          if (kind === 'image') {
+            return (
+              <div key={k}>
+                <p className="text-sm font-medium mb-1.5">{label}</p>
+                <div className="flex flex-wrap items-start gap-3">
+                  <div className="w-48 aspect-[16/10] rounded-lg overflow-hidden border border-line bg-brand-soft flex items-center justify-center text-xs text-ink-soft text-center px-2">
+                    {f[k] ? <img src={f[k]} alt="" className="w-full h-full object-cover" /> : 'No picture yet: INUKA shows a matching photo'}
+                  </div>
+                  <div className="flex-1 min-w-[200px] space-y-2">
+                    <UploadButton small accept={ACCEPT.image} label="Upload a picture" onUploaded={(file) => setF((x) => ({ ...x, [k]: file.url }))} />
+                    <input value={f[k] || ''} onChange={set} placeholder="or paste an image link" aria-label={`${label} link`} className="w-full min-h-11 rounded-lg border border-line bg-surface px-3 text-sm" />
+                  </div>
+                </div>
+              </div>
+            );
+          }
           if (kind === 'rich' || kind === 'html') {
             return <RichEditor showLabel key={k} variant={kind === 'rich' ? 'compact' : 'full'} label={label} value={f[k] || ''} onChange={(html) => setF((x) => ({ ...x, [k]: html }))} minHeight={kind === 'rich' ? undefined : k === 'answer' ? 160 : 320} />;
           }

@@ -29,7 +29,7 @@ export default function StudentDashboard() {
     <div className="space-y-6">
       <section className="rounded-2xl bg-brand text-white p-6 md:p-8">
         <p className="text-white/70 text-sm">{formatDate(new Date())}</p>
-        <h1 className="text-white text-2xl md:text-3xl font-semibold mt-1">
+        <h1 className="text-white text-xl md:text-2xl font-semibold mt-1">
           {params.get('welcome') ? `Welcome to INUKA, ${user.firstName}!` : `Welcome back, ${user.firstName}!`} Ready to learn today?
         </h1>
         <figure className="mt-3 max-w-2xl">
@@ -74,7 +74,7 @@ export default function StudentDashboard() {
 
         <Card>
           <h2 className="text-lg font-semibold mb-3">Your streak</h2>
-          <p className="text-4xl font-display font-bold text-brand">{d.streak.current} <Flame className="inline -mt-2 text-brand" size={32} fill="currentColor" aria-hidden="true" /></p>
+          <p className="text-3xl font-display font-bold text-brand">{d.streak.current} <Flame className="inline -mt-2 text-brand" size={32} fill="currentColor" aria-hidden="true" /></p>
           <p className="text-ink-soft">{d.streak.current === 1 ? 'day in a row' : 'days in a row'}</p>
           {d.streak.atRisk && <p className="mt-3 text-sm font-medium text-brand-deep bg-brand-soft rounded-lg px-3 py-2">Your streak is at risk! Study today to keep it going.</p>}
           <div className="mt-5 pt-4 border-t border-line">

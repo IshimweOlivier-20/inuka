@@ -157,12 +157,27 @@ router.post('/login', loginLimiter, async (req, res) => {
 // Our own "Continue with Google" button sends people to /api/auth/google/start. Google sends them back to
 // /api/auth/google/callback, where we sign them in (or create a student account) and return them to the website.
 // Needs GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in backend/.env (README section 12).
-const googleReady = () => !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
+const gId = () => (process.env.GOOGLE_CLIENT_ID || '').trim();
+const gSecret = () => (process.env.GOOGLE_CLIENT_SECRET || '').trim();
+const googleReady = () => !googleProblem();
+// What is wrong with the Google settings (shown only while developing, to help set it up).
+export function googleProblem() {
+  if (!gId() && !gSecret()) return 'GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET are missing in backend/.env.';
+  if (!gId()) return 'GOOGLE_CLIENT_ID is missing in backend/.env.';
+  if (!gSecret()) return 'GOOGLE_CLIENT_SECRET is missing in backend/.env.';
+  if (!gId().endsWith('.apps.googleusercontent.com')) return 'GOOGLE_CLIENT_ID looks wrong: it should end with .apps.googleusercontent.com (copy the "Client ID", not the project ID).';
+  return null;
+}
 const googleRedirectUri = () => process.env.GOOGLE_REDIRECT_URI || `${FRONTEND_URL}/api/auth/google/callback`;
 const STATE_COOKIE = 'inuka_google_state';
 
 router.get('/config', (req, res) => {
-  res.json({ google: googleReady(), showGoogleSetupHint: !googleReady() && process.env.NODE_ENV !== 'production' });
+  const dev = process.env.NODE_ENV !== 'production';
+  res.set('Cache-Control', 'no-store');
+  res.json({
+    google: googleReady(), showGoogleSetupHint: !googleReady() && dev,
+    ...(dev && { googleProblem: googleProblem(), googleRedirectUri: googleRedirectUri() }),
+  });
 });
 
 // Finds the account for a Google profile, links it, or creates a new student.
@@ -194,7 +209,7 @@ router.get('/google/start', loginLimiter, (req, res) => {
   res.cookie(STATE_COOKIE, JSON.stringify({ state, from }), { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', maxAge: 10 * 60 * 1000, path: '/api/auth/google' });
   const url = new URL('https://accounts.google.com/o/oauth2/v2/auth');
   url.search = new URLSearchParams({
-    client_id: process.env.GOOGLE_CLIENT_ID, redirect_uri: googleRedirectUri(), response_type: 'code',
+    client_id: gId(), redirect_uri: googleRedirectUri(), response_type: 'code',
     scope: 'openid email profile', state, prompt: 'select_account',
   }).toString();
   res.redirect(url.toString());
@@ -210,9 +225,9 @@ router.get('/google/callback', async (req, res) => {
   if (req.query.error) return back('google=cancelled');
   if (!req.query.code || !saved.state || saved.state !== req.query.state) return back('google=failed');
   try {
-    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET, googleRedirectUri());
+    const client = new OAuth2Client(gId(), gSecret(), googleRedirectUri());
     const { tokens } = await client.getToken(String(req.query.code));
-    const p = (await client.verifyIdToken({ idToken: tokens.id_token, audience: process.env.GOOGLE_CLIENT_ID })).getPayload();
+    const p = (await client.verifyIdToken({ idToken: tokens.id_token, audience: gId() })).getPayload();
     if (!p?.email || !p.email_verified) return back('google=unverified');
     const { user, isNew } = await googleUser(p);
     const { token, maxAge } = await issueRefreshToken(user.id);

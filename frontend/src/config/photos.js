@@ -180,3 +180,18 @@ export function scholarshipPhoto(s) {
 
 // Scholarship page side box ("Need help applying?").
 export const HELP_PHOTO = { src: unsplash('photo-1655720357872-ce227e4164ba', 800), alt: 'Young people looking at a laptop together' };
+
+// News & guides pictures. An article's own picture (Admin → Website content → "Article picture") always wins;
+// otherwise the photo for its slug below, otherwise one for its type. All free under the Unsplash License.
+const POST_PHOTOS = {
+  'documents-for-scholarship-applications': { src: unsplash('photo-1576243165717-ce0a37f0ac8b', 1200), alt: 'A hand holding a passport' },
+  'personal-statement-that-sounds-like-you': { src: unsplash('photo-1558478551-16a013a18bd8', 1200), alt: 'A person writing in a notebook' },
+  'how-to-spot-a-scholarship-scam': { src: unsplash('photo-1576814547952-f8531781d7ef', 1200), alt: 'A young man checking his smartphone in Lagos, Nigeria' },
+  'welcome-to-inuka': { src: unsplash('photo-1531482615713-2afd69097998', 1200), alt: 'Two young people learning together at a computer in Lagos, Nigeria' },
+};
+const POST_BY_TYPE = {
+  guide: { src: unsplash('photo-1634951401794-6c84f593db82', 1200), alt: 'Two young men studying together in a library' },
+  news: { src: unsplash('photo-1645263012710-35e2fc89cb5c', 1200), alt: 'Graduates celebrating together in Nairobi, Kenya' },
+  story: { src: unsplash('photo-1640117743090-93ce4f4450dd', 1200), alt: 'A young woman in her graduation gown being congratulated' },
+};
+export const postPhoto = (p) => (p?.coverUrl ? { src: p.coverUrl, alt: '' } : POST_PHOTOS[p?.slug] || POST_BY_TYPE[p?.category] || POST_BY_TYPE.guide);

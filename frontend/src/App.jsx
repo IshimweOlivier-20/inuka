@@ -31,6 +31,11 @@ const StudentDashboard = lazy(() => import('./pages/student/StudentDashboard'));
 const Courses = lazy(() => import('./pages/student/Courses'));
 const CourseDetail = lazy(() => import('./pages/student/CourseDetail'));
 const ExamPage = lazy(() => import('./pages/student/ExamPage'));
+const BookSession = lazy(() => import('./pages/student/BookSession'));
+const SessionDetail = lazy(() => import('./pages/student/SessionPages').then((m) => ({ default: m.SessionDetail })));
+const RescheduleSession = lazy(() => import('./pages/student/SessionPages').then((m) => ({ default: m.RescheduleSession })));
+const CancelSession = lazy(() => import('./pages/student/SessionPages').then((m) => ({ default: m.CancelSession })));
+const Messages = lazy(() => import('./pages/shared/Messages'));
 const LessonPage = lazy(() => import('./pages/student/LessonPage'));
 const Scholarships = lazy(() => import('./pages/student/Scholarships'));
 const MyLearning = lazy(() => import('./pages/student/MyLearning'));
@@ -128,7 +133,17 @@ export default function App() {
           <Route path="/certificates/:id" element={<Certificate />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/mentorship" element={<Mentorship />} />
+          <Route path="/mentorship/book/:mentorId" element={<BookSession />} />
+          <Route path="/mentorship/sessions/:id" element={<SessionDetail />} />
+          <Route path="/mentorship/sessions/:id/reschedule" element={<RescheduleSession />} />
+          <Route path="/mentorship/sessions/:id/cancel" element={<CancelSession />} />
           <Route path="/ai" element={<InukaAI />} />
+        </Route>
+
+        {/* Messages between students and mentors */}
+        <Route element={<RequireAuth roles={['student', 'mentor']}><AppLayout /></RequireAuth>}>
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/messages/:id" element={<Messages />} />
         </Route>
 
         {/* Mentor dashboard */}

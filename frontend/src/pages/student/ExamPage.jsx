@@ -55,7 +55,7 @@ function ExamIntro({ status, slug, onStart, busy, error, onSeeResult }) {
   return (
     <div className="max-w-2xl space-y-5">
       <Link to={`/courses/${slug}`} className="text-sm text-brand hover:underline">← {course.title}</Link>
-      <h1 className="text-2xl sm:text-[1.75rem] font-bold">{e.title}</h1>
+      <h1 className="text-xl sm:text-2xl font-bold">{e.title}</h1>
       {error && <Alert>{error}</Alert>}
       <Card>
         <ul className="space-y-3">

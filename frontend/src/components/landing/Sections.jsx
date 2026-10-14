@@ -8,11 +8,9 @@ import { CATEGORY_LABEL, SectionHeading } from './common';
 import { SITE } from '../../config/site';
 import { api, errorMessage } from '../../services/api';
 import { formatDate } from '../../utils/format';
-import { Check, ChevronLeft, ChevronRight, Earth, GraduationCap, HeartHandshake, Quote, Send } from 'lucide-react';
-import { AUDIENCE_PHOTOS, FAQ_PHOTO, samplePhoto } from '../../config/photos';
+import { Check, ChevronLeft, ChevronRight, Earth, GraduationCap, Heart, HeartHandshake, MessageCircle, Quote, Send } from 'lucide-react';
+import { AUDIENCE_PHOTOS, FAQ_PHOTO, postPhoto, samplePhoto } from '../../config/photos';
 import { ICONS } from './socialIcons';
-import IconTile from '../ui/IconTile';
-import { CATEGORY_ICON, Newspaper } from './categoryIcons';
 import RichText from '../../components/ui/RichText';
 
 /* ---------- Who INUKA is for: photo, title, text, button ---------- */
@@ -154,19 +152,25 @@ export function TestimonialsSection({ testimonials }) {
 
 /* ---------- News & guides ---------- */
 export function PostCard({ p, i = 0 }) {
+  const photo = postPhoto(p);
   return (
-    <Reveal as="li" delay={(i % 3) * 110} className="group relative bg-paper rounded-lg border border-line overflow-hidden flex flex-col hover:border-brand/40 transition-colors">
-      <div className="h-36 bg-brand-soft flex items-center justify-center" aria-hidden="true"><IconTile icon={CATEGORY_ICON[p.category] || Newspaper} tone={p.category === 'news' ? 'accent' : 'brand'} size="xl" /></div>
-      <div className="p-5 flex-1 flex flex-col">
-        <div className="flex items-center gap-2 text-sm text-ink-soft">
-          <Pill tone={p.category === 'news' ? 'cyan' : 'brand'}>{CATEGORY_LABEL[p.category] || p.category}</Pill>
-          <span>{p.readMinutes} min read</span>
-        </div>
-        <h3 className="font-semibold text-lg leading-snug mt-3">
-          <Link to={`/news/${p.slug}`} className="after:absolute after:inset-0 group-hover:text-brand">{p.title}</Link>
+    <Reveal as="li" delay={(i % 3) * 110} className="group relative flex flex-col">
+      <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-brand-soft">
+        <img src={photo.src} alt={photo.alt} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+        <span className={`absolute left-3 top-3 rounded-full px-3 py-1 text-xs font-bold shadow ${p.category === 'news' ? 'bg-accent text-night' : p.category === 'story' ? 'bg-success text-white' : 'bg-white text-brand'}`}>{CATEGORY_LABEL[p.category] || p.category}</span>
+      </div>
+      <div className="pt-4 flex-1 flex flex-col">
+        <p className="text-sm text-ink-soft">{p.publishedAt ? formatDate(p.publishedAt) : ''}{p.readMinutes ? ` · ${p.readMinutes} min read` : ''}</p>
+        <h3 className="font-semibold text-lg leading-snug mt-1.5">
+          <Link to={`/news/${p.slug}`} className="after:absolute after:inset-0 group-hover:text-brand group-hover:underline decoration-2 underline-offset-4">{p.title}</Link>
         </h3>
-        <p className="text-ink-soft text-[15px] mt-2 flex-1">{plainText(p.excerpt)}</p>
-        {p.publishedAt && <p className="text-sm text-ink-soft mt-4">{formatDate(p.publishedAt)}</p>}
+        <p className="text-ink-soft text-[15px] mt-2 flex-1 line-clamp-3">{plainText(p.excerpt)}</p>
+        {(p.likes != null || p.comments != null) && (
+          <p className="mt-3 flex items-center gap-4 text-sm text-ink-soft">
+            <span className="inline-flex items-center gap-1.5"><Heart size={15} aria-hidden="true" />{p.likes || 0}<span className="sr-only"> likes</span></span>
+            <span className="inline-flex items-center gap-1.5"><MessageCircle size={15} aria-hidden="true" />{p.comments || 0}<span className="sr-only"> comments</span></span>
+          </p>
+        )}
       </div>
     </Reveal>
   );
@@ -180,7 +184,7 @@ export function NewsSection({ posts }) {
         <SectionHeading label="Latest" title="News & guides" intro="Practical guides for your application, and updates from INUKA." />
         <Link to="/news" className="mb-10 text-brand font-semibold hover:underline">See all articles</Link>
       </Reveal>
-      <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
         {posts ? posts.map((p, i) => <PostCard key={p.id} p={p} i={i} />)
           : [0, 1, 2].map((i) => <li key={i} className="bg-surface rounded-lg border border-line overflow-hidden"><Skeleton height={144} borderRadius={0} /><div className="p-5"><Skeleton width={120} /><Skeleton height={22} className="mt-3" /><Skeleton count={2} /></div></li>)}
       </ul>

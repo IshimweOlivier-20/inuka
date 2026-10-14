@@ -100,6 +100,11 @@ model User {
   savedScholarships SavedScholarship[]
   applications      Application[]
   studentBookings   Booking[]          @relation("StudentBookings")
+  chatsAsStudent    Conversation[]     @relation("ChatStudent")
+  chatsAsMentor     Conversation[]     @relation("ChatMentor")
+  messagesSent      Message[]
+  postLikes         PostLike[]
+  postComments      PostComment[]
   reviewsGiven      Review[]           @relation("StudentReviews")
   documents         Document[]
   notifications     Notification[]
@@ -401,6 +406,12 @@ model Booking {
   scheduledAt DateTime      @map("scheduled_at")
   status      BookingStatus @default(pending)
   videoLink   String?       @map("video_link")
+  sessionType String        @default("video") @map("session_type") // video | voice | message
+  cancelReason     String?   @map("cancel_reason")
+  cancelledBy      String?   @map("cancelled_by") // student | mentor
+  rescheduleReason String?   @map("reschedule_reason")
+  rescheduleCount  Int       @default(0) @map("reschedule_count")
+  previousTime     DateTime? @map("previous_time") // the time before the last reschedule
   createdAt   DateTime      @default(now()) @map("created_at")
   student     User          @relation("StudentBookings", fields: [studentId], references: [id], onDelete: Cascade)
   mentor      Mentor        @relation(fields: [mentorId], references: [id], onDelete: Cascade)
@@ -509,6 +520,9 @@ model Post {
   excerpt     String
   contentHtml String   @map("content_html")
   coverEmoji  String?  @map("cover_emoji")
+  coverUrl    String?  @map("cover_url") // the article picture (uploaded in Admin → Website content)
+  likes       PostLike[]
+  comments    PostComment[]
   authorName  String   @default("INUKA Team") @map("author_name")
   readMinutes Int      @default(3) @map("read_minutes")
   publishedAt DateTime @default(now()) @map("published_at")
@@ -659,4 +673,66 @@ model ExamAttempt {
 
   @@index([userId, examId])
   @@map("exam_attempts")
+}
+
+// Messages between a student and a mentor (one conversation per pair). Allowed once the student has booked the mentor.
+model Conversation {
+  id               String    @id @default(uuid())
+  studentId        String    @map("student_id")
+  mentorUserId     String    @map("mentor_user_id")
+  lastMessageAt    DateTime  @default(now()) @map("last_message_at")
+  studentReadAt    DateTime? @map("student_read_at")
+  mentorReadAt     DateTime? @map("mentor_read_at")
+  studentClearedAt DateTime? @map("student_cleared_at") // "Clear chat" hides older messages for that person only
+  mentorClearedAt  DateTime? @map("mentor_cleared_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  student          User      @relation("ChatStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  mentorUser       User      @relation("ChatMentor", fields: [mentorUserId], references: [id], onDelete: Cascade)
+  messages         Message[]
+
+  @@unique([studentId, mentorUserId])
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String       @map("conversation_id")
+  senderId       String?      @map("sender_id") // null = INUKA (session booked, confirmed, moved…)
+  kind           String       @default("text") // text | system
+  text           String       @default("")
+  fileKey        String?      @map("file_key")
+  fileName       String?      @map("file_name")
+  fileType       String?      @map("file_type")
+  fileSize       Int?         @map("file_size")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User?        @relation(fields: [senderId], references: [id], onDelete: SetNull)
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
+}
+
+// Likes and comments on News & guides articles (signed-in people).
+model PostLike {
+  postId    String   @map("post_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([postId, userId])
+  @@map("post_likes")
+}
+
+model PostComment {
+  id        String   @id @default(uuid())
+  postId    String   @map("post_id")
+  userId    String   @map("user_id")
+  text      String
+  createdAt DateTime @default(now()) @map("created_at")
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([postId, createdAt])
+  @@map("post_comments")
 }

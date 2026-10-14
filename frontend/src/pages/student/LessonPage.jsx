@@ -63,7 +63,7 @@ export default function LessonPage() {
     <article className="max-w-3xl">
       <Link to={`/courses/${course.slug}`} className="text-sm text-brand hover:underline">← {course.title}</Link>
       <div className="mt-3"><ProgressBar value={position.percent} label={`Lesson ${position.index + 1} of ${position.total}`} tone="brand" /></div>
-      <h1 className="text-2xl sm:text-[1.75rem] font-bold mt-6">{lesson.title}</h1>
+      <h1 className="text-xl sm:text-2xl font-bold mt-6">{lesson.title}</h1>
       {lesson.summary && <RichText html={lesson.summary} className="text-ink-soft mt-1 text-lg" />}
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <ListenButton getText={() => contentRef.current?.innerText || ''} />

@@ -1,14 +1,13 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { CalendarClock, CircleCheck, HeartHandshake, Languages, Search, UsersRound } from 'lucide-react';
-import { Alert, Button, Card, EmptyState, Field, Modal, Pill } from '../../components/ui';
+import { useCallback, useEffect, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Languages, Search, UsersRound } from 'lucide-react';
+import { Alert, Button, EmptyState, Field, Pill } from '../../components/ui';
 import Avatar from '../../components/ui/Avatar';
-import RichText from '../../components/ui/RichText';
-import { useConfirm, useToast } from '../../context/FeedbackContext';
+import { useToast } from '../../context/FeedbackContext';
 import { ListRowsSkeleton, ScholarshipGridSkeleton } from '../../components/ui/Skeletons';
-import {
-  JoinSessionButton, StarInput, Stars, StatusPill, countWords, sessionDate, sessionTime, sessionWhen,
-} from '../../components/mentorship/shared';
+import { Stars } from '../../components/mentorship/shared';
+import SessionCard, { CardButton } from '../../components/mentorship/SessionCard';
+import { ConfirmSheet } from '../../components/mentorship/booking';
 import { api, errorMessage } from '../../services/api';
 
 // Mentorship for students (spec 12): find a mentor, book a session, see your sessions, rate them.
@@ -19,13 +18,13 @@ export default function Mentorship() {
   const loadBookings = useCallback(() => api.get('/bookings').then((r) => setBookings(r.data.bookings)).catch(() => setBookings([])), []);
   useEffect(() => { document.title = 'Mentorship — INUKA'; loadBookings(); }, [loadBookings]);
 
-  const upcomingCount = bookings?.filter((b) => ['pending', 'confirmed'].includes(b.status) && new Date(b.scheduledAt) > Date.now() - 3600e3).length || 0;
+  const upcomingCount = bookings?.filter((b) => viewOf(b) === 'upcoming').length || 0;
   const setTab = (t) => setParams(t === 'find' ? {} : { tab: t });
 
   return (
     <div>
-      <h1 className="text-2xl sm:text-[1.75rem] font-bold">Mentorship</h1>
-      <p className="text-ink-soft mt-1">Book a free 1-hour video session with a mentor who can guide your applications.</p>
+      <h1 className="text-xl sm:text-2xl font-bold">Mentorship</h1>
+      <p className="text-ink-soft mt-1">Book a free 1-hour session with a mentor who can guide your applications: by video, voice call or messages.</p>
       <div role="tablist" className="flex gap-1 mt-6 border-b border-line">
         {[['find', 'Find a mentor'], ['sessions', `My sessions${upcomingCount ? ` (${upcomingCount})` : ''}`]].map(([k, l]) => (
           <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
@@ -34,24 +33,24 @@ export default function Mentorship() {
       </div>
       <div className="mt-6">
         {tab === 'find'
-          ? <MentorDirectory onBooked={() => { loadBookings(); setTab('sessions'); }} />
-          : <MySessions bookings={bookings} reload={loadBookings} onFind={() => setTab('find')} />}
+          ? <MentorDirectory />
+          : <MySessions bookings={bookings} onFind={() => setTab('find')} />}
       </div>
     </div>
   );
 }
 
 /* ---------- Directory (spec 12.1) ---------- */
-function MentorDirectory({ onBooked }) {
-  const [params, setParams] = useSearchParams();
+function MentorDirectory() {
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
   const [q, setQ] = useState('');
   const [expertise, setExpertise] = useState('');
   const [language, setLanguage] = useState('');
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
-  const [booking, setBooking] = useState(params.get('book')); // ?book=<mentorId> opens the booking form (from search)
-  const [done, setDone] = useState('');
-  useEffect(() => { if (params.get('book')) { setBooking(params.get('book')); setParams({}, { replace: true }); } }, [params]); // eslint-disable-line react-hooks/exhaustive-deps
+  // ?book=<mentorId> (from the search bar) opens the booking page
+  useEffect(() => { if (params.get('book')) navigate(`/mentorship/book/${params.get('book')}`, { replace: true }); }, [params, navigate]);
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -62,7 +61,6 @@ function MentorDirectory({ onBooked }) {
 
   return (
     <div>
-      {done && <div className="mb-4"><Alert tone="success">{done}</Alert></div>}
       <div className="flex flex-wrap gap-3 items-end">
         <label className="relative flex-1 min-w-[220px]">
           <span className="sr-only">Search mentors</span>
@@ -109,230 +107,122 @@ function MentorDirectory({ onBooked }) {
                 <span className={`w-2 h-2 rounded-full ${m.availableThisWeek ? 'bg-brand' : 'bg-line'}`} aria-hidden="true" />
                 {m.availableThisWeek ? 'Available this week' : 'Fully booked this week'}
               </p>
-              <Button onClick={() => { setDone(''); setBooking(m.id); }} className="mt-4 w-full">Book a session</Button>
+              <Button to={`/mentorship/book/${m.id}`} className="mt-4 w-full">Book a session</Button>
             </li>
           ))}
         </ul>
       )}
-      {booking && (
-        <BookingModal mentorId={booking} onClose={() => setBooking(null)}
-          onBooked={(msg) => { setBooking(null); setDone(msg); onBooked(); }} />
-      )}
     </div>
   );
 }
 
-/* ---------- Booking flow (spec 12.2) ---------- */
-function BookingModal({ mentorId, onClose, onBooked }) {
-  const [d, setD] = useState(null);
-  const [error, setError] = useState('');
-  const [topic, setTopic] = useState('');
-  const [day, setDay] = useState('');
-  const [time, setTime] = useState('');
-  const [message, setMessage] = useState('');
-  const [errors, setErrors] = useState({});
-  const [busy, setBusy] = useState(false);
-
-  useEffect(() => { api.get(`/mentors/${mentorId}`).then((r) => setD(r.data)).catch((e) => setError(errorMessage(e))); }, [mentorId]);
-
-  // Open times grouped by the student's local day
-  const days = useMemo(() => {
-    const map = new Map();
-    for (const t of d?.times || []) {
-      const key = new Date(t).toDateString();
-      if (!map.has(key)) map.set(key, []);
-      map.get(key).push(t);
-    }
-    return [...map.entries()];
-  }, [d]);
-  useEffect(() => { if (days.length && !day) setDay(days[0][0]); }, [days, day]);
-
-  const submit = async () => {
-    const errs = {};
-    if (!topic) errs.topic = 'Please choose a topic.';
-    if (!time) errs.time = 'Please choose a time.';
-    if (message.trim().length < 10) errs.message = 'Please tell the mentor what you need help with.';
-    else if (countWords(message) > 200) errs.message = 'Please keep your message to 200 words or fewer.';
-    setErrors(errs);
-    if (Object.keys(errs).length) return;
-    setBusy(true); setError('');
-    try {
-      await api.post('/bookings', { mentorId, topic, scheduledAt: time, message });
-      onBooked(`Your request has been sent to ${d.mentor.firstName} for ${sessionWhen(time)}. We will tell you when it is confirmed.`);
-    } catch (e) {
-      setError(errorMessage(e));
-      if (e.response?.status === 409) { setTime(''); api.get(`/mentors/${mentorId}`).then((r) => setD(r.data)); }
-    } finally { setBusy(false); }
-  };
-
-  const m = d?.mentor;
-  return (
-    <Modal open onClose={onClose} wide title={m ? `Book a session with ${m.firstName}` : 'Book a session'}
-      footer={m && d.times.length > 0 && <><Button variant="ghost" onClick={onClose}>Cancel</Button><Button onClick={submit} loading={busy}>Confirm booking</Button></>}>
-      {error && <div className="mb-4"><Alert>{error}</Alert></div>}
-      {!d ? <ListRowsSkeleton rows={4} /> : (
-        <div className="space-y-5">
-          <div className="flex items-start gap-4">
-            <Avatar user={m} size="md" />
-            <div className="min-w-0">
-              <p className="font-semibold">{m.firstName} {m.lastName}</p>
-              <p className="text-sm text-ink-soft">{m.title}{m.org ? `, ${m.org}` : ''}</p>
-              <RichText html={m.bio} className="text-sm mt-2" />
-              {d.reviews.length > 0 && (
-                <details className="mt-2 text-sm">
-                  <summary className="cursor-pointer text-brand font-semibold min-h-11 inline-flex items-center">What students say ({d.reviews.length})</summary>
-                  <ul className="mt-1 space-y-2">
-                    {d.reviews.map((r) => <li key={r.id}><Stars value={r.rating} size={14} /> {r.comment && <span className="text-ink-soft">“{r.comment}” — {r.student.firstName}</span>}</li>)}
-                  </ul>
-                </details>
-              )}
-            </div>
-          </div>
-
-          {d.times.length === 0 ? (
-            <Alert tone="info">{m.firstName} has no free times in the next 14 days. Please try another mentor or check again later.</Alert>
-          ) : (
-            <>
-              <Field as="select" label="What is the session about?" value={topic} onChange={(e) => setTopic(e.target.value)} error={errors.topic}>
-                <option value="">Choose a topic</option>{d.topics.map((t) => <option key={t}>{t}</option>)}
-              </Field>
-
-              <fieldset>
-                <legend className="text-sm font-medium mb-1.5">Choose a day and time <span className="text-ink-soft font-normal">(your time zone, 1 hour)</span></legend>
-                <div className="flex gap-2 overflow-x-auto pb-2" role="radiogroup" aria-label="Day">
-                  {days.map(([key, times]) => {
-                    const date = new Date(times[0]);
-                    return (
-                      <button key={key} type="button" role="radio" aria-checked={day === key} onClick={() => { setDay(key); setTime(''); }}
-                        className={`shrink-0 min-w-[76px] rounded-xl border px-3 py-2 text-center ${day === key ? 'bg-brand text-white border-brand' : 'bg-surface border-line hover:border-brand'}`}>
-                        <span className="block text-xs font-semibold uppercase">{date.toLocaleDateString('en-GB', { weekday: 'short' })}</span>
-                        <span className="block text-lg font-bold leading-tight">{date.getDate()}</span>
-                        <span className="block text-xs">{date.toLocaleDateString('en-GB', { month: 'short' })}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-                <div className="flex flex-wrap gap-2 mt-2" role="radiogroup" aria-label="Time">
-                  {(days.find(([k]) => k === day)?.[1] || []).map((t) => (
-                    <button key={t} type="button" role="radio" aria-checked={time === t} onClick={() => setTime(t)}
-                      className={`min-h-11 px-4 rounded-lg border font-semibold tabular-nums ${time === t ? 'bg-brand text-white border-brand' : 'bg-surface border-line hover:border-brand'}`}>
-                      {sessionTime(t)}
-                    </button>
-                  ))}
-                </div>
-                {errors.time && <p className="mt-1 text-sm text-danger">{errors.time}</p>}
-              </fieldset>
-
-              <Field as="textarea" rows={4} label="What do you need help with?" value={message} onChange={(e) => setMessage(e.target.value)} error={errors.message}
-                hint={`${countWords(message)} of 200 words. For example: "I am applying to the Mastercard Foundation Scholars Program and need feedback on my personal statement."`} />
-              <p className="text-sm text-ink-soft">The mentor will accept your request and share a video link (Zoom, Google Meet or WhatsApp). You will get an email when it is confirmed.</p>
-            </>
-          )}
-        </div>
-      )}
-    </Modal>
-  );
+/* ---------- My sessions: Upcoming / Completed / Cancelled ---------- */
+const VIEWS = [['upcoming', 'Upcoming'], ['completed', 'Completed'], ['cancelled', 'Cancelled']];
+export function viewOf(b, now = Date.now()) {
+  const t = new Date(b.scheduledAt).getTime();
+  if (b.status === 'completed') return 'completed';
+  if (b.status === 'cancelled' || b.status === 'declined') return 'cancelled';
+  if (b.status === 'pending') return t > now ? 'upcoming' : 'cancelled'; // never confirmed
+  return t + 3600e3 > now ? 'upcoming' : 'completed'; // confirmed: upcoming until it ends
 }
 
-/* ---------- My sessions + rating (spec 12.4) ---------- */
-function MySessions({ bookings, reload, onFind }) {
-  const confirm = useConfirm();
+function MySessions({ bookings, onFind }) {
+  const navigate = useNavigate();
+  const [params, setParams] = useSearchParams();
+  const view = VIEWS.some(([k]) => k === params.get('view')) ? params.get('view') : 'upcoming';
+  const [cancelling, setCancelling] = useState(null);
   const toast = useToast();
-  const [msg, setMsg] = useState(null);
   if (!bookings) return <ListRowsSkeleton rows={3} />;
   const now = Date.now();
-  const upcoming = bookings.filter((b) => ['pending', 'confirmed'].includes(b.status) && new Date(b.scheduledAt).getTime() > now - 3600e3).reverse();
-  const past = bookings.filter((b) => !upcoming.includes(b));
-
-  const cancel = async (b) => {
-    const ok = await confirm({ title: 'Cancel this session?', message: `"${b.topic}" on ${sessionWhen(b.scheduledAt)}. Your mentor will be told, and the time becomes free for other students.`, confirmLabel: 'Yes, cancel session', cancelLabel: 'Keep it', tone: 'danger' });
-    if (!ok) return;
-    try { await api.post(`/bookings/${b.id}/cancel`); toast.success('Your session has been cancelled.'); reload(); }
-    catch (e) { toast.error(errorMessage(e)); }
+  const groups = { upcoming: [], completed: [], cancelled: [] };
+  for (const b of bookings) groups[viewOf(b, now)].push(b);
+  groups.upcoming.sort((a, b) => new Date(a.scheduledAt) - new Date(b.scheduledAt));
+  const list = groups[view];
+  const message = async (b) => {
+    try {
+      const { data } = await api.post('/conversations', { mentorId: b.mentor.id });
+      navigate(`/messages/${data.conversation.id}`);
+    } catch (e) { toast.error(errorMessage(e)); }
   };
 
-  if (!bookings.length) {
-    return <EmptyState icon={HeartHandshake} title="No sessions yet" action={<Button onClick={onFind}>Find a mentor</Button>}>Book your first session with a mentor. It is free.</EmptyState>;
-  }
   return (
-    <div className="space-y-8">
-      {msg && <Alert tone={msg.tone}>{msg.text}</Alert>}
-      <section>
-        <h2 className="text-xl font-semibold">Upcoming</h2>
-        {upcoming.length === 0 ? <p className="mt-2 text-ink-soft">No upcoming sessions. <button onClick={onFind} className="text-brand font-semibold hover:underline">Find a mentor</button></p> : (
-          <ul className="mt-3 grid md:grid-cols-2 gap-4">
-            {upcoming.map((b) => (
-              <li key={b.id}><Card>
-                <SessionHeader b={b} />
-                {b.status === 'confirmed'
-                  ? <JoinSessionButton session={b} className="mt-4 w-full" />
-                  : <p className="mt-4 text-sm rounded-lg bg-paper border border-line px-3 py-2">Waiting for {b.mentor.user.firstName} to accept. You will get an email.</p>}
-                <button onClick={() => cancel(b)} className="mt-3 min-h-11 text-sm font-semibold text-ink-soft hover:text-danger">Cancel session</button>
-              </Card></li>
-            ))}
-          </ul>
-        )}
-      </section>
-      <section>
-        <h2 className="text-xl font-semibold">Past sessions</h2>
-        {past.length === 0 ? <p className="mt-2 text-ink-soft">Your finished sessions, mentor notes and ratings will appear here.</p> : (
-          <ul className="mt-3 space-y-4">
-            {past.map((b) => (
-              <li key={b.id}><Card>
-                <SessionHeader b={b} past />
-                {b.notes?.[0] && (
-                  <div className="mt-4 rounded-lg bg-brand-soft p-3">
-                    <p className="text-sm font-semibold">Notes from {b.mentor.user.firstName}</p>
-                    <p className="text-sm mt-1 whitespace-pre-line">{b.notes[0].notes}</p>
-                  </div>
-                )}
-                {b.status === 'completed' && (b.review ? (
-                  <p className="mt-3 text-sm inline-flex items-center gap-2"><CircleCheck size={16} className="text-brand" aria-hidden="true" />You rated this session <Stars value={b.review.rating} size={14} /></p>
-                ) : <RateSession booking={b} onDone={reload} />)}
-              </Card></li>
-            ))}
-          </ul>
-        )}
-      </section>
-    </div>
-  );
-}
-
-function SessionHeader({ b, past }) {
-  return (
-    <div className="flex items-start gap-3">
-      <Avatar user={b.mentor.user} size="md" />
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-2">
-          <p className="font-semibold">{b.mentor.user.firstName} {b.mentor.user.lastName}</p>
-          <StatusPill status={b.status} past={past} />
-        </div>
-        <p className="text-[15px] mt-0.5">{b.topic}</p>
-        <p className="text-sm text-ink-soft inline-flex items-center gap-1.5 mt-0.5"><CalendarClock size={15} aria-hidden="true" />{sessionDate(b.scheduledAt)}, {sessionTime(b.scheduledAt)}</p>
+    <div>
+      <div role="tablist" className="grid grid-cols-3 border-b border-line max-w-xl">
+        {VIEWS.map(([k, l]) => (
+          <button key={k} role="tab" aria-selected={view === k} onClick={() => setParams({ tab: 'sessions', ...(k !== 'upcoming' && { view: k }) })}
+            className={`min-h-12 font-medium border-b-[3px] -mb-px transition-colors ${view === k ? 'border-brand text-brand font-semibold' : 'border-transparent text-ink-soft hover:text-ink'}`}>
+            {l}{groups[k].length > 0 && k !== 'cancelled' ? <span className="ml-1.5 text-xs tabular-nums opacity-70">{groups[k].length}</span> : null}
+          </button>
+        ))}
       </div>
+      {list.length === 0 ? (
+        <EmptySessions view={view} onFind={onFind} />
+      ) : (
+        <ul className="mt-5 grid lg:grid-cols-2 gap-4">
+          {list.map((b) => {
+            const name = b.mentor.user.firstName;
+            let actions;
+            if (view === 'upcoming') {
+              actions = <>
+                <CardButton onClick={() => setCancelling(b)}>Cancel session</CardButton>
+                <CardButton filled to={`/mentorship/sessions/${b.id}/reschedule`}>Reschedule</CardButton>
+              </>;
+            } else if (view === 'completed') {
+              actions = <>
+                <CardButton to={`/mentorship/book/${b.mentor.id}`}>Book again</CardButton>
+                {b.status === 'completed' && !b.review
+                  ? <CardButton filled to={`/mentorship/sessions/${b.id}#review`}>Leave a review</CardButton>
+                  : <CardButton filled to={`/mentorship/sessions/${b.id}`}>{b.review ? `You rated ${b.review.rating}/5` : 'View session'}</CardButton>}
+              </>;
+            } else {
+              actions = <>
+                <CardButton to={`/mentorship/sessions/${b.id}`}>View details</CardButton>
+                <CardButton filled to={`/mentorship/book/${b.mentor.id}`}>Book again</CardButton>
+              </>;
+            }
+            return (
+              <li key={b.id}>
+                <SessionCard b={b} person={b.mentor.user} to={`/mentorship/sessions/${b.id}`} actions={actions}
+                  iconAction={{ label: `Message ${name}`, onClick: () => message(b) }} />
+              </li>
+            );
+          })}
+        </ul>
+      )}
+      <ConfirmSheet open={!!cancelling} title="Cancel session" danger confirmLabel="Yes, cancel" onClose={() => setCancelling(null)}
+        onConfirm={() => { const id = cancelling.id; setCancelling(null); navigate(`/mentorship/sessions/${id}/cancel`); }}>
+        <p>Are you sure you want to cancel your session with {cancelling?.mentor.user.firstName}?</p>
+        <p className="text-ink-soft text-sm">The time becomes free for other students. You can move it to another time instead.</p>
+        {cancelling && <Link to={`/mentorship/sessions/${cancelling.id}/reschedule`} className="inline-block text-brand font-semibold underline min-h-11 leading-[44px]">Reschedule instead</Link>}
+      </ConfirmSheet>
     </div>
   );
 }
 
-function RateSession({ booking, onDone }) {
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState('');
-  const [error, setError] = useState('');
-  const [busy, setBusy] = useState(false);
-  const submit = async (e) => {
-    e.preventDefault();
-    if (!rating) { setError('Please choose 1 to 5 stars.'); return; }
-    setBusy(true); setError('');
-    try { await api.post(`/bookings/${booking.id}/review`, { rating, comment }); onDone(); }
-    catch (err) { setError(errorMessage(err)); } finally { setBusy(false); }
-  };
+function EmptySessions({ view, onFind }) {
+  const copy = {
+    upcoming: ['You have no upcoming session', 'Book a free session with a mentor to get help with scholarships, essays or English.'],
+    completed: ['No finished sessions yet', 'After a session, you can read your mentor\'s notes and rate it here.'],
+    cancelled: ['No cancelled sessions', 'Sessions that you, or a mentor, cancel will appear here.'],
+  }[view];
   return (
-    <form onSubmit={submit} className="mt-4 pt-4 border-t border-line space-y-3">
-      <p className="font-semibold">How was your session?</p>
-      <StarInput value={rating} onChange={setRating} />
-      <Field as="textarea" rows={2} label="Short review (optional, shown on the mentor's profile)" value={comment} onChange={(e) => setComment(e.target.value)} />
-      {error && <p className="text-sm text-danger">{error}</p>}
-      <Button type="submit" loading={busy}>Send rating</Button>
-    </form>
+    <div className="py-14 text-center max-w-sm mx-auto">
+      <svg viewBox="0 0 180 150" className="w-48 mx-auto" aria-hidden="true">
+        <g transform="rotate(-12 70 80)">
+          <rect x="22" y="28" width="86" height="104" rx="8" fill="var(--color-surface)" stroke="var(--color-ink-soft)" strokeWidth="2" />
+          <rect x="32" y="42" width="66" height="80" rx="3" fill="var(--color-line)" />
+          <rect x="44" y="20" width="42" height="14" rx="4" fill="var(--color-brand)" />
+          <circle cx="65" cy="17" r="5" fill="none" stroke="var(--color-brand)" strokeWidth="2" />
+        </g>
+        <rect x="74" y="38" width="86" height="106" rx="8" fill="var(--color-surface)" stroke="var(--color-ink-soft)" strokeWidth="2" />
+        <rect x="84" y="52" width="66" height="82" rx="3" fill="var(--color-paper)" stroke="var(--color-line)" />
+        <rect x="96" y="30" width="42" height="14" rx="4" fill="var(--color-accent)" />
+        <circle cx="117" cy="27" r="5" fill="none" stroke="var(--color-accent)" strokeWidth="2" />
+        <path d="M94 76h40M94 90h46M94 104h28" stroke="var(--color-line)" strokeWidth="4" strokeLinecap="round" />
+      </svg>
+      <h2 className="mt-5 font-bold text-lg">{copy[0]}</h2>
+      <p className="mt-1 text-ink-soft">{copy[1]}</p>
+      {view !== 'cancelled' && <Button onClick={onFind} className="mt-5">Find a mentor</Button>}
+    </div>
   );
 }

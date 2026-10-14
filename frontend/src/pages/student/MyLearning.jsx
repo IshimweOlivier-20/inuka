@@ -26,13 +26,13 @@ export default function MyLearning() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl sm:text-[1.75rem] font-bold">My Learning</h1>
+      <h1 className="text-xl sm:text-2xl font-bold">My Learning</h1>
       <div className="grid md:grid-cols-3 gap-6">
         <Card><Ring pct={d.dash.levels.english.percent} label="English track" sub={d.dash.levels.english.level} /></Card>
         <Card><Ring pct={d.dash.levels.computer.percent} label="Computer skills track" sub={d.dash.levels.computer.level} /></Card>
         <Card>
           <p className="text-sm text-ink-soft">Study streak</p>
-          <p className="text-4xl font-display font-bold text-brand">{d.streak.current} <Flame className="inline -mt-2 text-brand" size={32} fill="currentColor" aria-hidden="true" /></p>
+          <p className="text-3xl font-display font-bold text-brand">{d.streak.current} <Flame className="inline -mt-2 text-brand" size={32} fill="currentColor" aria-hidden="true" /></p>
           <p className="text-sm text-ink-soft mb-3">{d.dash.overall.completed} of {d.dash.overall.total} lessons completed</p>
           {d.streak.atRisk && <p className="text-sm font-medium text-brand-deep">Your streak is at risk! Study today to keep it going.</p>}
           <Heatmap days={d.streak.calendar} />

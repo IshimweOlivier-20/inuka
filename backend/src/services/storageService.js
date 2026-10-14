@@ -118,3 +118,10 @@ export async function deleteCourseFile(url) {
 
 // Reads a public image ("photos" or "media" folder) for /api/public/photos|media/<name>. null if missing.
 export const readPublicImage = (folder, name) => get(`${folder}/${name}`);
+
+// ---------- Files in student–mentor messages (private: only the two people in the conversation) ----------
+export async function saveChatFile(conversationId, file, ext) {
+  const key = `chat/${conversationId}/${randomUUID()}.${ext}`;
+  await put(key, file.buffer, file.mimetype);
+  return key;
+}

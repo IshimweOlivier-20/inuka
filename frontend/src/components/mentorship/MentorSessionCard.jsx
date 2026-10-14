@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { BookOpen, CalendarClock, Link2, MapPin, NotebookPen } from 'lucide-react';
+import { BookOpen, CalendarClock, Link2, MapPin, MessagesSquare, NotebookPen, XCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { typeOf } from './booking';
 import { Alert, Button, Field, Modal } from '../ui';
 import Avatar from '../ui/Avatar';
 import { JoinSessionButton, Stars, StatusPill, sessionDate, sessionTime } from './shared';
@@ -10,6 +12,7 @@ import { useConfirm } from '../../context/FeedbackContext';
 // pending → Accept / Decline; confirmed → Join, video link, Mark as done; any confirmed/completed → notes.
 export default function MentorSessionCard({ b, onChanged, compact }) {
   const confirm = useConfirm();
+  const navigate = useNavigate();
   const [dialog, setDialog] = useState(null); // 'accept' | 'decline' | 'notes' | 'link'
   const [msg, setMsg] = useState(null);
   const now = Date.now();
@@ -24,8 +27,13 @@ export default function MentorSessionCard({ b, onChanged, compact }) {
     catch (e) { setMsg(errorMessage(e)); }
   };
 
+  const T = typeOf(b.sessionType);
+  const message = async () => {
+    try { const { data } = await api.post('/conversations', { studentId: b.studentId }); navigate(`/messages/${data.conversation.id}`); }
+    catch (e) { setMsg(errorMessage(e)); }
+  };
   return (
-    <div className="bg-surface rounded-xl border border-line p-4">
+    <div className="bg-surface rounded-3xl border border-line p-4 shadow-[0_6px_24px_-14px_rgba(7,41,77,0.2)]">
       <div className="flex items-start gap-3">
         <Avatar user={s} size="md" />
         <div className="min-w-0 flex-1">
@@ -35,8 +43,13 @@ export default function MentorSessionCard({ b, onChanged, compact }) {
           </div>
           <p className="text-[15px] font-medium mt-0.5">{b.topic}</p>
           <p className="text-sm text-ink-soft inline-flex items-center gap-1.5 mt-0.5"><CalendarClock size={15} aria-hidden="true" />{sessionDate(b.scheduledAt)}, {sessionTime(b.scheduledAt)}</p>
+          <p className="text-sm text-ink-soft inline-flex items-center gap-1.5 mt-0.5 ml-3"><T.icon size={15} aria-hidden="true" />{T.label}</p>
         </div>
+        <button type="button" onClick={message} aria-label={`Message ${s.firstName}`} title={`Message ${s.firstName}`}
+          className="w-12 h-12 shrink-0 rounded-full bg-brand-soft text-brand flex items-center justify-center hover:bg-brand hover:text-white transition-colors"><MessagesSquare size={20} aria-hidden="true" /></button>
       </div>
+      {b.previousTime && b.status === 'pending' && <p className="mt-3 text-sm rounded-lg bg-warning-soft text-warning-ink px-3 py-2">{s.firstName} asked to move this session (was {sessionDate(b.previousTime)}, {sessionTime(b.previousTime)}).{b.rescheduleReason ? ` Reason: ${b.rescheduleReason}.` : ''} Please accept or decline the new time.</p>}
+      {['cancelled', 'declined'].includes(b.status) && b.cancelReason && <p className="mt-3 text-sm rounded-lg bg-danger-soft text-danger-ink px-3 py-2">{b.cancelledBy === 'mentor' ? 'You cancelled' : `${s.firstName} cancelled`}: {b.cancelReason}</p>}
 
       {!compact && (
         <div className="mt-3 grid sm:grid-cols-2 gap-2 text-sm">
@@ -72,6 +85,9 @@ export default function MentorSessionCard({ b, onChanged, compact }) {
         {['confirmed', 'completed'].includes(b.status) && (
           <Button variant="ghost" onClick={() => setDialog('notes')}><NotebookPen size={18} aria-hidden="true" />{b.notes?.[0] ? 'Edit notes' : 'Add notes'}</Button>
         )}
+        {b.status === 'confirmed' && !past && (
+          <Button variant="ghost" className="text-danger" onClick={() => setDialog('cancel')}><XCircle size={18} aria-hidden="true" />Cancel session</Button>
+        )}
       </div>
 
       {dialog && <ActionDialog kind={dialog} b={b} onClose={() => setDialog(null)} onDone={(text) => { setDialog(null); onChanged?.(text); }} />}
@@ -83,13 +99,15 @@ const COPY = {
   accept: { title: 'Accept this session', button: 'Accept and confirm' },
   decline: { title: 'Decline this request', button: 'Decline request' },
   notes: { title: 'Session notes', button: 'Save notes' },
-  link: { title: 'Video link', button: 'Save link' },
+  link: { title: 'Call link', button: 'Save link' },
+  cancel: { title: 'Cancel this session', button: 'Cancel session' },
 };
 
 function ActionDialog({ kind, b, onClose, onDone }) {
   const [videoLink, setVideoLink] = useState(b.videoLink || '');
   const [message, setMessage] = useState('');
   const [notes, setNotes] = useState(b.notes?.[0]?.notes || '');
+  const [reason, setReason] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -99,23 +117,28 @@ function ActionDialog({ kind, b, onClose, onDone }) {
       if (kind === 'accept') { await api.post(`/mentor/bookings/${b.id}/accept`, { videoLink, message }); onDone(`Confirmed. ${b.student.firstName} has been told by email.`); }
       if (kind === 'decline') { await api.post(`/mentor/bookings/${b.id}/decline`, { message }); onDone(`Declined. ${b.student.firstName} has been told by email.`); }
       if (kind === 'notes') { await api.put(`/mentor/bookings/${b.id}/notes`, { notes }); onDone(`Notes saved. ${b.student.firstName} can read them in My Learning.`); }
+      if (kind === 'cancel') { await api.post(`/mentor/bookings/${b.id}/cancel`, { reason }); onDone(`Cancelled. ${b.student.firstName} has been told by email.`); }
       if (kind === 'link') { await api.patch(`/mentor/bookings/${b.id}`, { videoLink }); onDone('Video link saved.'); }
     } catch (e) { setError(errorMessage(e)); } finally { setBusy(false); }
   };
 
   return (
     <Modal open onClose={onClose} title={COPY[kind].title}
-      footer={<><Button variant="ghost" onClick={onClose}>Cancel</Button><Button variant={kind === 'decline' ? 'danger' : 'primary'} onClick={save} loading={busy}>{COPY[kind].button}</Button></>}>
+      footer={<><Button variant="ghost" onClick={onClose}>Cancel</Button><Button variant={kind === 'decline' || kind === 'cancel' ? 'danger' : 'primary'} onClick={save} loading={busy}>{COPY[kind].button}</Button></>}>
       <div className="space-y-4">
         {error && <Alert>{error}</Alert>}
         <p className="text-sm text-ink-soft">{b.student.firstName} {b.student.lastName} · {b.topic} · {sessionDate(b.scheduledAt)}, {sessionTime(b.scheduledAt)}</p>
         {(kind === 'accept' || kind === 'link') && (
-          <Field label="Video call link (Zoom, Google Meet or WhatsApp)" type="url" placeholder="https://meet.google.com/…" value={videoLink} onChange={(e) => setVideoLink(e.target.value)}
+          <Field label={b.sessionType === 'voice' ? 'Call link or phone/WhatsApp details' : 'Video call link (Zoom, Google Meet or WhatsApp)'} type="url" placeholder="https://meet.google.com/…" value={videoLink} onChange={(e) => setVideoLink(e.target.value)}
             hint={kind === 'accept' ? 'You can also add it later.' : 'The student sees it on their dashboard.'} />
         )}
         {(kind === 'accept' || kind === 'decline') && (
           <Field as="textarea" rows={3} label="Message to the student (optional)" value={message} onChange={(e) => setMessage(e.target.value)}
             hint={kind === 'decline' ? 'For example, suggest another time or another mentor.' : undefined} />
+        )}
+        {kind === 'cancel' && (
+          <Field as="textarea" rows={3} label="Why do you need to cancel? (the student sees this)" value={reason} onChange={(e) => setReason(e.target.value)}
+            hint="For example: I am travelling that day. Please book another time." />
         )}
         {kind === 'notes' && (
           <Field as="textarea" rows={7} label="What did you discuss? What should the student do next?" value={notes} onChange={(e) => setNotes(e.target.value)}

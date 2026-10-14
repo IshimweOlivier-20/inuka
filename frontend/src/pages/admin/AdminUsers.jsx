@@ -125,7 +125,7 @@ function EditUser({ id }) {
       <div className="flex flex-wrap items-center gap-4">
         <Avatar user={u} size="lg" />
         <div className="min-w-0">
-          <h1 className="text-2xl sm:text-[1.75rem] font-bold">{name}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold">{name}</h1>
           <p className="text-ink-soft">{u.email} · joined {formatDate(u.createdAt)}</p>
           <p className="mt-1.5 flex flex-wrap gap-1.5"><Pill tone={ROLE_TONE[u.role]}>{cap(u.role)}</Pill>{!u.isActive && <Pill tone="danger">Suspended</Pill>}{!u.isVerified && <Pill tone="warning">Email not confirmed</Pill>}</p>
         </div>

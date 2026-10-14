@@ -26,6 +26,7 @@ const TYPES = {
       readMinutes: z.coerce.number().int().min(1).max(60).default(3),
       publishedAt: z.coerce.date().default(() => new Date()),
       isPublished: z.boolean().default(true),
+      coverUrl: z.string().trim().max(500).regex(/^(https?:\/\/|\/api\/public\/)/, 'Please upload a picture or paste a full image link.').optional().nullable().or(z.literal('')).transform((v) => v || null),
     }),
   },
   testimonials: {

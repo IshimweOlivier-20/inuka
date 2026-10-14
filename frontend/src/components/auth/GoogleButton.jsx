@@ -6,7 +6,10 @@ import { api } from '../../services/api';
 // Needs GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in backend/.env. Until then, in development, the button
 // shows how to switch it on; in production it stays hidden.
 let configPromise;
-const getConfig = () => (configPromise ??= api.get('/auth/config').then((r) => r.data).catch(() => ({})));
+const getConfig = (fresh) => {
+  if (fresh || !configPromise) configPromise = api.get('/auth/config').then((r) => r.data).catch(() => ({}));
+  return configPromise;
+};
 
 const GoogleG = () => (
   <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
@@ -23,8 +26,10 @@ export default function GoogleButton({ label = 'Continue with Google', from, div
   useEffect(() => { let alive = true; getConfig().then((c) => alive && setCfg(c)); return () => { alive = false; }; }, []);
   if (!cfg || (!cfg.google && !cfg.showGoogleSetupHint)) return null;
 
-  const go = () => {
-    if (!cfg.google) { setHint(true); return; }
+  const go = async () => {
+    // Ask again: the backend may have been set up since this page opened.
+    const now = cfg.google ? cfg : await getConfig(true);
+    if (!now.google) { setCfg(now); setHint(true); return; }
     window.location.href = `/api/auth/google/start${from ? `?from=${encodeURIComponent(from)}` : ''}`;
   };
   return (
@@ -35,7 +40,8 @@ export default function GoogleButton({ label = 'Continue with Google', from, div
       </button>
       {hint && (
         <p className="mt-2 text-xs rounded-lg bg-paper border border-line px-3 py-2 text-ink-soft" role="status">
-          Google sign-in is not switched on yet. To switch it on, add <code>GOOGLE_CLIENT_ID</code> and <code>GOOGLE_CLIENT_SECRET</code> to backend/.env (README section 12). This note only shows while developing.
+          Google sign-in is not switched on yet{cfg.googleProblem ? `: ${cfg.googleProblem}` : '.'} Save backend/.env (no restart needed) and press the button again.
+          In Google Cloud the redirect link must be <code className="break-all">{cfg.googleRedirectUri || 'http://localhost:5173/api/auth/google/callback'}</code> (README section 12). This note only shows while developing.
         </p>
       )}
       <div className="flex items-center gap-3 mt-4 text-sm text-ink-soft" aria-hidden="true">

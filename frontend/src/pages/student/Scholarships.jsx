@@ -84,7 +84,7 @@ export default function Scholarships() {
 
   return (
     <div>
-      <h1 className="text-2xl sm:text-[1.75rem] font-bold">Scholarships</h1>
+      <h1 className="text-xl sm:text-2xl font-bold">Scholarships</h1>
       <p className="text-ink-soft mt-1">African and refugee-friendly scholarships first. Always check details on the official website.</p>
 
       <div role="tablist" className="flex gap-1 mt-6 border-b border-line overflow-x-auto">

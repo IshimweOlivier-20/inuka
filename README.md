@@ -737,3 +737,73 @@ Existing quiz questions keep working (their single answer is copied to the new l
 API: `/api/admin/files`, `/api/admin/courses/:id/(move|duplicate|stats|exam…)`, `/api/admin/lessons/:id/(duplicate|quizzes/import)`,
 `/api/admin/exam-questions/:id`, `/api/admin/exam-attempts/:id`; students: `/api/courses/:slug/exam`, `/api/courses/:slug/exam/start`,
 `/api/exam-attempts/:id` (GET, `PUT …/answers`, `POST …/submit`).
+
+## 38. Mentor sessions (book, reschedule, cancel) and Messages
+
+**Database change:** run `npx prisma migrate deploy` in `backend` (migration `20261014090000_sessions_messages`).
+
+**Students — Mentorship → My sessions** has three tabs: **Upcoming**, **Completed**, **Cancelled**. Each card shows the
+mentor's photo, how you meet (video call, voice call or messages), the status, date and time, and a round button to
+message the mentor.
+- **Book a session** (`/mentorship/book/:mentorId`): 1) choose a day on the calendar and a free hour → 2) choose video
+  call, voice call or messages, the topic and your message → 3) check and send. A "Request sent!" message follows.
+- **Session page** (`/mentorship/sessions/:id`): mentor, date and time, your details, how you meet, mentor notes, the
+  Join / Messages button (opens 15 minutes before), rating after the session. The ⋯ menu has Reschedule, Message and Cancel.
+- **Reschedule**: choose a reason → choose a new day and hour → "Session moved!". The mentor confirms the new time
+  again (the session goes back to "Waiting for mentor"). A session can be moved 3 times.
+- **Cancel**: "Are you sure?" → choose a reason → "Session cancelled". The mentor gets an email with the reason.
+
+**Mentors — Sessions** uses the same three tabs. Mentors see when a student asked to move a session (old time and reason),
+can cancel a confirmed session with a reason (the student is emailed), and message the student from each card.
+
+**Messages** (`/messages`, in the menu for students and mentors, with an unread number):
+- A student can message a mentor after booking them; the mentor can then reply.
+- Text, pictures (also from the phone camera), PDF/Word files and **voice messages** (press the microphone), 10 MB at most.
+  Files are private: only the two people can open them.
+- Ticks show sent ✓ and read ✓✓ (yellow). New messages appear by themselves (checked every 4 seconds).
+- INUKA writes short grey lines in the chat when a session is requested, confirmed, moved, cancelled or completed.
+- ⋯ menu: Sessions, **Export chat** (text file), **Clear chat** (hides the messages for you only). The search icon finds words in the chat.
+
+## 39. Google sign-in: if it still says "not switched on"
+
+- The keys must be in **backend/.env** (not frontend/.env), named exactly `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
+- While developing, saving backend/.env is now enough: the backend reads it again by itself (before, `npm run dev`
+  had to be stopped and started again). The terminal prints `✓ Google sign-in: on` or what is wrong.
+- The Client ID ends with `.apps.googleusercontent.com`. The note under the button now says exactly what is missing.
+- In Google Cloud → Credentials → your OAuth client, **Authorized redirect URIs** must contain
+  `http://localhost:5173/api/auth/google/callback` (and your real site's address in production).
+- While the OAuth consent screen is in "Testing", only the Google accounts added as **Test users** can sign in.
+
+## 40. Dashboard look: dark sidebar, calmer text, hours on the booking calendar
+
+- **Sidebar** (all three dashboards): a dark-blue floating panel with white icons. The open page is a light "tab"
+  that comes out of the panel (curved corners, `.side-tab` in `index.css`). The round button at the bottom folds it
+  to icons only. On phones it opens from the menu button.
+- **Text size**: dashboards use a slightly smaller scale (15px base, `html.dash` in `index.css`) and smaller page titles.
+  The public website is unchanged.
+- **Booking calendar**: under "Select hour" you see all the mentor's hours for the chosen day; hours already booked
+  are crossed out. The calendar and hours always show, even when a mentor is fully booked.
+
+## 41. More hours, News & guides with pictures, likes, comments and sharing
+
+**Database change:** run `npx prisma migrate deploy` in `backend` (migration `20261014140000_post_reactions`).
+
+**Hours when booking a mentor.** A session (1 hour) can now start every half hour: 09:00, 09:30, 10:00…, inside the
+hours the mentor set in **Mentor → My profile** (touching hours are joined, so 09:00–10:00 + 10:00–11:00 also offers 09:30).
+The test mentor used to have only two hours a week (that is why you saw only 4:00 PM). Run `npm run seed` in
+`backend` once: it gives the test mentor Monday–Friday 09:00–12:00 and 14:00–18:00, Saturday 10:00–13:00 (Kigali time).
+Moving a session can now use a time close to its old time.
+
+**Courses (student dashboard).** The course cards have no coloured box any more: the picture, then the course letter,
+level, title, description, progress and button directly below it.
+
+**News & guides** (`/news`)
+- Every article has a picture: the one uploaded in **Admin → Website content → News & guides → Article picture**, or else a
+  matching photo (`postPhoto` in `config/photos.js`).
+- The newest article is shown big at the top. Filters: All / Guides / News / Student stories (with numbers), a search box,
+  and Latest / Most liked.
+- Article page: big picture, author and date, **Like / Unlike**, **Comment**, **Share** (WhatsApp, Facebook, X, LinkedIn,
+  copy link, or the phone's share menu), comments with name, photo and a "Mentor" or "INUKA team" label,
+  "Keep reading" with pictures.
+- Liking and commenting need an account (the page sends people to sign in and back). People can delete their own
+  comments; admins can delete any comment. At most 10 comments per person in 10 minutes.
