@@ -126,7 +126,7 @@ router.post('/courses/:id/duplicate', async (req, res) => {
       track: await nextTrack(src.category), slug: await uniqueSlug(slugify(`${src.category}-${title}`)), orderIndex: (last?.orderIndex ?? 0) + 1, isPublished: false,
       lessons: {
         create: src.lessons.map((l) => ({
-          title: l.title, summary: l.summary, contentHtml: l.contentHtml, audioUrl: l.audioUrl, orderIndex: l.orderIndex, isPublished: l.isPublished,
+          title: l.title, summary: l.summary, contentHtml: l.contentHtml, audioUrl: l.audioUrl, transcript: l.transcript, orderIndex: l.orderIndex, isPublished: l.isPublished,
           estimatedMinutes: l.estimatedMinutes, passMark: l.passMark, aiActivity: l.aiActivity ?? Prisma.DbNull, resources: l.resources,
           quizzes: { create: l.quizzes.map(({ id, lessonId, ...q }) => q) },
         })),
@@ -195,6 +195,7 @@ const lessonSchema = z.object({
   summary: z.string().trim().max(8000).optional().nullable(),
   contentHtml: z.string().max(200000).default(''),
   audioUrl: z.string().trim().max(500).optional().nullable().or(z.literal('')),
+  transcript: z.string().trim().max(50000).optional().nullable().transform((v) => v || null),
   isPublished: z.boolean().optional(),
   estimatedMinutes: z.coerce.number().int().min(1).max(600).nullable().optional(),
   passMark: z.coerce.number().int().min(10).max(100).nullable().optional(),
@@ -273,7 +274,7 @@ router.post('/lessons/:id/duplicate', async (req, res) => {
   const last = await prisma.lesson.findFirst({ where: { courseId: src.courseId }, orderBy: { orderIndex: 'desc' } });
   const lesson = await prisma.lesson.create({
     data: {
-      courseId: src.courseId, title: `${src.title} (copy)`, summary: src.summary, contentHtml: src.contentHtml, audioUrl: src.audioUrl,
+      courseId: src.courseId, title: `${src.title} (copy)`, summary: src.summary, contentHtml: src.contentHtml, audioUrl: src.audioUrl, transcript: src.transcript,
       orderIndex: (last?.orderIndex ?? 0) + 1, isPublished: false, estimatedMinutes: src.estimatedMinutes, passMark: src.passMark,
       aiActivity: src.aiActivity ?? Prisma.DbNull, resources: src.resources,
       quizzes: { create: src.quizzes.map(({ id, lessonId, ...q }) => q) },

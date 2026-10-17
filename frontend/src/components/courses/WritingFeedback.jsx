@@ -1,3 +1,4 @@
+import VoiceInputButton from '../ui/VoiceInput';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PenLine, RotateCcw } from 'lucide-react';
@@ -38,12 +39,15 @@ export default function WritingFeedback({ lessonId, activity }) {
       <div className="p-5">
         <p className="flex gap-2 text-[15px]"><PenLine size={18} className="text-accent-hover mt-1 shrink-0" aria-hidden="true" /><span><strong>Your task:</strong> {activity.task}</span></p>
         <form onSubmit={submit} className="mt-4">
+          <div className="relative">
+          <span className="absolute right-2 bottom-3 z-[1]"><VoiceInputButton onText={(t) => setText((v) => (v ? `${v.trimEnd()} ${t}` : t))} label="Speak your text" /></span>
           <label className="block">
             <span className="sr-only">Your text</span>
             <textarea value={text} onChange={(e) => setText(e.target.value)} rows={activity.kind === 'paragraph' ? 7 : 12}
               placeholder="Write or paste your text here…"
-              className="w-full rounded-lg border border-line bg-surface px-3 py-3 text-[15px] leading-7 focus:outline-none focus:ring-2 focus:ring-brand" />
+              className="w-full rounded-lg border border-line bg-surface pl-3 pr-12 py-3 text-[15px] leading-7 focus:outline-none focus:ring-2 focus:ring-brand" />
           </label>
+          </div>
           <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
             <p className={`text-sm font-semibold ${!n ? 'text-ink-soft' : inRange ? 'text-success-ink' : 'text-warning-ink'}`} aria-live="polite">
               {n} word{n === 1 ? '' : 's'} · target {min}–{max}

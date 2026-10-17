@@ -199,3 +199,27 @@ html.dash body { line-height: 1.6; }
 }
 .side-tab::before { top: -22px; border-bottom-right-radius: 22px; box-shadow: 8px 8px 0 8px var(--color-paper); }
 .side-tab::after { bottom: -22px; border-top-right-radius: 22px; box-shadow: 8px -8px 0 8px var(--color-paper); }
+
+/* ---------- Accessibility settings (components/accessibility/AccessibilityPanel.jsx) ---------- */
+/* Text size scales every rem-based size (Tailwind text-*, spacing). */
+html[data-text=large] { font-size: 17.5px; }
+html[data-text=xlarge] { font-size: 19.5px; }
+html.dash[data-text=large] { font-size: 16.5px; }
+html.dash[data-text=xlarge] { font-size: 18px; }
+/* Easy-to-read font (Atkinson Hyperlegible, made for low vision) */
+html.a11y-font body, html.a11y-font h1, html.a11y-font h2, html.a11y-font h3, html.a11y-font h4,
+html.a11y-font button, html.a11y-font input, html.a11y-font select, html.a11y-font textarea {
+  font-family: "Atkinson Hyperlegible", "Open Sans", ui-sans-serif, system-ui, sans-serif !important; letter-spacing: 0.01em;
+}
+html.a11y-font body { line-height: 1.75; }
+/* Underline every link */
+html.a11y-links a { text-decoration: underline; text-underline-offset: 3px; }
+/* Stop animations and smooth scrolling */
+html.a11y-motion, html.a11y-motion *, html.a11y-motion *::before, html.a11y-motion *::after {
+  animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important;
+}
+/* High contrast: darker text, stronger borders, clear focus ring */
+html.a11y-contrast { --color-ink: #000; --color-ink-soft: #1F2937; --color-line: #6B7280; --color-paper: #FFFFFF; }
+html.a11y-contrast[data-theme=dark] { --color-ink: #FFFFFF; --color-ink-soft: #E5E7EB; --color-line: #9CA3AF; --color-paper: #000000; --color-surface: #0A0A0A; }
+html.a11y-contrast :focus-visible { outline: 4px solid #FFC600; outline-offset: 2px; box-shadow: 0 0 0 7px #07294D; }
+html.a11y-contrast img { filter: contrast(1.05); }

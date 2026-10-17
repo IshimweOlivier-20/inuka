@@ -6,6 +6,7 @@ import { requireAuth } from '../../middleware/auth.js';
 import { ALWAYS_REQUIRED_DOCS, CONDITIONAL_DOCS } from '../../lib/constants.js';
 import { awardBadge } from '../../utils/badgeChecker.js';
 import { matchScholarships } from '../../services/scholarshipMatch.js';
+import { readinessContext, readinessFor } from '../../services/readiness.js';
 
 const router = Router();
 router.use(requireAuth);
@@ -17,6 +18,7 @@ const filtersSchema = z.object({
   level: z.enum(['undergraduate', 'postgraduate', 'both']).optional(),
   funding: z.enum(['fully_funded', 'partial', 'tuition_only']).optional(),
   refugees: z.enum(['yes']).optional(),
+  disability: z.enum(['yes']).optional(),
   language: z.enum(['English', 'French', 'Both']).optional(),
   deadline: z.enum(['month', '3months']).optional(),
   sort: z.enum(['deadline', 'relevant', 'newest']).default('deadline'),
@@ -52,6 +54,7 @@ export function scholarshipQuery(query) {
   if (f.level) where.level = f.level === 'both' ? 'both' : { in: [f.level, 'both'] };
   if (f.funding) where.fundingType = f.funding;
   if (f.refugees === 'yes') where.openToRefugees = true;
+  if (f.disability === 'yes') where.disabilityFriendly = true;
   if (f.language) where.languageOfStudy = f.language === 'Both' ? 'Both' : { in: [f.language, 'Both'] };
   if (f.deadline) {
     const days = f.deadline === 'month' ? 31 : 92;
@@ -106,6 +109,22 @@ router.delete('/save/:id', async (req, res) => {
   res.json({ ok: true });
 });
 
+// GET /api/scholarships/readiness — how ready the student is for their saved scholarships (or best matches)
+router.get('/readiness', async (req, res) => {
+  const [saved, ctx] = await Promise.all([
+    prisma.savedScholarship.findMany({ where: { userId: req.user.id, scholarship: { isActive: true } }, include: { scholarship: true } }),
+    readinessContext(req.user),
+  ]);
+  const now = new Date();
+  let list = saved.map((r) => r.scholarship).filter((s) => !s.deadline || s.deadline >= now);
+  let source = 'saved';
+  if (!list.length) { list = (await matchScholarships(req.user, { limit: 3 })).matches; source = 'matches'; }
+  const rows = list.map((s) => ({ id: s.id, slug: s.slug, name: s.name, orgName: s.orgName, deadline: s.deadline, readiness: readinessFor(s, req.user, ctx) }))
+    .filter((r) => r.readiness.eligible)
+    .sort((a, b) => (a.deadline ? new Date(a.deadline) : Infinity) - (b.deadline ? new Date(b.deadline) : Infinity));
+  res.json({ source, scholarships: rows.slice(0, 6), hasResults: !!ctx.result });
+});
+
 // GET /api/scholarships/matches?limit=6 — best scholarships for this student's profile, with reasons
 router.get('/matches', async (req, res) => {
   const limit = Math.min(Math.max(Number(req.query.limit) || 6, 1), 20);
@@ -115,7 +134,7 @@ router.get('/matches', async (req, res) => {
 router.get('/:id', async (req, res) => {
   const s = await prisma.scholarship.findFirst({ where: { OR: [{ id: req.params.id }, { slug: req.params.id }] } });
   if (!s) throw new HttpError(404, 'We could not find that scholarship.');
-  const [saved, docs, related, application] = await Promise.all([
+  const [saved, docs, related, application, ctx] = await Promise.all([
     prisma.savedScholarship.findUnique({ where: { userId_scholarshipId: { userId: req.user.id, scholarshipId: s.id } } }),
     prisma.document.findMany({ where: { userId: req.user.id }, select: { docType: true } }),
     prisma.scholarship.findMany({
@@ -123,8 +142,9 @@ router.get('/:id', async (req, res) => {
       take: 3, orderBy: { isFeatured: 'desc' },
     }),
     prisma.application.findUnique({ where: { userId_scholarshipId: { userId: req.user.id, scholarshipId: s.id } } }),
+    readinessContext(req.user),
   ]);
-  res.json({ scholarship: { ...s, saved: !!saved }, checklist: buildChecklist(s, req.user, docs), related, application });
+  res.json({ scholarship: { ...s, saved: !!saved }, checklist: buildChecklist(s, req.user, docs), related, application, readiness: readinessFor(s, req.user, ctx) });
 });
 
 // ---------- Applications (spec 10.4) ----------

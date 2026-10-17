@@ -28,6 +28,25 @@ router.patch('/profile', async (req, res) => {
   res.json({ user: publicUser(user) });
 });
 
+// PUT /api/profile/accessibility — display settings (remembered on every device), extra exam time,
+// and (optional, private) disabilities, used only to suggest supportive scholarships and universities.
+router.put('/profile/accessibility', async (req, res) => {
+  const d = z.object({
+    accessibility: z.object({
+      textSize: z.enum(['normal', 'large', 'xlarge']).default('normal'),
+      contrast: z.boolean().default(false),
+      readableFont: z.boolean().default(false),
+      reduceMotion: z.boolean().default(false),
+      readAloud: z.boolean().default(false),
+      underlineLinks: z.boolean().default(false),
+    }).optional(),
+    extraTimePercent: z.coerce.number().int().refine((n) => [0, 25, 50, 100].includes(n), 'Please choose 0, 25, 50 or 100% extra time.').optional(),
+    disabilities: z.array(z.enum(['visual', 'hearing', 'physical', 'learning', 'other'])).max(5).nullable().optional(),
+  }).parse(req.body);
+  const user = await prisma.user.update({ where: { id: req.user.id }, data: d });
+  res.json({ user: publicUser(user) });
+});
+
 // PUT /api/profile/photo — upload or replace the profile photo (multipart field "photo")
 router.put('/profile/photo', photoUpload.single('photo'), async (req, res) => {
   if (!req.file) throw new HttpError(400, 'Please choose a photo.');

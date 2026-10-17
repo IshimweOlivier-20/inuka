@@ -42,7 +42,8 @@
       "community_service"
     ],
     "applyUrl": "https://mastercardfdn.org/en/what-we-do/our-programs/mastercard-foundation-scholars-program/",
-    "isFeatured": true
+    "isFeatured": true,
+    "disabilityFriendly": true
   },
   {
     "slug": "unhcr-dafi",

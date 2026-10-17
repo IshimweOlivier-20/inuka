@@ -19,6 +19,16 @@ const Article = lazy(() => import('./pages/public/News').then((m) => ({ default:
 const Terms = lazy(() => import('./pages/public/Legal').then((m) => ({ default: m.Terms })));
 const Privacy = lazy(() => import('./pages/public/Legal').then((m) => ({ default: m.Privacy })));
 
+// Free tools (public): S6 options, university directory, scam checker, certificate check, teacher letter upload
+const NextStepPublic = lazy(() => import('./pages/tools/NextStep'));
+const MyOptions = lazy(() => import('./pages/tools/NextStep').then((m) => ({ default: m.MyOptions })));
+const UniversityList = lazy(() => import('./pages/tools/Universities'));
+const UniversityPage = lazy(() => import('./pages/tools/Universities').then((m) => ({ default: m.UniversityPage })));
+const ScamCheckPublic = lazy(() => import('./pages/tools/ScamCheck'));
+const ScamCheckDashboard = lazy(() => import('./pages/tools/ScamCheck').then((m) => ({ default: m.ScamCheckDashboard })));
+const Verify = lazy(() => import('./pages/tools/Verify'));
+const LetterRespond = lazy(() => import('./pages/tools/LetterRespond'));
+
 // Sign in, sign up, account emails
 const AuthPage = lazy(() => import('./pages/auth/AuthPage'));
 const GoogleDone = lazy(() => import('./pages/auth/GoogleDone'));
@@ -62,6 +72,8 @@ const AdminExam = lazy(() => import('./pages/admin/AdminExam'));
 const AdminScholarships = lazy(() => import('./pages/admin/AdminScholarships').then((m) => ({ default: m.AdminScholarships })));
 const AdminScholarshipForm = lazy(() => import('./pages/admin/AdminScholarships').then((m) => ({ default: m.AdminScholarshipForm })));
 const AdminAnalytics = lazy(() => import('./pages/admin/AdminInsights').then((m) => ({ default: m.AdminAnalytics })));
+const AdminUniversities = lazy(() => import('./pages/admin/AdminUniversities').then((m) => ({ default: m.AdminUniversities })));
+const AdminUniversity = lazy(() => import('./pages/admin/AdminUniversities').then((m) => ({ default: m.AdminUniversity })));
 const AdminContent = lazy(() => import('./pages/admin/AdminContent'));
 const AdminContentItem = lazy(() => import('./pages/admin/AdminContent').then((m) => ({ default: m.AdminContentItem })));
 const AdminAnnouncements = lazy(() => import('./pages/admin/AdminInsights').then((m) => ({ default: m.AdminAnnouncements })));
@@ -111,6 +123,13 @@ export default function App() {
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/logout" element={<Logout />} />
+        <Route path="/next-step" element={<NextStepPublic />} />
+        <Route path="/universities" element={<UniversityList />} />
+        <Route path="/universities/:slug" element={<UniversityPage />} />
+        <Route path="/scam-check" element={<ScamCheckPublic />} />
+        <Route path="/verify" element={<Verify />} />
+        <Route path="/verify/:code" element={<Verify />} />
+        <Route path="/letters/:token" element={<LetterRespond />} />
 
         {/* Sign in and account */}
         {/* Sign in and sign up share one sliding card (same component, so it animates between them) */}
@@ -138,6 +157,8 @@ export default function App() {
           <Route path="/mentorship/sessions/:id/reschedule" element={<RescheduleSession />} />
           <Route path="/mentorship/sessions/:id/cancel" element={<CancelSession />} />
           <Route path="/ai" element={<InukaAI />} />
+          <Route path="/options" element={<MyOptions />} />
+          <Route path="/safety" element={<ScamCheckDashboard />} />
         </Route>
 
         {/* Messages between students and mentors */}
@@ -166,6 +187,8 @@ export default function App() {
           <Route path="/admin/courses/:id/exam" element={<AdminExam />} />
           <Route path="/admin/scholarships" element={<AdminScholarships />} />
           <Route path="/admin/scholarships/:id" element={<AdminScholarshipForm />} />
+          <Route path="/admin/universities" element={<AdminUniversities />} />
+          <Route path="/admin/universities/:id" element={<AdminUniversity />} />
           <Route path="/admin/analytics" element={<AdminAnalytics />} />
           <Route path="/admin/announcements" element={<AdminAnnouncements />} />
           <Route path="/admin/content" element={<AdminContent />} />

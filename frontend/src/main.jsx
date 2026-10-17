@@ -6,6 +6,11 @@ import { FeedbackProvider } from './context/FeedbackContext';
 import App from './App';
 import './index.css';
 import { InukaSkeletonTheme } from './components/ui/Skeletons';
+import { applyA11y, loadA11y } from './utils/a11y';
+import ReadAloud from './components/accessibility/ReadAloud';
+
+// Accessibility settings saved on this device apply before the first paint.
+applyA11y(loadA11y(), { save: false });
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -14,6 +19,7 @@ createRoot(document.getElementById('root')).render(
         <InukaSkeletonTheme>
           <FeedbackProvider>
             <App />
+            <ReadAloud />
           </FeedbackProvider>
         </InukaSkeletonTheme>
       </AuthProvider>

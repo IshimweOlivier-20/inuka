@@ -1,7 +1,7 @@
 // Public (no sign-in) data for the home page and the News & Guides pages.
 import { Router } from 'express';
 import { z } from 'zod';
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import { prisma } from '../lib/prisma.js';
 import { HttpError } from '../middleware/errorHandler.js';
 import { searchScholarships } from '../services/scholarshipSearch.js';
@@ -135,7 +135,7 @@ router.post('/posts/:slug/like', requireAuth, async (req, res) => {
 });
 
 const commentLimiter = rateLimit({
-  windowMs: 10 * 60 * 1000, limit: 10, standardHeaders: 'draft-7', legacyHeaders: false, keyGenerator: (req) => req.user?.id || req.ip,
+  windowMs: 10 * 60 * 1000, limit: 10, standardHeaders: 'draft-7', legacyHeaders: false, keyGenerator: (req) => req.user?.id || ipKeyGenerator(req.ip),
   handler: (req, res) => res.status(429).json({ error: 'You have written many comments in a short time. Please wait a few minutes.' }),
 });
 

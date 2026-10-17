@@ -36,6 +36,8 @@ const schema = z.object({
   imageUrl: z.url().optional().nullable().or(z.literal('')),
   isFeatured: z.boolean().default(false),
   isActive: z.boolean().default(true),
+  minPoints: z.coerce.number().int().min(0).max(18).nullable().optional(),
+  disabilityFriendly: z.boolean().default(false),
 }).refine((s) => !s.refugeesOnly || s.openToRefugees, { message: 'A refugees-only scholarship must also be open to refugees.', path: ['openToRefugees'] });
 
 const clean = (d) => ({ ...d, hostUniversity: d.hostUniversity || null, deadlineNote: d.deadlineNote || null, logoUrl: d.logoUrl || null, imageUrl: d.imageUrl || null, deadline: d.deadline || null });

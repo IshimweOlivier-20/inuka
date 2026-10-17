@@ -1,3 +1,4 @@
+import VoiceInputButton from '../ui/VoiceInput';
 // One question for students (lesson quiz or final exam). Types: single, multiple, true_false, short.
 // value: string (or string[] for "multiple"). result (after checking): { correct, correctAnswers?, correctAnswer?, explanation? }
 export const isAnswered = (q, v) => (q.type === 'multiple' ? Array.isArray(v) && v.length > 0 : String(v ?? '').trim() !== '');
@@ -18,8 +19,11 @@ export default function QuestionInput({ q, n, value, onChange, result, disabled 
       </legend>
       {q.imageUrl && <img src={q.imageUrl} alt="" className="mb-3 max-h-64 rounded-lg border border-line" />}
       {q.type === 'short' ? (
-        <input value={value || ''} onChange={(e) => onChange(e.target.value)} disabled={disabled} aria-label={`Your answer to question ${n}`} placeholder="Type your answer"
-          className={`w-full sm:max-w-md min-h-12 rounded-lg border-2 bg-surface px-4 ${result ? (result.correct ? 'border-success' : 'border-danger') : 'border-line focus:border-brand'} outline-none`} />
+        <div className="flex items-center gap-2 w-full sm:max-w-md">
+          <input value={value || ''} onChange={(e) => onChange(e.target.value)} disabled={disabled} aria-label={`Your answer to question ${n}`} placeholder="Type your answer"
+            className={`flex-1 min-w-0 min-h-12 rounded-lg border-2 bg-surface px-4 ${result ? (result.correct ? 'border-success' : 'border-danger') : 'border-line focus:border-brand'} outline-none`} />
+          {!disabled && !result && <VoiceInputButton onText={(t) => onChange(value ? `${value} ${t}` : t)} label="Say your answer" />}
+        </div>
       ) : (
         <div className="grid sm:grid-cols-2 gap-2">
           {q.options.map((o) => {

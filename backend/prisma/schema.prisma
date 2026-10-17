@@ -85,6 +85,9 @@ model User {
   age              Int?
   profilePhotoUrl  String?        @map("profile_photo_url")
   weeklyGoal       Int            @default(3) @map("weekly_goal")
+  accessibility    Json? // display settings: { textSize, contrast, readableFont, reduceMotion, readAloud }
+  extraTimePercent Int            @default(0) @map("extra_time_percent") // more time on timed quizzes and exams
+  disabilities     Json? // optional and private: ["visual", "hearing", "physical", "learning", "other"]
   isVerified       Boolean        @default(false) @map("is_verified")
   isActive         Boolean        @default(true) @map("is_active")
   createdAt        DateTime       @default(now()) @map("created_at")
@@ -112,6 +115,8 @@ model User {
   streakLogs        StreakLog[]
   refreshTokens     RefreshToken[]
   authTokens        AuthToken[]
+  s6Result          S6Result?
+  letterRequests    RecommendationRequest[]
 
   @@map("users")
 }
@@ -171,6 +176,7 @@ model Lesson {
   summary     String?
   contentHtml String   @map("content_html")
   audioUrl    String?  @map("audio_url")
+  transcript  String? // written text of the audio, for deaf and hard-of-hearing students
   orderIndex  Int      @map("order_index")
   isPublished Boolean  @default(true) @map("is_published")
   estimatedMinutes Int? @map("estimated_minutes") // shown to students ("About 10 minutes")
@@ -279,6 +285,7 @@ model Certificate {
   courseId String   @map("course_id")
   issuedAt DateTime @default(now()) @map("issued_at")
   pdfUrl   String?  @map("pdf_url")
+  code     String   @unique // short public code for the QR "verify" page
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
@@ -324,6 +331,8 @@ model Scholarship {
   logoUrl           String?     @map("logo_url")
   imageUrl          String?     @map("image_url") // photo on the scholarship card (optional; a matching photo is used if empty)
   isFeatured        Boolean     @default(false) @map("is_featured")
+  minPoints         Int?        @map("min_points") // minimum S6 points if the scholarship publishes one (null = none listed)
+  disabilityFriendly Boolean    @default(false) @map("disability_friendly") // prioritises or supports students with disabilities
   isActive          Boolean     @default(true) @map("is_active")
   createdAt         DateTime    @default(now()) @map("created_at")
 
@@ -735,4 +744,79 @@ model PostComment {
 
   @@index([postId, createdAt])
   @@map("post_comments")
+}
+
+// Universities, Rwanda Polytechnic / TVET colleges and their programmes, with entry requirements (entered by INUKA's team).
+model University {
+  id            String      @id @default(uuid())
+  slug          String      @unique
+  name          String
+  shortName     String?     @map("short_name")
+  kind          String // public | private | tvet
+  city          String?
+  website       String?
+  about         String?
+  accessibility Json? // { supportOffice, accessibleCampus, assistiveTech, notes }
+  isSample      Boolean     @default(false) @map("is_sample")
+  isPublished   Boolean     @default(true) @map("is_published")
+  verifiedAt    DateTime?   @map("verified_at") // when the team last checked the requirements on the official site
+  createdAt     DateTime    @default(now()) @map("created_at")
+  programmes    Programme[]
+
+  @@map("universities")
+}
+
+model Programme {
+  id            String     @id @default(uuid())
+  universityId  String     @map("university_id")
+  name          String
+  field         String // e.g. Engineering, Health, Business, Education, ICT, Agriculture, Arts
+  award         String // bachelor | diploma | certificate
+  durationYears Float?     @map("duration_years")
+  combinations  Json       @default("[]") // accepted S6 combinations, e.g. ["MPC","MPG"]; [] = any
+  required      Json       @default("[]") // [{ subject, minGrade }]
+  minPoints     Int?       @map("min_points")
+  notes         String?
+  applyUrl      String?    @map("apply_url")
+  isPublished   Boolean    @default(true) @map("is_published")
+  university    University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+
+  @@index([universityId])
+  @@map("programmes")
+}
+
+// A student's S6 results (typed by the student, private).
+model S6Result {
+  userId      String   @id @map("user_id")
+  system      String   @default("rwanda") // rwanda | other
+  combination String?
+  subjects    Json // [{ subject, grade, percent? }]
+  examYear    Int?     @map("exam_year")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("s6_results")
+}
+
+// A recommendation letter asked from a teacher, who uploads it from an emailed link (no account needed).
+model RecommendationRequest {
+  id           String    @id @default(uuid())
+  studentId    String    @map("student_id")
+  teacherName  String    @map("teacher_name")
+  teacherEmail String    @map("teacher_email")
+  relationship String // e.g. "My Maths teacher at GS Kigali"
+  purpose      String // what it is for (scholarship name or "university applications")
+  message      String?
+  dueDate      DateTime? @map("due_date")
+  tokenHash    String    @unique @map("token_hash")
+  status       String    @default("requested") // requested | received | declined | cancelled
+  declineNote  String?   @map("decline_note")
+  documentId   String?   @map("document_id") // the letter, saved in the student's document vault
+  remindedAt   DateTime? @map("reminded_at")
+  receivedAt   DateTime? @map("received_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  student      User      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@map("recommendation_requests")
 }

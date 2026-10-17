@@ -9,6 +9,7 @@ import { ICONS } from '../landing/socialIcons';
 import { useAuth } from '../../context/AuthContext';
 import { homeFor } from '../../config/roles';
 import ThemeToggle from './ThemeToggle';
+import { AccessibilityButton } from '../accessibility/AccessibilityPanel';
 
 const linkBase = 'min-h-11 px-3.5 inline-flex items-center gap-1 font-medium text-[15px] transition-colors';
 const linkIdle = 'text-brand hover:text-accent-hover';
@@ -39,9 +40,10 @@ function Dropdown({ item }) {
         {item.label}<ChevronDown size={16} className={`transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
       </button>
       {open && (
-        <div className="nav-pop absolute right-0 mt-2 w-60 rounded-xl bg-surface border border-line shadow-[0_16px_40px_-16px_rgba(26,26,46,0.3)] p-2">
-          {item.children.map((c) => (
-            <SectionLink key={c.id} id={c.id} onClick={() => setOpen(false)}
+        <div className="nav-pop absolute right-0 mt-2 w-72 rounded-xl bg-surface border border-line shadow-[0_16px_40px_-16px_rgba(26,26,46,0.3)] p-2">
+          {item.children.map((c) => (c.to
+            ? <Link key={c.to} to={c.to} onClick={() => setOpen(false)} className="flex items-center min-h-11 px-3 rounded text-brand hover:bg-brand-soft hover:text-accent-hover font-medium">{c.label}</Link>
+            : <SectionLink key={c.id} id={c.id} onClick={() => setOpen(false)}
               className="flex items-center min-h-11 px-3 rounded text-brand hover:bg-brand-soft hover:text-accent-hover font-medium">{c.label}</SectionLink>
           ))}
         </div>
@@ -119,8 +121,9 @@ export default function LandingNav({ solid = false, topBar = false }) {
         )}
 
         <div className="flex items-center gap-1 sm:gap-2">
+          <AccessibilityButton className="rounded-full text-ink-soft hover:text-ink" />
           <ThemeToggle />
-          <Link to={account.to} className={`min-h-11 px-4 inline-flex items-center font-medium text-brand hover:text-accent-hover`}>{account.label}</Link>
+          <Link to={account.to} className={`min-h-11 px-3 sm:px-4 whitespace-nowrap inline-flex items-center font-medium text-brand hover:text-accent-hover`}>{account.label}</Link>
           {scrolled && !user && (
             <Link to="/register" className="nav-pop hidden sm:inline-flex min-h-11 px-6 items-center rounded bg-accent text-night font-semibold text-[15px] hover:bg-accent-hover">Get started</Link>
           )}
@@ -139,7 +142,8 @@ export default function LandingNav({ solid = false, topBar = false }) {
               <p className="text-xs font-semibold text-ink-soft mb-1">{item.label}</p>
               <div className="grid grid-cols-2 gap-x-3">
                 {item.children.map((c) => (
-                  <SectionLink key={c.id} id={c.id} onClick={close} className="flex items-center min-h-11 text-ink font-medium">{c.label}</SectionLink>
+                  c.to ? <Link key={c.to} to={c.to} onClick={close} className="flex items-center min-h-11 text-ink font-medium">{c.label}</Link>
+                    : <SectionLink key={c.id} id={c.id} onClick={close} className="flex items-center min-h-11 text-ink font-medium">{c.label}</SectionLink>
                 ))}
               </div>
             </div>

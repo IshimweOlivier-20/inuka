@@ -17,6 +17,7 @@ import { api, errorMessage } from '../../services/api';
 const SPEC = {
   q: { type: 'value' },
   refugees: { type: 'value' },
+  disability: { type: 'value' },
   funding: { type: 'list' },
   level: { type: 'list' },
   deadline: { type: 'value' },
@@ -61,6 +62,10 @@ function Filters({ f, facets, sheet }) {
         {['open', 'only'].map((k) => (
           <RadioOption key={k} name={name('refugees')} label={L.refugees[k]} count={c('refugees', k)} checked={v.refugees === k} onChange={() => update({ refugees: k })} />
         ))}
+      </FilterGroup>
+      <FilterGroup title="Disability support" selectedCount={v.disability ? 1 : 0} defaultOpen={false}>
+        <RadioOption name={name('disability')} label="All scholarships" count={facets?.disability?.all} checked={!v.disability} onChange={() => update({ disability: '' })} />
+        <RadioOption name={name('disability')} label="Supports students with disabilities" count={c('disability', 'yes')} checked={v.disability === 'yes'} onChange={() => update({ disability: 'yes' })} />
       </FilterGroup>
       <FilterGroup title="Funding" selectedCount={v.funding.length}>
         {Object.keys(L.funding).map((k) => (
@@ -170,6 +175,7 @@ export default function Opportunities() {
   const chips = [
     ...(v.q ? [{ key: 'q', label: `“${v.q}”`, onRemove: () => f.update({ q: '' }) }] : []),
     ...(v.refugees ? [{ key: 'refugees', label: L.refugees[v.refugees], onRemove: () => f.update({ refugees: '' }) }] : []),
+    ...(v.disability ? [{ key: 'disability', label: 'Disability support', onRemove: () => f.update({ disability: '' }) }] : []),
     ...v.funding.map((k) => ({ key: `funding-${k}`, label: L.funding[k] || k, onRemove: () => f.toggle('funding', k) })),
     ...v.level.map((k) => ({ key: `level-${k}`, label: k === 'postgraduate' ? 'Postgraduate' : L.level[k] || k, onRemove: () => f.toggle('level', k) })),
     ...(v.deadline ? [{ key: 'deadline', label: L.deadline[v.deadline], onRemove: () => f.update({ deadline: '' }) }] : []),

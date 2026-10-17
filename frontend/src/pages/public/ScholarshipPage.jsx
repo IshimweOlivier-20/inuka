@@ -9,6 +9,7 @@ import ScholarshipCard from '../../components/scholarships/ScholarshipCard';
 import DocumentChecklist from '../../components/scholarships/DocumentChecklist';
 import RichText from '../../components/ui/RichText';
 import { Button, EmptyState } from '../../components/ui';
+import { ReadinessCard } from '../../components/scholarships/Readiness';
 import { useAuth } from '../../context/AuthContext';
 import { api, errorMessage } from '../../services/api';
 import { FUNDING_LABEL, LEVEL_LABEL, daysUntil, formatDate } from '../../utils/format';
@@ -196,7 +197,8 @@ export default function ScholarshipPage() {
           </article>
 
           {/* Side panel */}
-          <aside className="space-y-6 lg:sticky lg:top-24">
+          <aside className={`space-y-6 ${data.readiness ? '' : 'lg:sticky lg:top-24'}`}>
+            {data.readiness && <ReadinessCard readiness={data.readiness} />}
             <div className="bg-surface rounded-xl border border-line overflow-hidden">
               <div className="px-5 pt-5 pb-4 border-b border-line">
                 <p className="text-sm text-ink-soft">Application deadline</p>

@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser';
 import { generalLimiter } from './src/middleware/rateLimiter.js';
 import { errorHandler, notFound } from './src/middleware/errorHandler.js';
 // Shared (everyone)
+import { prisma } from './src/lib/prisma.js';
 import publicRoutes from './src/routes/public.js';
 import authRoutes, { googleProblem } from './src/routes/auth.js';
 import { watchFile } from 'node:fs';
@@ -23,6 +24,8 @@ import mentorshipRoutes from './src/routes/student/mentorship.js';
 import aiRoutes from './src/routes/student/ai.js';
 import assistantRoutes from './src/routes/assistant.js';
 import messageRoutes from './src/routes/messages.js';
+import optionsRoutes from './src/routes/options.js';
+import toolRoutes from './src/routes/tools.js';
 // Mentor and admin dashboards
 import mentorRoutes from './src/routes/mentor/index.js';
 import adminRoutes from './src/routes/admin/index.js';
@@ -43,6 +46,8 @@ app.use(cookieParser());
 app.use('/api', generalLimiter);
 
 app.get('/api/health', (req, res) => res.json({ ok: true, service: 'inuka-api' }));
+app.use('/api', optionsRoutes); // /api/options…, /api/public/universities…
+app.use('/api', toolRoutes); // scam check, certificate verify, recommendation letters
 app.use('/api/public', publicRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/search', searchRoutes); // dashboard search bar (every role)
@@ -69,7 +74,25 @@ app.listen(port, () => {
   startReminders(); // reminder emails (scholarship deadlines, mentor sessions)
   const g = googleProblem();
   console.log(g ? `• Google sign-in: off — ${g}` : '✓ Google sign-in: on');
+  checkDatabase();
 });
+
+// Explains the two most common set-up problems after an update, instead of "500" errors in the browser:
+// 1) the Prisma client is older than prisma/schema.prisma (run "npx prisma generate" with the server STOPPED —
+//    on Windows a running server locks the Prisma files), 2) the database is missing new tables (migrate deploy).
+async function checkDatabase() {
+  const fix = '\n  Stop the server (Ctrl+C), then in backend run:\n    npx prisma migrate deploy\n    npx prisma generate\n    npm run db:seed\n  and start it again with: npm run dev';
+  if (!prisma.university || !prisma.recommendationRequest || !prisma.postLike) {
+    console.error(`✗ Database code is out of date (Prisma client older than schema.prisma).${fix}`);
+    return;
+  }
+  try {
+    await Promise.all([prisma.university.count(), prisma.post.findFirst({ select: { coverUrl: true } }), prisma.recommendationRequest.count()]);
+    console.log('✓ Database: up to date');
+  } catch (e) {
+    console.error(`✗ Database is missing the latest changes (${String(e.message).split('\n').filter(Boolean).pop()?.slice(0, 160)}).${fix}`);
+  }
+}
 
 // While developing: when backend/.env is saved, read it again (no restart needed for keys like GOOGLE_CLIENT_ID,
 // SMTP_*, AI_*). "node --watch" restarts on code changes only, not on .env changes.

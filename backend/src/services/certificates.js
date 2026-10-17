@@ -2,7 +2,12 @@
 //   1. Every published lesson of the course is completed, and
 //   2. if the course has a published final exam that is "required for the certificate", the exam is passed.
 import { prisma } from '../lib/prisma.js';
+import { randomBytes } from 'node:crypto';
 import { notify } from '../utils/notify.js';
+
+// Short code printed on the certificate and in its QR code (no 0/O/1/I, easy to type).
+const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+export const newCertificateCode = () => Array.from(randomBytes(10), (b) => ALPHABET[b % ALPHABET.length]).join('');
 
 // The final exam students can take (published, with at least one question), or null.
 export async function activeExam(courseId) {
@@ -28,7 +33,7 @@ export async function checkCertificate(userId, courseId) {
     if (!passed) return { certificate: null, created: false, waitingForExam: true, exam };
   }
   const certificate = await prisma.certificate.upsert({
-    where: { userId_courseId: { userId, courseId } }, update: {}, create: { userId, courseId },
+    where: { userId_courseId: { userId, courseId } }, update: {}, create: { userId, courseId, code: newCertificateCode() },
   });
   const course = await prisma.course.findUnique({ where: { id: courseId }, select: { title: true } });
   await notify(userId, 'course_completed', `Congratulations! You completed ${course.title}. Download your certificate!`, '/my-learning');

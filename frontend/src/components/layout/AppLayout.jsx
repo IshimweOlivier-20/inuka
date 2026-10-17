@@ -6,6 +6,7 @@ import Avatar from '../ui/Avatar';
 import NotificationBell from './NotificationBell';
 import HeaderSearch from './HeaderSearch';
 import ThemeToggle from './ThemeToggle';
+import { AccessibilityButton } from '../accessibility/AccessibilityPanel';
 import { useAuth } from '../../context/AuthContext';
 import { PageSkeleton } from '../ui/Skeletons';
 import { LogOut, Menu, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
@@ -96,6 +97,7 @@ export default function AppLayout() {
           <button className="md:hidden min-w-11 min-h-11 inline-flex items-center justify-center" onClick={() => setMenuOpen(true)} aria-label="Open menu"><Menu size={24} /></button>
           <HeaderSearch />
           <div className="flex items-center gap-2 shrink-0 ml-auto sm:ml-0">
+            <AccessibilityButton className="rounded-full text-ink-soft hover:text-ink" />
             <ThemeToggle />
             <NotificationBell />
             <NavLink to={isStudent ? '/profile' : homeFor(user)} className="flex items-center gap-2 min-h-11 pl-1 pr-3 rounded-full hover:bg-brand-soft">

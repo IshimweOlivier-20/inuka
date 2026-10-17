@@ -1,0 +1,479 @@
+[
+  {
+    "slug": "university-of-rwanda",
+    "name": "University of Rwanda",
+    "shortName": "UR",
+    "kind": "public",
+    "city": "Kigali (several campuses)",
+    "website": "https://ur.ac.rw",
+    "about": "Rwanda's public university, with colleges of science and technology, medicine and health, business and economics, education, agriculture, and arts and social sciences.",
+    "programmes": [
+      {
+        "name": "BSc Civil Engineering",
+        "field": "Engineering",
+        "award": "bachelor",
+        "durationYears": 4,
+        "minPoints": 12,
+        "required": [
+          {
+            "subject": "Mathematics",
+            "minGrade": "C"
+          },
+          {
+            "subject": "Physics",
+            "minGrade": "C"
+          }
+        ],
+        "combinations": [
+          "MPC",
+          "MPG",
+          "PCM"
+        ],
+        "notes": null
+      },
+      {
+        "name": "Bachelor of Medicine and Surgery",
+        "field": "Health",
+        "award": "bachelor",
+        "durationYears": 6,
+        "minPoints": 15,
+        "required": [
+          {
+            "subject": "Biology",
+            "minGrade": "B"
+          },
+          {
+            "subject": "Chemistry",
+            "minGrade": "B"
+          }
+        ],
+        "combinations": [],
+        "notes": null
+      },
+      {
+        "name": "BSc Nursing",
+        "field": "Health",
+        "award": "bachelor",
+        "durationYears": 4,
+        "minPoints": 10,
+        "required": [
+          {
+            "subject": "Biology",
+            "minGrade": "C"
+          },
+          {
+            "subject": "Chemistry",
+            "minGrade": "D"
+          }
+        ],
+        "combinations": [],
+        "notes": null
+      },
+      {
+        "name": "BSc Computer Science",
+        "field": "ICT",
+        "award": "bachelor",
+        "durationYears": 4,
+        "minPoints": 11,
+        "required": [
+          {
+            "subject": "Mathematics",
+            "minGrade": "C"
+          }
+        ],
+        "combinations": [],
+        "notes": null
+      },
+      {
+        "name": "BA Economics",
+        "field": "Business",
+        "award": "bachelor",
+        "durationYears": 4,
+        "minPoints": 10,
+        "required": [
+          {
+            "subject": "Economics",
+            "minGrade": "C"
+          },
+          {
+            "subject": "Mathematics",
+            "minGrade": "D"
+          }
+        ],
+        "combinations": [],
+        "notes": null
+      },
+      {
+        "name": "BSc Agriculture",
+        "field": "Agriculture",
+        "award": "bachelor",
+        "durationYears": 4,
+        "minPoints": 8,
+        "required": [
+          {
+            "subject": "Biology",
+            "minGrade": "D"
+          },
+          {
+            "subject": "Chemistry",
+            "minGrade": "E"
+          }
+        ],
+        "combinations": [],
+        "notes": null
+      },
+      {
+        "name": "Bachelor of Education (Languages)",
+        "field": "Education",
+        "award": "bachelor",
+        "durationYears": 4,
+        "minPoints": 8,
+        "required": [
+          {
+            "subject": "Literature in English",
+            "minGrade": "D"
+          }
+        ],
+        "combinations": [],
+        "notes": null
+      }
+    ],
+    "isSample": true
+  },
+  {
+    "slug": "rwanda-polytechnic",
+    "name": "Rwanda Polytechnic",
+    "shortName": "RP",
+    "kind": "tvet",
+    "city": "Kigali, Huye, Musanze, Tumba, Karongi, Ngoma and more",
+    "website": "https://rp.ac.rw",
+    "about": "Public polytechnic with campuses across Rwanda (the former IPRCs). Practical advanced diplomas and short courses that lead straight to jobs.",
+    "programmes": [
+      {
+        "name": "Advanced Diploma in Electrical Technology",
+        "field": "Engineering",
+        "award": "diploma",
+        "durationYears": 3,
+        "minPoints": 4,
+        "required": [
+          {
+            "subject": "Mathematics",
+            "minGrade": "E"
+          },
+          {
+            "subject": "Physics",
+            "minGrade": "E"
+          }
+        ],
+        "combinations": [],
+        "notes": null
+      },
+      {
+        "name": "Advanced Diploma in Information Technology",
+        "field": "ICT",
+        "award": "diploma",
+        "durationYears": 3,
+        "minPoints": 4,
+        "required": [
+          {
+            "subject": "Mathematics",
+            "minGrade": "E"
+          }
+        ],
+        "combinations": [],
+        "notes": null
+      },
+      {
+        "name": "Advanced Diploma in Construction Technology",
+        "field": "Engineering",
+        "award": "diploma",
+        "durationYears": 3,
+        "minPoints": 4,
+        "required": [],
+        "combinations": [],
+        "notes": null
+      },
+      {
+        "name": "Advanced Diploma in Irrigation and Drainage",
+        "field": "Agriculture",
+        "award": "diploma",
+        "durationYears": 3,
+        "minPoints": 4,
+        "required": [],
+        "combinations": [],
+        "notes": null
+      },
+      {
+        "name": "Short course: Hospitality and Tourism",
+        "field": "Hospitality",
+        "award": "certificate",
+        "durationYears": 0.5,
+        "minPoints": 0,
+        "required": [],
+        "combinations": [],
+        "notes": "Short courses accept many school levels; check the current intake."
+      }
+    ],
+    "isSample": true
+  },
+  {
+    "slug": "auca",
+    "name": "Adventist University of Central Africa",
+    "shortName": "AUCA",
+    "kind": "private",
+    "city": "Kigali",
+    "website": "https://auca.ac.rw",
+    "programmes": [
+      {
+        "name": "BSc Information Technology",
+        "field": "ICT",
+        "award": "bachelor",
+        "durationYears": 4,
+        "minPoints": 6,
+        "required": [
+          {
+            "subject": "Mathematics",
+            "minGrade": "E"
+          }
+        ],
+        "combinations": [],
+        "notes": null
+      },
+      {
+        "name": "Bachelor of Business Administration",
+        "field": "Business",
+        "award": "bachelor",
+        "durationYears": 4,
+        "minPoints": 4,
+        "required": [],
+        "combinations": [],
+        "notes": null
+      },
+      {
+        "name": "Bachelor of Education",
+        "field": "Education",
+        "award": "bachelor",
+        "durationYears": 4,
+        "minPoints": 4,
+        "required": [],
+        "combinations": [],
+        "notes": null
+      }
+    ],
+    "about": null,
+    "isSample": true
+  },
+  {
+    "slug": "ines-ruhengeri",
+    "name": "INES-Ruhengeri",
+    "shortName": "INES",
+    "kind": "private",
+    "city": "Musanze",
+    "website": "https://ines.ac.rw",
+    "programmes": [
+      {
+        "name": "BSc Biotechnology",
+        "field": "Science",
+        "award": "bachelor",
+        "durationYears": 4,
+        "minPoints": 6,
+        "required": [
+          {
+            "subject": "Biology",
+            "minGrade": "D"
+          },
+          {
+            "subject": "Chemistry",
+            "minGrade": "D"
+          }
+        ],
+        "combinations": [],
+        "notes": null
+      },
+      {
+        "name": "BSc Civil Engineering",
+        "field": "Engineering",
+        "award": "bachelor",
+        "durationYears": 4,
+        "minPoints": 7,
+        "required": [
+          {
+            "subject": "Mathematics",
+            "minGrade": "D"
+          },
+          {
+            "subject": "Physics",
+            "minGrade": "D"
+          }
+        ],
+        "combinations": [],
+        "notes": null
+      },
+      {
+        "name": "Diploma in Land Surveying",
+        "field": "Engineering",
+        "award": "diploma",
+        "durationYears": 2,
+        "minPoints": 3,
+        "required": [
+          {
+            "subject": "Mathematics",
+            "minGrade": "E"
+          }
+        ],
+        "combinations": [],
+        "notes": null
+      }
+    ],
+    "about": null,
+    "isSample": true
+  },
+  {
+    "slug": "university-of-kigali",
+    "name": "University of Kigali",
+    "shortName": "UoK",
+    "kind": "private",
+    "city": "Kigali",
+    "website": "https://uok.ac.rw",
+    "programmes": [
+      {
+        "name": "Bachelor of Business Administration (Accounting)",
+        "field": "Business",
+        "award": "bachelor",
+        "durationYears": 4,
+        "minPoints": 4,
+        "required": [],
+        "combinations": [],
+        "notes": null
+      },
+      {
+        "name": "Bachelor of Laws",
+        "field": "Law",
+        "award": "bachelor",
+        "durationYears": 4,
+        "minPoints": 6,
+        "required": [],
+        "combinations": [],
+        "notes": null
+      }
+    ],
+    "about": null,
+    "isSample": true
+  },
+  {
+    "slug": "ulk",
+    "name": "Kigali Independent University",
+    "shortName": "ULK",
+    "kind": "private",
+    "city": "Kigali",
+    "website": "https://ulk.ac.rw",
+    "programmes": [
+      {
+        "name": "Bachelor of International Relations",
+        "field": "Social sciences",
+        "award": "bachelor",
+        "durationYears": 4,
+        "minPoints": 4,
+        "required": [],
+        "combinations": [],
+        "notes": null
+      },
+      {
+        "name": "Bachelor of Computer Science",
+        "field": "ICT",
+        "award": "bachelor",
+        "durationYears": 4,
+        "minPoints": 4,
+        "required": [
+          {
+            "subject": "Mathematics",
+            "minGrade": "E"
+          }
+        ],
+        "combinations": [],
+        "notes": null
+      }
+    ],
+    "about": null,
+    "isSample": true
+  },
+  {
+    "slug": "kepler",
+    "name": "Kepler College",
+    "shortName": "Kepler",
+    "kind": "private",
+    "city": "Kigali and Kiziba refugee camp",
+    "website": "https://kepler.org",
+    "about": "Admits students through its own tests and interviews; open to refugees.",
+    "programmes": [
+      {
+        "name": "Bachelor's in Business Management",
+        "field": "Business",
+        "award": "bachelor",
+        "durationYears": 3,
+        "minPoints": 0,
+        "required": [],
+        "combinations": [],
+        "notes": "Admission by Kepler's own English and reasoning tests and an interview. Grades are not the main criterion."
+      }
+    ],
+    "isSample": true
+  },
+  {
+    "slug": "alu",
+    "name": "African Leadership University",
+    "shortName": "ALU",
+    "kind": "private",
+    "city": "Kigali",
+    "website": "https://alueducation.com",
+    "programmes": [
+      {
+        "name": "BSc Software Engineering",
+        "field": "ICT",
+        "award": "bachelor",
+        "durationYears": 3,
+        "minPoints": 0,
+        "required": [],
+        "combinations": [],
+        "notes": "Admission by application, essays and interview. Grades are considered but there is no fixed minimum listed here."
+      }
+    ],
+    "about": null,
+    "isSample": true
+  },
+  {
+    "slug": "ughe",
+    "name": "University of Global Health Equity",
+    "shortName": "UGHE",
+    "kind": "private",
+    "city": "Butaro",
+    "website": "https://ughe.org",
+    "programmes": [
+      {
+        "name": "Bachelor of Medicine and Surgery",
+        "field": "Health",
+        "award": "bachelor",
+        "durationYears": 6,
+        "minPoints": 15,
+        "required": [
+          {
+            "subject": "Biology",
+            "minGrade": "B"
+          },
+          {
+            "subject": "Chemistry",
+            "minGrade": "B"
+          },
+          {
+            "subject": "Physics",
+            "minGrade": "C"
+          }
+        ],
+        "combinations": [],
+        "notes": null
+      }
+    ],
+    "about": null,
+    "isSample": true
+  }
+]

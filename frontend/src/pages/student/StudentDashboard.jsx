@@ -7,7 +7,8 @@ import { useAuth } from '../../context/AuthContext';
 import { api, errorMessage } from '../../services/api';
 import { formatDate, quoteOfTheDay } from '../../utils/format';
 import { DashboardSkeleton } from '../../components/ui/Skeletons';
-import { BookOpen, CalendarClock, Flame, GraduationCap, HeartHandshake, Laptop, Sparkles, Sprout, UserRound, Video } from 'lucide-react';
+import { BookOpen, CalendarClock, ChevronRight, Compass, Flame, GraduationCap, HeartHandshake, Laptop, Mail, ShieldCheck, Sparkles, Sprout, UserRound, Video } from 'lucide-react';
+import { ReadinessWidget } from '../../components/scholarships/Readiness';
 import IconTile from '../../components/ui/IconTile';
 import { BadgeMedal } from '../../utils/badgeIcons';
 import RecommendedScholarships from '../../components/scholarships/RecommendedScholarships';
@@ -107,6 +108,26 @@ export default function StudentDashboard() {
             ))}
           </div>
         </Card>
+      </div>
+
+      <div className="grid grid-cols-[minmax(0,1fr)] lg:grid-cols-2 gap-6 items-start">
+        <ReadinessWidget />
+        <section className="bg-surface border border-line rounded-md p-5">
+          <h2 className="text-base font-semibold">Plan your next step</h2>
+          <ul className="mt-3 divide-y divide-line">
+            {[[Compass, 'See your options', 'Type your S6 results: degrees, diplomas, second chances.', '/options'],
+              [Mail, 'Ask for a recommendation letter', 'Your teacher uploads it from an email link.', '/profile?tab=letters'],
+              [ShieldCheck, 'Check a suspicious message', 'Scholarship scam checker.', '/safety']].map(([Icon, t, sub, to]) => (
+              <li key={to}>
+                <Link to={to} className="flex items-center gap-3 py-2.5 group">
+                  <span className="w-9 h-9 rounded-lg bg-brand-soft text-brand flex items-center justify-center shrink-0"><Icon size={17} aria-hidden="true" /></span>
+                  <span className="flex-1 min-w-0"><span className="block text-sm font-semibold group-hover:text-brand">{t}</span><span className="block text-xs text-ink-soft">{sub}</span></span>
+                  <ChevronRight size={16} className="text-ink-soft" aria-hidden="true" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
       </div>
 
       <RecommendedScholarships />

@@ -95,7 +95,7 @@ export function AdminScholarships() {
 const EMPTY = {
   name: '', orgName: '', description: '', hostCountry: '', hostUniversity: '', region: 'Global', fundingType: 'fully_funded', level: 'undergraduate',
   openToRefugees: false, refugeesOnly: false, languageOfStudy: 'English', deadline: '', deadlineNote: '',
-  eligibility: '', coverage: '', applicationSteps: '', documentsRequired: [], applyUrl: '', logoUrl: '', imageUrl: '', isFeatured: false, isActive: true,
+  eligibility: '', coverage: '', applicationSteps: '', documentsRequired: [], applyUrl: '', logoUrl: '', imageUrl: '', isFeatured: false, isActive: true, minPoints: '', disabilityFriendly: false,
 };
 const toLines = (a) => (Array.isArray(a) ? a.join('\n') : '');
 const fromLines = (t) => t.split('\n').map((x) => x.trim()).filter(Boolean);
@@ -116,7 +116,7 @@ export function AdminScholarshipForm() {
     if (!isNew) {
       api.get(`/admin/scholarships/${id}`).then(({ data: { scholarship: s } }) => setF({
         ...EMPTY, ...s, hostUniversity: s.hostUniversity || '', deadlineNote: s.deadlineNote || '', logoUrl: s.logoUrl || '', imageUrl: s.imageUrl || '',
-        deadline: s.deadline ? s.deadline.slice(0, 10) : '', eligibility: toLines(s.eligibility), coverage: toLines(s.coverage),
+        deadline: s.deadline ? s.deadline.slice(0, 10) : '', minPoints: s.minPoints ?? '', eligibility: toLines(s.eligibility), coverage: toLines(s.coverage),
         applicationSteps: toLines(s.applicationSteps), documentsRequired: Array.isArray(s.documentsRequired) ? s.documentsRequired : [],
       })).catch((e) => setMsg({ tone: 'error', text: errorMessage(e) }));
     }
@@ -127,7 +127,7 @@ export function AdminScholarshipForm() {
   const save = async (e) => {
     e.preventDefault(); setBusy(true); setMsg(null);
     const body = {
-      ...f, deadline: f.deadline || null, eligibility: fromLines(f.eligibility), coverage: fromLines(f.coverage), applicationSteps: fromLines(f.applicationSteps),
+      ...f, deadline: f.deadline || null, minPoints: f.minPoints === '' ? null : Number(f.minPoints), eligibility: fromLines(f.eligibility), coverage: fromLines(f.coverage), applicationSteps: fromLines(f.applicationSteps),
     };
     delete body.id; delete body.slug; delete body.createdAt; delete body.requirements;
     try {
@@ -170,10 +170,12 @@ export function AdminScholarshipForm() {
           <div className="grid sm:grid-cols-2 gap-4">
             <Field label="Deadline (leave empty if it varies)" type="date" value={f.deadline} onChange={set('deadline')} />
             <Field label="Deadline note (optional)" value={f.deadlineNote} onChange={set('deadlineNote')} hint='e.g. "Each partner university sets its own deadline."' />
+            <Field label="Minimum S6 points (optional)" type="number" min="0" max="18" value={f.minPoints} onChange={set('minPoints')} hint="Only if the scholarship publishes a minimum (out of 18). Leave empty otherwise." />
           </div>
           <div className="flex flex-wrap gap-x-6">
             <label className="flex items-center gap-3 min-h-11"><input type="checkbox" className="w-5 h-5 accent-[#07294D]" checked={f.openToRefugees} onChange={(e) => setF({ ...f, openToRefugees: e.target.checked, refugeesOnly: e.target.checked && f.refugeesOnly })} />Open to refugees</label>
             <label className="flex items-center gap-3 min-h-11"><input type="checkbox" className="w-5 h-5 accent-[#07294D]" checked={f.refugeesOnly} onChange={(e) => setF({ ...f, refugeesOnly: e.target.checked, openToRefugees: e.target.checked || f.openToRefugees })} />Only for refugees</label>
+            <label className="flex items-center gap-3 min-h-11"><input type="checkbox" className="w-5 h-5 accent-[#07294D]" checked={f.disabilityFriendly} onChange={set('disabilityFriendly')} />Supports students with disabilities</label>
             <label className="flex items-center gap-3 min-h-11"><input type="checkbox" className="w-5 h-5 accent-[#07294D]" checked={f.isFeatured} onChange={set('isFeatured')} />Featured (shown first)</label>
             <label className="flex items-center gap-3 min-h-11"><input type="checkbox" className="w-5 h-5 accent-[#07294D]" checked={f.isActive} onChange={set('isActive')} />Visible on the website</label>
           </div>

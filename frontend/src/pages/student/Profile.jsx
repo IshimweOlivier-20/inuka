@@ -10,8 +10,10 @@ import { formatDate, formatSize } from '../../utils/format';
 import { ListRowsSkeleton } from '../../components/ui/Skeletons';
 import { CircleCheck, TriangleAlert } from 'lucide-react';
 import ProfilePhotoCard from '../../components/auth/ProfilePhotoCard';
+import LettersPanel from '../../components/letters/LettersPanel';
+import { AccessibilityTab } from '../../components/accessibility/AccessibilityPanel';
 
-const TABS = [['personal', 'Personal information'], ['documents', 'Documents vault'], ['applications', 'My applications'], ['certificates', 'Certificates']];
+const TABS = [['personal', 'Personal information'], ['documents', 'Documents vault'], ['letters', 'Letters'], ['applications', 'My applications'], ['certificates', 'Certificates'], ['accessibility', 'Accessibility']];
 
 export default function Profile() {
   const [params, setParams] = useSearchParams();
@@ -30,6 +32,8 @@ export default function Profile() {
         {tab === 'documents' && <DocumentVault highlight={params.get('type')} />}
         {tab === 'applications' && <ApplicationsTable />}
         {tab === 'certificates' && <CertificateList />}
+        {tab === 'letters' && <LettersPanel />}
+        {tab === 'accessibility' && <AccessibilityTab />}
       </div>
     </div>
   );

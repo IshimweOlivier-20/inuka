@@ -47,7 +47,11 @@ function ExamIntro({ status, slug, onStart, busy, error, onSeeResult }) {
   const { exam: e, course } = status;
   const rules = [
     [ClipboardCheck, `${e.questionCount} questions`],
-    [Clock, e.timeLimitMinutes ? `${e.timeLimitMinutes} minutes. When the time is up, your answers are sent automatically.` : 'No time limit.'],
+    [Clock, e.timeLimitMinutes
+      ? (status.extraTimePercent
+        ? `${Math.round(e.timeLimitMinutes * (1 + status.extraTimePercent / 100))} minutes (${e.timeLimitMinutes} + ${status.extraTimePercent}% extra time from your accessibility settings). When the time is up, your answers are sent automatically.`
+        : `${e.timeLimitMinutes} minutes. When the time is up, your answers are sent automatically. Need more time? Set extra time in Profile → Accessibility.`)
+      : 'No time limit.'],
     [Award, `You need ${e.passMark}% to pass${e.requiredForCertificate ? ' and get your certificate' : ''}.`],
     [RotateCcw, e.maxAttempts ? `${e.maxAttempts} ${e.maxAttempts === 1 ? 'try' : 'tries'} in total${e.retryAfterHours ? `, with ${e.retryAfterHours} hours between tries` : ''}.` : 'You can try as many times as you need.'],
   ];

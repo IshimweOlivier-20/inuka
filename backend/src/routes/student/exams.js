@@ -133,7 +133,7 @@ router.get('/courses/:slug/exam', requireAuth, async (req, res) => {
   if (!course) throw new HttpError(404, 'We could not find that course.');
   const status = await examStatus(req.user.id, course);
   if (!status) throw new HttpError(404, 'This course has no final exam.');
-  res.json({ course, ...status });
+  res.json({ course, ...status, extraTimePercent: req.user.extraTimePercent || 0 });
 });
 
 // POST /api/courses/:slug/exam/start — starts a new attempt (or returns the one already running)
@@ -161,7 +161,8 @@ router.post('/courses/:slug/exam/start', requireAuth, async (req, res) => {
   const attempt = await prisma.examAttempt.create({
     data: {
       userId: req.user.id, examId: exam.id, questions: set,
-      expiresAt: exam.timeLimitMinutes > 0 ? new Date(Date.now() + exam.timeLimitMinutes * 60e3) : null,
+      // Students who asked for extra time (accessibility settings) get it automatically.
+      expiresAt: exam.timeLimitMinutes > 0 ? new Date(Date.now() + exam.timeLimitMinutes * (1 + (req.user.extraTimePercent || 0) / 100) * 60e3) : null,
     },
   });
   res.status(201).json({ attemptId: attempt.id, resumed: false });

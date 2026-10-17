@@ -8,7 +8,7 @@ import { api, errorMessage } from '../../services/api';
 import { ScholarshipGridSkeleton } from '../../components/ui/Skeletons';
 import { Bookmark, SearchX } from 'lucide-react';
 
-const EMPTY = { q: '', region: '', level: '', funding: '', refugees: '', language: '', deadline: '', sort: 'deadline' };
+const EMPTY = { q: '', region: '', level: '', funding: '', refugees: '', language: '', deadline: '', disability: '', sort: 'deadline' };
 const TABS = [['discover', 'Discover'], ['foryou', 'For you'], ['saved', 'Saved'], ['applications', 'My applications']];
 
 export default function Scholarships() {
@@ -113,6 +113,7 @@ export default function Scholarships() {
                 <Select label="Level" value={filters.level} onChange={set('level')} options={[['', 'Any level'], ['undergraduate', 'Undergraduate'], ['postgraduate', 'Postgraduate']]} />
                 <Select label="Funding" value={filters.funding} onChange={set('funding')} options={[['', 'Any funding'], ['fully_funded', 'Fully funded'], ['partial', 'Partial'], ['tuition_only', 'Tuition only']]} />
                 <Select label="Open to refugees" value={filters.refugees} onChange={set('refugees')} options={[['', 'All scholarships'], ['yes', 'Only refugee-friendly']]} />
+                <Select label="Disability support" value={filters.disability} onChange={set('disability')} options={[['', 'All scholarships'], ['yes', 'Supports students with disabilities']]} />
                 <Select label="Language of study" value={filters.language} onChange={set('language')} options={[['', 'Any language'], ['English', 'English'], ['French', 'French']]} />
                 <Select label="Deadline" value={filters.deadline} onChange={set('deadline')} options={[['', 'Any time'], ['month', 'This month'], ['3months', 'Next 3 months']]} />
                 <Select label="Sort by" value={filters.sort} onChange={set('sort')} options={[['deadline', 'Deadline (soonest first)'], ['relevant', 'Most relevant'], ['newest', 'Newest added']]} />

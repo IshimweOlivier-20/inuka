@@ -55,6 +55,7 @@ function Heading({ s, onOpen }) {
       )}
       <p className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-ink-soft">
         <MapPin size={13} aria-hidden="true" />{s.hostCountry}
+        {s.disabilityFriendly && <span className="ml-2 normal-case tracking-normal rounded-full bg-info-soft text-info-ink px-2 py-0.5 font-semibold">Disability support</span>}
       </p>
       <h3 className="mt-1 text-lg font-semibold text-brand leading-snug">
         <button type="button" onClick={() => onOpen(s)} className="text-left hover:underline">{s.name}</button>

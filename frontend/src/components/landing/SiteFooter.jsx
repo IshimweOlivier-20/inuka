@@ -50,6 +50,9 @@ export default function SiteFooter() {
           </FooterCol>
           <FooterCol title="Information">
             <Link to="/opportunities" className={col}>Scholarships</Link>
+            <Link to="/next-step" className={col}>See your options</Link>
+            <Link to="/universities" className={col}>Universities</Link>
+            <Link to="/scam-check" className={col}>Scam checker</Link>
             <SectionLink id="how-it-works" className={col}>How it works</SectionLink>
             <SectionLink id="faq" className={col}>FAQs</SectionLink>
             <Link to="/terms" className={col}>Terms of use</Link>

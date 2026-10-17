@@ -64,6 +64,20 @@ async function seedScholarships() {
   console.log(`✓ ${list.length} scholarships`);
 }
 
+// University directory (S6 results page). SAMPLE data: entry requirements must be checked against each
+// institution's official page and confirmed in Admin → Universities (that marks them as real data).
+// Universities are added once by slug; programmes only when the university has none (admin edits are never overwritten).
+async function seedUniversities() {
+  const list = load('universities.json');
+  for (const { programmes, ...u } of list) {
+    const row = await prisma.university.upsert({ where: { slug: u.slug }, update: {}, create: u });
+    if (!(await prisma.programme.count({ where: { universityId: row.id } }))) {
+      await prisma.programme.createMany({ data: programmes.map((p) => ({ ...p, universityId: row.id })) });
+    }
+  }
+  console.log(`✓ ${list.length} universities (sample requirements: confirm them in Admin → Universities)`);
+}
+
 async function seedHomeContent() {
   const home = load('home.json');
   // Posts are updated by slug. Other content is only inserted into empty tables,
@@ -174,6 +188,7 @@ try {
   await seedCourses();
   await seedBadges();
   await seedScholarships();
+  await seedUniversities();
   await seedHomeContent();
   await seedAdmin();
   await seedTestStudent();

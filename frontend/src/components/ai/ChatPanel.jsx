@@ -1,3 +1,4 @@
+import VoiceInputButton from '../ui/VoiceInput';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { SendHorizontal, Sprout } from 'lucide-react';
@@ -173,6 +174,7 @@ export default function ChatPanel({ conversationId, onConversation, compact = fa
             placeholder="Ask about scholarships, courses, documents…"
             className="w-full resize-none rounded-xl border border-line bg-surface px-3 py-2.5 max-h-40 focus:outline-none focus:ring-2 focus:ring-brand" />
         </label>
+        <span className="mb-1"><VoiceInputButton onText={(t) => setInput((v) => (v ? `${v} ${t}` : t))} /></span>
         <button type="submit" disabled={!input.trim() || busy} aria-label="Send"
           className="w-11 h-11 shrink-0 rounded-xl bg-accent text-night flex items-center justify-center disabled:opacity-40 hover:bg-accent-hover">
           <SendHorizontal size={20} aria-hidden="true" />

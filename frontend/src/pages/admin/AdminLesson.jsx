@@ -16,7 +16,7 @@ const KINDS = { writing: [['paragraph', 'A paragraph'], ['essay', 'An essay'], [
 const formFrom = (l) => {
   const a = l.aiActivity;
   return {
-    title: l.title, summary: l.summary || '', contentHtml: l.contentHtml || '', audioUrl: l.audioUrl || '', isPublished: l.isPublished,
+    title: l.title, summary: l.summary || '', contentHtml: l.contentHtml || '', audioUrl: l.audioUrl || '', transcript: l.transcript || '', isPublished: l.isPublished,
     estimatedMinutes: l.estimatedMinutes ?? '', passMark: l.passMark ?? '',
     resources: Array.isArray(l.resources) ? l.resources : [],
     aiMode: !a ? 'default' : a.type, // default = INUKA's built-in activity (if any); none; writing; voice
@@ -62,7 +62,7 @@ export default function AdminLesson() {
     const resources = f.resources.map((r) => ({ name: r.name.trim(), url: r.url.trim() })).filter((r) => r.name || r.url);
     try {
       await api.patch(`/admin/lessons/${id}`, {
-        title: f.title, summary: f.summary || null, contentHtml: f.contentHtml, audioUrl: f.audioUrl || null, isPublished: f.isPublished,
+        title: f.title, summary: f.summary || null, contentHtml: f.contentHtml, audioUrl: f.audioUrl || null, transcript: f.transcript?.trim() || null, isPublished: f.isPublished,
         estimatedMinutes: f.estimatedMinutes === '' ? null : Number(f.estimatedMinutes),
         passMark: f.passMark === '' ? null : Number(f.passMark),
         resources, aiActivity,
@@ -146,6 +146,14 @@ export default function AdminLesson() {
               {f.audioUrl && <Button variant="ghost" className="px-3" onClick={() => setF({ ...f, audioUrl: '' })}><X size={16} aria-hidden="true" />Remove</Button>}
             </div>
             {f.audioUrl && <audio controls src={f.audioUrl} className="mt-2 w-full max-w-md" preload="none"><track kind="captions" /></audio>}
+            {f.audioUrl && (
+              <label className="block mt-3">
+                <span className="block text-sm font-medium mb-1">Transcript (for deaf and hard-of-hearing students)</span>
+                <textarea rows={5} value={f.transcript} onChange={set('transcript')} maxLength={20000} placeholder="Type or paste every word of the recording…"
+                  className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm leading-relaxed" />
+                <span className="block text-xs text-ink-soft mt-1">{f.transcript ? 'Students can open it under the audio player.' : 'Recommended: without it, students who cannot hear the audio cannot do this lesson.'}</span>
+              </label>
+            )}
           </div>
 
           <div>

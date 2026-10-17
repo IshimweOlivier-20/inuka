@@ -31,6 +31,15 @@ export const SITE = {
 export const NAV_ITEMS = [
   { to: '/learn', label: 'Courses' },
   { to: '/opportunities', label: 'Opportunities' },
+  {
+    label: 'Tools',
+    children: [
+      { to: '/next-step', label: 'See your options (S6 results)' },
+      { to: '/universities', label: 'Universities & colleges' },
+      { to: '/scam-check', label: 'Scholarship scam checker' },
+      { to: '/verify', label: 'Verify a certificate' },
+    ],
+  },
   { to: '/news', label: 'News' },
   {
     label: 'About',

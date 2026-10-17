@@ -32,6 +32,7 @@ export const searchSchema = z.object({
   language: list(LANGUAGES),
   covers: list(COVERAGE.map((c) => c.key)),
   refugees: z.enum(['open', 'only']).optional(),
+  disability: z.enum(['yes']).optional(),
   deadline: z.enum(DEADLINES).optional(),
   past: z.enum(['show', 'hide']).default('hide'),
   sort: z.enum(['deadline', 'relevant', 'newest', 'name']).default('deadline'),
@@ -79,6 +80,7 @@ function matches(s, f, skip, now) {
     && !f.language.some((l) => s.languageOfStudy === l || s.languageOfStudy === 'Both')) return false;
   if (skip !== 'refugees' && f.refugees === 'open' && !s.openToRefugees) return false;
   if (skip !== 'refugees' && f.refugees === 'only' && !s.refugeesOnly) return false;
+  if (skip !== 'disability' && f.disability === 'yes' && !s.disabilityFriendly) return false;
   if (skip !== 'deadline' && f.deadline && !inDeadlineWindow(s, f.deadline, now)) return false;
   if (skip !== 'covers' && f.covers.length && !f.covers.every((c) => s._covers.has(c))) return false;
   return true;
@@ -109,7 +111,7 @@ const SORTERS = {
 };
 
 const PUBLIC_FIELDS = ['id', 'slug', 'name', 'orgName', 'hostCountry', 'hostUniversity', 'region', 'fundingType', 'level',
-  'openToRefugees', 'refugeesOnly', 'languageOfStudy', 'deadline', 'description', 'isFeatured', 'imageUrl'];
+  'openToRefugees', 'refugeesOnly', 'languageOfStudy', 'deadline', 'description', 'isFeatured', 'imageUrl', 'disabilityFriendly'];
 
 export async function searchScholarships(query) {
   const f = searchSchema.parse(query);
@@ -127,6 +129,7 @@ export async function searchScholarships(query) {
     language: count(base('language'), (s) => (s.languageOfStudy === 'Both' ? LANGUAGES : [s.languageOfStudy])),
     // Single-choice groups also report "all" (the count when that group is not filtered).
     refugees: withAll(base('refugees'), (s) => [...(s.openToRefugees ? ['open'] : []), ...(s.refugeesOnly ? ['only'] : [])]),
+    disability: withAll(base('disability'), (s) => (s.disabilityFriendly ? ['yes'] : [])),
     deadline: withAll(base('deadline'), (s) => DEADLINES.filter((w) => inDeadlineWindow(s, w, now))),
     // Coverage is "must include ALL ticked", so each option counts results that also include it.
     covers: count(base('covers').filter((s) => f.covers.every((c) => s._covers.has(c))), (s) => [...s._covers]),

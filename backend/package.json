@@ -10,6 +10,8 @@
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset",
     "db:seed": "prisma db seed",
+    "seed": "prisma db seed",
+    "db:update": "prisma migrate deploy && prisma generate && prisma db seed",
     "db:setup": "prisma migrate deploy && prisma db seed",
     "db:studio": "prisma studio",
     "postinstall": "prisma generate",

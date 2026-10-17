@@ -8,6 +8,7 @@ import scholarshipRoutes from './scholarships.js';
 import insightRoutes from './insights.js';
 import contentRoutes from './content.js';
 import examRoutes from './exams.js';
+import universityRoutes from './universities.js';
 
 const router = Router();
 router.use(requireAuth, requireRole('admin'));
@@ -96,5 +97,6 @@ router.use(scholarshipRoutes);
 router.use(insightRoutes);
 router.use(contentRoutes);
 router.use(examRoutes);
+router.use(universityRoutes);
 
 export default router;

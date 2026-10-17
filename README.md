@@ -807,3 +807,40 @@ level, title, description, progress and button directly below it.
   "Keep reading" with pictures.
 - Liking and commenting need an account (the page sends people to sign in and back). People can delete their own
   comments; admins can delete any comment. At most 10 comments per person in 10 minutes.
+
+## 42. Six "next step" features (plan: INUKA Priority Features)
+
+**Update the database first (with the backend server stopped):** `cd backend && npm run db:update`
+(= `npx prisma migrate deploy`, `npx prisma generate`, `npm run db:seed`). On Windows, `prisma generate` fails or
+silently keeps the old client while `npm run dev` is running, which shows up as 500 errors such as
+"Cannot read properties of undefined (reading 'findMany')" or "Unknown field `coverUrl`".
+(migration `20261017090000_next_step_features`; the seed adds 9 sample universities and 25 programmes).
+
+1. **Type your S6 results, see your options** — public at `/next-step`, in the student dashboard at `/options` ("Next step").
+   Rwanda S6 grades (A–F, points out of 18) or percentages from another country (refugees; INUKA shows an *estimate*).
+   Shows degrees and diplomas the student meets ("You meet the minimum") or almost meets (with the exact gap), scholarships,
+   and **Second chance**: polytechnic/TVET diplomas, a re-sit plan with hours per week, free skills courses and
+   scholarships with no grade minimum. No NESA connection: students type their own results.
+   - **University directory** `/universities` (filters: type, field, disability support) and one page per institution.
+   - **Admin → Universities**: add institutions and programmes (combinations, required subjects with minimum grade,
+     minimum points). **The seeded entries are SAMPLE data** (hidden on the live site). Check each one against the official
+     page and tick "I checked this against the official page today" — that makes it real data.
+   - The grade scale is in `backend/src/lib/grading.js` (A 6 … F 0). Confirm it with NESA's rules before launch.
+2. **Scholarship readiness** — "You are 62% ready" on every scholarship page (signed-in students) and on the dashboard,
+   with each missing item linked to its fix (profile, S6 results, English, documents, personal statement, letters).
+   Admins can set a minimum S6 points value per scholarship.
+3. **Accessibility** — the ♿ button at the top of every page: text size, high contrast, easy-to-read font, underline links,
+   stop animations, read aloud (select text → Listen). Saved on the device and in the account. Profile → Accessibility:
+   **extra time in exams** (+25/50/100%) and optional, private disability information. Scholarships and universities can be
+   marked as supporting students with disabilities (filters on both). Lessons with audio have a **transcript** field
+   (Admin → lesson). **Voice input** (microphone button) on INUKA AI chat, writing feedback, short exam answers and the scam checker
+   (Chrome / Edge / Android).
+4. **Scam checker** — `/scam-check` (public) and "Scam checker" in the student dashboard. Red / yellow / green with reasons:
+   fees, requests for passwords, Gmail "officials", short links, pressure, agents, and links that are not the scholarship's
+   official website. Uses rules on our server (free); when INUKA AI is on, it adds its own reading. Nothing pasted is stored.
+5. **QR certificates** — every certificate has a code and a QR code. Anyone can check it at `/verify/<code>`
+   (name, course, date, final-exam score). Existing certificates got codes in the migration.
+6. **Recommendation letters** — Profile → Letters: the student enters the teacher's name and email; the teacher gets an email
+   link (`/letters/<token>`, valid 60 days, no account) to upload a PDF/Word letter or decline. The letter goes into the
+   student's document vault (Recommendation letter 1, then 2). Statuses: Waiting → (reminder after 3 days) → Received /
+   Declined. Emails need SMTP set up (section 36); without it they are printed in the backend terminal.

@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { applyA11y } from '../utils/a11y';
 import { api, refreshSession, setAccessToken, setSignedOutHandler } from '../services/api';
 
 const AuthContext = createContext(null);
@@ -56,6 +57,9 @@ export function AuthProvider({ children }) {
       setUser(null);
     }
   }, []);
+
+  // A signed-in user's accessibility settings follow them to every device.
+  useEffect(() => { if (user?.accessibility) applyA11y(user.accessibility); }, [user?.accessibility]);
 
   const value = useMemo(
     () => ({ user, setUser, loading, login, logout, startSession }),

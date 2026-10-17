@@ -73,6 +73,12 @@ export default function LessonPage() {
         <div className="mt-5 rounded-xl border border-line bg-surface p-4">
           <p className="font-semibold flex items-center gap-2 mb-2"><Headphones size={18} className="text-brand" aria-hidden="true" />Listen to the recording</p>
           <audio controls src={lesson.audioUrl} preload="none" className="w-full"><track kind="captions" /></audio>
+          {lesson.transcript ? (
+            <details className="mt-3 group">
+              <summary className="cursor-pointer text-sm font-semibold text-brand hover:underline list-none inline-flex items-center gap-1.5"><FileText size={15} aria-hidden="true" />Read the transcript</summary>
+              <div className="mt-2 max-h-72 overflow-y-auto rounded-lg bg-paper border border-line p-3 text-sm leading-relaxed whitespace-pre-line">{lesson.transcript}</div>
+            </details>
+          ) : <p className="mt-2 text-xs text-ink-soft">No transcript yet for this recording.</p>}
         </div>
       )}
 
