@@ -38,7 +38,8 @@ for (const key of ['DATABASE_URL', 'JWT_SECRET']) {
 }
 
 const app = express();
-app.set('trust proxy', 1);
+// How many proxies sit in front of the server (1 = Render alone; 2 = Vercel /api proxy -> Render). Used for real visitor IPs (rate limits).
+app.set('trust proxy', Number(process.env.TRUST_PROXY || 1));
 app.use(helmet());
 app.use(cors({ origin: process.env.FRONTEND_URL || process.env.CLIENT_URL, credentials: true }));
 app.use(express.json({ limit: '1mb' }));
@@ -70,7 +71,7 @@ app.use(errorHandler);
 const port = Number(process.env.PORT || 3000);
 app.listen(port, () => {
   console.log(`✓ INUKA API running on http://localhost:${port}`);
-  verifyEmail().then((r) => console.log(r.ok ? `✓ Email: sending through ${process.env.SMTP_HOST}` : `• Email: ${r.reason}`));
+  verifyEmail().then((r) => console.log(r.ok ? `✓ Email: sending through ${r.via || process.env.SMTP_HOST}` : `• Email: ${r.reason}`));
   startReminders(); // reminder emails (scholarship deadlines, mentor sessions)
   const g = googleProblem();
   console.log(g ? `• Google sign-in: off — ${g}` : '✓ Google sign-in: on');

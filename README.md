@@ -844,3 +844,9 @@ silently keeps the old client while `npm run dev` is running, which shows up as 
    link (`/letters/<token>`, valid 60 days, no account) to upload a PDF/Word letter or decline. The letter goes into the
    student's document vault (Recommendation letter 1, then 2). Statuses: Waiting → (reminder after 3 days) → Received /
    Declined. Emails need SMTP set up (section 36); without it they are printed in the backend terminal.
+
+## 43. Free hosting (Vercel + Render + Neon + Supabase Storage + Brevo)
+
+Step-by-step guide: **[HOSTING.md](HOSTING.md)**. New settings for hosting:
+`BREVO_API_KEY` (email over HTTPS, because Render's free plan blocks SMTP), `S3_ENDPOINT` (S3-compatible file storage
+such as Supabase Storage), `TRUST_PROXY=2` (Vercel → Render). Config files: `frontend/vercel.json`, `render.yaml`.

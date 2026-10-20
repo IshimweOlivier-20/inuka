@@ -4,10 +4,15 @@
 //   SMTP_USER=hello.inuka@gmail.com   SMTP_PASS=<16-letter Gmail app password>
 //   EMAIL_FROM="INUKA <hello.inuka@gmail.com>"
 // Without SMTP settings (development) emails are printed in the backend terminal instead of being sent.
+//
+// Hosts that block SMTP ports (e.g. Render's free plan blocks 465 and 587): use Brevo's HTTPS email API instead:
+//   BREVO_API_KEY=xkeysib-...   EMAIL_FROM="INUKA <hello.inuka@gmail.com>"  (the sender must be verified in Brevo)
+// When BREVO_API_KEY is set it is used instead of SMTP.
 import nodemailer from 'nodemailer';
 
 let transporter = null;
-const configured = () => !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
+const useBrevo = () => !!process.env.BREVO_API_KEY;
+const configured = () => useBrevo() || !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
 export const emailEnabled = configured;
 
 function getTransporter() {
@@ -22,6 +27,26 @@ function getTransporter() {
     });
   }
   return transporter;
+}
+
+// "INUKA <hello@x.org>" -> { name: 'INUKA', email: 'hello@x.org' }
+function parseFrom(v) {
+  const m = String(v).match(/^\s*"?([^"<]*?)"?\s*<([^>]+)>\s*$/);
+  return m ? { name: m[1].trim() || 'INUKA', email: m[2].trim() } : { name: 'INUKA', email: String(v).trim() };
+}
+
+async function sendWithBrevo({ to, subject, text, html, headers }) {
+  const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: { 'api-key': process.env.BREVO_API_KEY, 'content-type': 'application/json', accept: 'application/json' },
+    body: JSON.stringify({
+      sender: parseFrom(from()), to: String(to).split(',').map((e) => ({ email: e.trim() })), subject, textContent: text, htmlContent: html,
+      ...(headers && { headers }),
+    }),
+    signal: AbortSignal.timeout(20000),
+  });
+  if (!res.ok) throw new Error(`Brevo ${res.status}: ${(await res.text()).slice(0, 200)}`);
+  return res.json();
 }
 
 const from = () => process.env.EMAIL_FROM || (process.env.FROM_EMAIL ? `INUKA <${process.env.FROM_EMAIL}>` : `INUKA <${process.env.SMTP_USER}>`);
@@ -52,11 +77,13 @@ export function renderHtml({ subject, text, action, footer }) {
 export async function sendEmail({ to, subject, text, html, action, footer, headers }) {
   const fullText = action ? `${text}\n\n${action.label}: ${action.url}` : text;
   if (!configured()) {
-    console.log(`\n📧  EMAIL (dev — not sent; set SMTP_* in backend/.env to send)\n   To: ${to}\n   Subject: ${subject}\n   ${fullText.replace(/\n/g, '\n   ')}\n`);
+    console.log(`\n📧  EMAIL (dev — not sent; set BREVO_API_KEY or SMTP_* in backend/.env to send)\n   To: ${to}\n   Subject: ${subject}\n   ${fullText.replace(/\n/g, '\n   ')}\n`);
     return { dev: true };
   }
+  const fullHtml = html || renderHtml({ subject, text, action, footer });
+  if (useBrevo()) return sendWithBrevo({ to, subject, text: fullText, html: fullHtml, headers });
   return getTransporter().sendMail({
-    from: from(), to, subject, text: fullText, html: html || renderHtml({ subject, text, action, footer }),
+    from: from(), to, subject, text: fullText, html: fullHtml,
     ...(headers && { headers }),
   });
 }
@@ -67,5 +94,11 @@ export const sendEmailSafe = (args) => sendEmail(args).catch((e) => { console.er
 // Checks the SMTP login (used by `npm run email:test` and at startup).
 export async function verifyEmail() {
   if (!configured()) return { ok: false, reason: 'SMTP is not set up (emails are printed in the terminal).' };
+  if (useBrevo()) {
+    try {
+      const r = await fetch('https://api.brevo.com/v3/account', { headers: { 'api-key': process.env.BREVO_API_KEY, accept: 'application/json' }, signal: AbortSignal.timeout(15000) });
+      return r.ok ? { ok: true, via: 'Brevo API' } : { ok: false, reason: `Brevo API key refused (${r.status}). Check BREVO_API_KEY.` };
+    } catch (e) { return { ok: false, reason: `Brevo API: ${e.message}` }; }
+  }
   try { await getTransporter().verify(); return { ok: true }; } catch (e) { return { ok: false, reason: e.message }; }
 }

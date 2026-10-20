@@ -1,6 +1,6 @@
 // File storage for student documents, profile photos and images in lessons/articles.
 //   STORAGE_DRIVER=local (default) — files in backend/uploads/ (development, or one small server)
-//   STORAGE_DRIVER=s3             — Amazon S3 (production). Uses AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY,
+//   STORAGE_DRIVER=s3             — Amazon S3, or any S3-compatible service with S3_ENDPOINT (Supabase Storage, R2). Uses AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY,
 //                                   AWS_REGION and AWS_S3_BUCKET. The bucket stays PRIVATE: the backend reads the
 //                                   files and sends them (documents only to their owner, photos/images to everyone).
 // Keys are the same for both: "<userId>/<uuid>.<ext>" for documents, "photos/<uuid>.<ext>", "media/<uuid>.<ext>".
@@ -34,7 +34,9 @@ async function put(key, buffer, contentType) {
   if (useS3()) {
     const { PutObjectCommand } = await import('@aws-sdk/client-s3');
     await (await s3Client()).send(new PutObjectCommand({
-      Bucket: bucket(), Key: key, Body: buffer, ContentType: contentType || contentTypeOf(key), ServerSideEncryption: 'AES256',
+      Bucket: bucket(), Key: key, Body: buffer, ContentType: contentType || contentTypeOf(key),
+      // AWS S3: encrypt at rest. S3-compatible services (Supabase Storage, Cloudflare R2) encrypt by default and may refuse this header.
+      ...(!process.env.S3_ENDPOINT && { ServerSideEncryption: 'AES256' }),
     }));
     return;
   }
