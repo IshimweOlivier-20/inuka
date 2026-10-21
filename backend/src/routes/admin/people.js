@@ -77,7 +77,7 @@ router.post('/users', async (req, res) => {
     },
   });
   const token = await issueAuthToken(user.id, 'password_reset', 72);
-  const link = `${process.env.FRONTEND_URL || process.env.CLIENT_URL}/reset-password?token=${token}`;
+  const link = `${String(process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173').trim().replace(/\/+$/, '')}/reset-password?token=${token}`;
   const roleName = { student: 'a student', mentor: 'a mentor', admin: 'an admin' }[data.role];
   mail({
     to: user.email, subject: 'Your INUKA account is ready',

@@ -14,7 +14,8 @@ import { signAccessToken, issueRefreshToken, issueAuthToken, hashToken, publicUs
 
 const router = Router();
 const COOKIE = 'inuka_refresh';
-const FRONTEND_URL = process.env.FRONTEND_URL || process.env.CLIENT_URL; // CLIENT_URL: older .env files
+// CLIENT_URL: older .env files. Spaces and a trailing "/" are removed ("https://x.app/" would give "//api/..." links).
+const FRONTEND_URL = String(process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173').trim().replace(/\/+$/, '');
 const cookieOpts = (maxAge) => ({
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
@@ -168,7 +169,7 @@ export function googleProblem() {
   if (!gId().endsWith('.apps.googleusercontent.com')) return 'GOOGLE_CLIENT_ID looks wrong: it should end with .apps.googleusercontent.com (copy the "Client ID", not the project ID).';
   return null;
 }
-const googleRedirectUri = () => process.env.GOOGLE_REDIRECT_URI || `${FRONTEND_URL}/api/auth/google/callback`;
+const googleRedirectUri = () => (process.env.GOOGLE_REDIRECT_URI || '').trim() || `${FRONTEND_URL}/api/auth/google/callback`;
 const STATE_COOKIE = 'inuka_google_state';
 
 router.get('/config', (req, res) => {

@@ -12,7 +12,7 @@ const EMAIL = {
   deadline_reminder: 'Scholarship deadline reminder',
   session_reminder: 'Reminder: your mentor session',
 };
-const site = () => (process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/$/, '');
+const site = () => (process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173').trim().replace(/\/+$/, '');
 
 export async function notify(userId, type, message, link, { email = true, subject } = {}) {
   const n = await prisma.notification.create({ data: { userId, type, message, link } });

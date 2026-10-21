@@ -41,7 +41,7 @@ const app = express();
 // How many proxies sit in front of the server (1 = Render alone; 2 = Vercel /api proxy -> Render). Used for real visitor IPs (rate limits).
 app.set('trust proxy', Number(process.env.TRUST_PROXY || 1));
 app.use(helmet());
-app.use(cors({ origin: process.env.FRONTEND_URL || process.env.CLIENT_URL, credentials: true }));
+app.use(cors({ origin: String(process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173').trim().replace(/\/+$/, ''), credentials: true }));
 app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
 app.use('/api', generalLimiter);

@@ -50,7 +50,7 @@ async function sendWithBrevo({ to, subject, text, html, headers }) {
 }
 
 const from = () => process.env.EMAIL_FROM || (process.env.FROM_EMAIL ? `INUKA <${process.env.FROM_EMAIL}>` : `INUKA <${process.env.SMTP_USER}>`);
-const site = () => (process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/$/, '');
+const site = () => (process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173').trim().replace(/\/+$/, '');
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 // Plain text -> simple branded HTML. Links become clickable; an optional button is added (action: { label, url }).

@@ -16,7 +16,7 @@ import { hashToken } from '../utils/tokens.js';
 import { notify } from '../utils/notify.js';
 
 const router = Router();
-const site = () => (process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/$/, '');
+const site = () => (process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173').trim().replace(/\/+$/, '');
 const limiter = (limit, minutes = 10) => rateLimit({ windowMs: minutes * 60 * 1000, limit, standardHeaders: 'draft-7', legacyHeaders: false });
 
 // ---------- Scam checker ----------

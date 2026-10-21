@@ -4,7 +4,7 @@
 import { prisma } from '../lib/prisma.js';
 import { sendEmailSafe } from './emailService.js';
 
-const site = () => (process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/$/, '');
+const site = () => (process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173').trim().replace(/\/+$/, '');
 const strip = (html) => String(html || '').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
 const FUNDING = { fully_funded: 'Fully funded', partial: 'Partial funding', tuition_only: 'Tuition only' };
 

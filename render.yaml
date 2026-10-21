@@ -5,7 +5,6 @@ services:
     name: inuka-api
     runtime: node
     plan: free
-    region: ohio
     rootDir: backend
     buildCommand: npm install && npx prisma migrate deploy
     startCommand: npm start
