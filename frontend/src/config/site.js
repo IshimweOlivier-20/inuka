@@ -34,6 +34,7 @@ export const NAV_ITEMS = [
   {
     label: 'Tools',
     children: [
+      { to: '/tools', label: 'All free tools' },
       { to: '/next-step', label: 'See your options (S6 results)' },
       { to: '/universities', label: 'Universities & colleges' },
       { to: '/scam-check', label: 'Scholarship scam checker' },

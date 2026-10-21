@@ -109,7 +109,7 @@ Allow about 1–2 hours the first time. Do the steps in order: each one gives yo
 
 ## 5. Website — Vercel
 
-1. In `frontend/vercel.json`, replace `https://YOUR-BACKEND.onrender.com` with your Render address from step 4.
+1. In `frontend/vercel.json`, make sure the `/api` rewrite points to your Render address (now `https://inuka-api.onrender.com`) from step 4.
    Commit and push:
    ```
    git add frontend/vercel.json

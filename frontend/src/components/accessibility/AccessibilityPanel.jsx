@@ -80,8 +80,10 @@ export function AccessibilityButton({ className = '' }) {
   const [count, setCount] = useState(() => a11yActiveCount(loadA11y()));
   useEffect(() => {
     const on = (e) => setCount(a11yActiveCount(e.detail));
+    const show = () => setOpen(true); // other pages can open it: window.dispatchEvent(new Event('inuka-open-a11y'))
     window.addEventListener('inuka-a11y', on);
-    return () => window.removeEventListener('inuka-a11y', on);
+    window.addEventListener('inuka-open-a11y', show);
+    return () => { window.removeEventListener('inuka-a11y', on); window.removeEventListener('inuka-open-a11y', show); };
   }, []);
   return (
     <>

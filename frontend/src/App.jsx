@@ -20,6 +20,7 @@ const Terms = lazy(() => import('./pages/public/Legal').then((m) => ({ default: 
 const Privacy = lazy(() => import('./pages/public/Legal').then((m) => ({ default: m.Privacy })));
 
 // Free tools (public): S6 options, university directory, scam checker, certificate check, teacher letter upload
+const ToolsOverview = lazy(() => import('./pages/tools/ToolsOverview'));
 const NextStepPublic = lazy(() => import('./pages/tools/NextStep'));
 const MyOptions = lazy(() => import('./pages/tools/NextStep').then((m) => ({ default: m.MyOptions })));
 const UniversityList = lazy(() => import('./pages/tools/Universities'));
@@ -123,6 +124,7 @@ export default function App() {
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/logout" element={<Logout />} />
+        <Route path="/tools" element={<ToolsOverview />} />
         <Route path="/next-step" element={<NextStepPublic />} />
         <Route path="/universities" element={<UniversityList />} />
         <Route path="/universities/:slug" element={<UniversityPage />} />

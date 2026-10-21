@@ -8,6 +8,7 @@ import PlatformPanel from '../../components/landing/PlatformPanel';
 import FeaturedCourses from '../../components/landing/FeaturedCourses';
 import MissionSection from '../../components/landing/MissionSection';
 import ImpactSection from '../../components/landing/ImpactSection';
+import ToolsSection from '../../components/landing/ToolsSection';
 import {
   AudienceSection, FaqSection, JoinSection, PartnersSection,
   TeamSection, TestimonialsSection,
@@ -42,6 +43,7 @@ export default function Landing() {
       <MissionSection />
       <FeaturedCourses />
       <AudienceSection />
+      <ToolsSection />
 
       {/* How it works */}
       <section id="how-it-works" className="scroll-mt-16 bg-surface border-y border-line py-16 md:py-20">
