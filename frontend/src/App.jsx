@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import AppLayout from './components/layout/AppLayout';
 import { PageLoader } from './components/ui';
@@ -109,9 +109,22 @@ function GuestOnly({ children }) {
   return <Navigate to={location.state?.from || homeFor(user)} replace />;
 }
 
+// Every new page opens at the top (not where you were on the previous page).
+// Links to a section (/#faq, /tools#letters) still scroll to that section; Back/Forward keep the browser's position.
+function ScrollToTop() {
+  const { pathname, hash } = useLocation();
+  const navType = useNavigationType();
+  useEffect(() => {
+    if (hash || navType === 'POP') return;
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [pathname]); // eslint-disable-line react-hooks/exhaustive-deps
+  return null;
+}
+
 export default function App() {
   return (
     <Suspense fallback={<PageLoader />}>
+      <ScrollToTop />
       <Routes>
         {/* Public website */}
         <Route path="/" element={<GuestOnly><Landing /></GuestOnly>} />

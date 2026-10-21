@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { ChevronDown, Menu, X } from 'lucide-react';
+import { Accessibility, ArrowRight, ChevronDown, LayoutDashboard, LogIn, Menu, X } from 'lucide-react';
 import Logo from './Logo';
 import { SectionLink } from '../landing/common';
 import { Mail, MapPin, Phone } from 'lucide-react';
@@ -82,6 +83,117 @@ function TopBar({ user, account }) {
   );
 }
 
+// Phone / tablet menu: a drawer from the right. One link per line with an icon, the current page highlighted,
+// "Tools" and "About" fold open (the group of the current page starts open), then display settings and sign in.
+function MobileMenu({ open, onClose, user, account }) {
+  const { pathname, hash } = useLocation();
+  const groupOf = () => NAV_ITEMS.find((i) => i.children?.some((c) => (c.to && c.to === pathname) || (c.id && pathname === '/' && hash === `#${c.id}`)))?.label;
+  const [openGroup, setOpenGroup] = useState(groupOf);
+  const panel = useRef(null);
+  useEffect(() => {
+    if (!open) return undefined;
+    setOpenGroup(groupOf() || null);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden'; // the page behind does not scroll
+    const onKey = (e) => e.key === 'Escape' && onClose();
+    document.addEventListener('keydown', onKey);
+    setTimeout(() => panel.current?.querySelector('button, a')?.focus(), 30);
+    return () => { document.body.style.overflow = prev; document.removeEventListener('keydown', onKey); };
+  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+  if (!open) return null;
+
+  const row = 'flex items-center gap-3 min-h-12 px-3 rounded-lg text-[15px] font-medium transition-colors';
+  const idle = 'text-ink hover:bg-brand-soft';
+  const active = 'bg-brand-soft text-brand font-semibold shadow-[inset_3px_0_0_var(--color-accent)]';
+  const Icon = ({ icon: I, on }) => (I ? <I size={18} className={on ? 'text-brand' : 'text-ink-soft'} aria-hidden="true" /> : null);
+  const isOn = (c) => (c.to ? pathname === c.to || (c.to !== '/' && pathname.startsWith(`${c.to}/`)) : pathname === '/' && hash === `#${c.id}`);
+
+  // Rendered on <body>: the header's blur would otherwise squeeze the drawer into the header bar.
+  return createPortal(
+    <div className="lg:hidden fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="Menu">
+      <button type="button" aria-label="Close menu" onClick={onClose} className="absolute inset-0 bg-night/50 backdrop-blur-[2px] toast-in" />
+      <div ref={panel} id="site-menu" className="absolute right-0 top-0 h-full w-[86%] max-w-sm bg-surface shadow-2xl flex flex-col drawer-in">
+        <div className="flex items-center justify-between h-16 px-4 border-b border-line shrink-0">
+          <Link to="/" onClick={onClose} aria-label="INUKA home"><Logo size="md" /></Link>
+          <button type="button" onClick={onClose} aria-label="Close menu" className="w-11 h-11 rounded-lg text-ink hover:bg-brand-soft inline-flex items-center justify-center"><X size={22} /></button>
+        </div>
+
+        <nav aria-label="Main" className="flex-1 overflow-y-auto px-3 py-3">
+          <ul className="space-y-0.5">
+            {NAV_ITEMS.map((item) => {
+              if (!item.children) {
+                const on = isOn(item);
+                return (
+                  <li key={item.label}>
+                    {item.to
+                      ? <Link to={item.to} onClick={onClose} aria-current={on ? 'page' : undefined} className={`${row} ${on ? active : idle}`}><Icon icon={item.icon} on={on} />{item.label}</Link>
+                      : <SectionLink id={item.id} onClick={onClose} className={`${row} ${idle}`}><Icon icon={item.icon} />{item.label}</SectionLink>}
+                  </li>
+                );
+              }
+              const expanded = openGroup === item.label;
+              const hasActive = item.children.some(isOn);
+              return (
+                <li key={item.label}>
+                  <button type="button" onClick={() => setOpenGroup(expanded ? null : item.label)} aria-expanded={expanded}
+                    className={`${row} w-full ${hasActive ? 'text-brand font-semibold' : 'text-ink'} hover:bg-brand-soft`}>
+                    <Icon icon={item.icon} on={hasActive} />{item.label}
+                    <ChevronDown size={17} className={`ml-auto text-ink-soft transition-transform ${expanded ? 'rotate-180' : ''}`} aria-hidden="true" />
+                  </button>
+                  {expanded && (
+                    <ul className="ml-5 pl-3 border-l border-line my-1 space-y-0.5">
+                      {item.children.map((c) => {
+                        const on = isOn(c);
+                        const cls = `flex items-center gap-2.5 min-h-11 px-3 rounded-lg text-sm font-medium ${on ? active : 'text-ink-soft hover:text-ink hover:bg-brand-soft'}`;
+                        return (
+                          <li key={c.to || c.id}>
+                            {c.to
+                              ? <Link to={c.to} onClick={onClose} aria-current={on ? 'page' : undefined} className={cls}><Icon icon={c.icon} on={on} />{c.label}</Link>
+                              : <SectionLink id={c.id} onClick={onClose} className={cls}><Icon icon={c.icon} on={on} />{c.label}</SectionLink>}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+
+          <div className="mt-4 pt-4 border-t border-line">
+            <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-ink-soft mb-1">Display</p>
+            <button type="button" onClick={() => { onClose(); window.dispatchEvent(new Event('inuka-open-a11y')); }} className={`${row} ${idle} w-full`}>
+              <Accessibility size={18} className="text-ink-soft" aria-hidden="true" />Accessibility settings
+            </button>
+            <div className={`${row} justify-between`}>
+              <span className="text-ink">Dark mode</span>
+              <ThemeToggle className="-mr-1" />
+            </div>
+          </div>
+        </nav>
+
+        <div className="shrink-0 border-t border-line p-4 space-y-2 bg-paper">
+          {user ? (
+            <Link to={account.to} onClick={onClose} className="flex items-center justify-center gap-2 min-h-11 rounded bg-brand text-white font-semibold text-[15px] hover:bg-brand-dark">
+              <LayoutDashboard size={17} aria-hidden="true" />My dashboard
+            </Link>
+          ) : (
+            <>
+              <Link to="/register" onClick={onClose} className="flex items-center justify-center gap-2 min-h-11 rounded bg-accent text-night font-semibold text-[15px] hover:bg-accent-hover">
+                Get started, it's free<ArrowRight size={16} aria-hidden="true" />
+              </Link>
+              <Link to="/login" onClick={onClose} className="flex items-center justify-center gap-2 min-h-11 rounded border border-brand text-brand font-semibold text-[15px] hover:bg-brand-soft">
+                <LogIn size={16} aria-hidden="true" />Sign in
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
 // Home page: a thin contact bar on top, then the white navbar. The contact bar slides away once you scroll.
 // `solid`: always show the full navbar with links. `topBar`: show the contact bar until the page is scrolled.
 export default function LandingNav({ solid = false, topBar = false }) {
@@ -121,40 +233,22 @@ export default function LandingNav({ solid = false, topBar = false }) {
         )}
 
         <div className="flex items-center gap-1 sm:gap-2">
-          <AccessibilityButton className="rounded-full text-ink-soft hover:text-ink" />
-          <ThemeToggle />
-          <Link to={account.to} className={`min-h-11 px-3 sm:px-4 whitespace-nowrap inline-flex items-center font-medium text-brand hover:text-accent-hover`}>{account.label}</Link>
+          {/* On phones and tablets these move into the menu (only the button hides; its settings window still works) */}
+          <AccessibilityButton className={`rounded-full text-ink-soft hover:text-ink ${scrolled ? '!hidden lg:!inline-flex' : ''}`} />
+          <ThemeToggle className={scrolled ? '!hidden lg:!inline-flex' : ''} />
+          <Link to={account.to} className={`min-h-11 px-3 sm:px-4 whitespace-nowrap items-center font-medium text-brand hover:text-accent-hover ${scrolled ? 'hidden sm:inline-flex' : 'inline-flex'}`}>{account.label}</Link>
           {scrolled && !user && (
             <Link to="/register" className="nav-pop hidden sm:inline-flex min-h-11 px-6 items-center rounded bg-accent text-night font-semibold text-[15px] hover:bg-accent-hover">Get started</Link>
           )}
           {scrolled && (
-            <button onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="site-menu" aria-label="Menu"
-              className="lg:hidden min-w-11 min-h-11 rounded-lg text-ink hover:bg-brand-soft inline-flex items-center justify-center">{menuOpen ? <X size={24} /> : <Menu size={24} />}</button>
+            <button onClick={() => setMenuOpen(true)} aria-expanded={menuOpen} aria-controls="site-menu" aria-label="Open menu"
+              className="lg:hidden min-w-11 min-h-11 rounded-lg text-brand hover:bg-brand-soft inline-flex items-center justify-center"><Menu size={24} /></button>
           )}
         </div>
       </div>
 
-      {/* Mobile / tablet menu */}
-      {scrolled && menuOpen && (
-        <nav id="site-menu" aria-label="Main" className="lg:hidden border-t border-line bg-surface px-5 pb-5 max-h-[calc(100vh-4rem)] overflow-y-auto">
-          {NAV_ITEMS.map((item) => (item.children ? (
-            <div key={item.label} className="pt-4">
-              <p className="text-xs font-semibold text-ink-soft mb-1">{item.label}</p>
-              <div className="grid grid-cols-2 gap-x-3">
-                {item.children.map((c) => (
-                  c.to ? <Link key={c.to} to={c.to} onClick={close} className="flex items-center min-h-11 text-ink font-medium">{c.label}</Link>
-                    : <SectionLink key={c.id} id={c.id} onClick={close} className="flex items-center min-h-11 text-ink font-medium">{c.label}</SectionLink>
-                ))}
-              </div>
-            </div>
-          ) : item.to ? (
-            <Link key={item.label} to={item.to} onClick={close} className="flex items-center min-h-12 font-medium text-brand hover:text-accent-hover border-b border-line">{item.label}</Link>
-          ) : (
-            <SectionLink key={item.label} id={item.id} onClick={close} className="flex items-center min-h-12 font-medium text-brand hover:text-accent-hover border-b border-line">{item.label}</SectionLink>
-          )))}
-          {!user && <Link to="/register" onClick={close} className="mt-5 flex items-center justify-center min-h-12 rounded bg-accent text-night font-semibold">Get started — it's free</Link>}
-        </nav>
-      )}
+      {/* Phones and tablets: a side drawer */}
+      {scrolled && <MobileMenu open={menuOpen} onClose={close} user={user} account={account} />}
     </header>
   );
 }

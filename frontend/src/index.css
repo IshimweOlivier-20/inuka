@@ -223,3 +223,7 @@ html.a11y-contrast { --color-ink: #000; --color-ink-soft: #1F2937; --color-line:
 html.a11y-contrast[data-theme=dark] { --color-ink: #FFFFFF; --color-ink-soft: #E5E7EB; --color-line: #9CA3AF; --color-paper: #000000; --color-surface: #0A0A0A; }
 html.a11y-contrast :focus-visible { outline: 4px solid #FFC600; outline-offset: 2px; box-shadow: 0 0 0 7px #07294D; }
 html.a11y-contrast img { filter: contrast(1.05); }
+
+/* Phone menu drawer slides in from the right */
+@keyframes drawer-in { from { transform: translateX(100%); } to { transform: none; } }
+.drawer-in { animation: drawer-in .25s cubic-bezier(.2,.8,.2,1) both; }

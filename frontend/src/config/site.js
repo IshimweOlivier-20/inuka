@@ -1,3 +1,7 @@
+import {
+  Accessibility, BadgeCheck, BookOpen, Building2, ChartNoAxesColumn, CircleHelp, Compass, GraduationCap, Handshake, Info, ListOrdered, Newspaper, ShieldCheck, Sparkles, Target, UsersRound,
+} from 'lucide-react';
+
 // ─────────────────────────────────────────────────────────────
 //  INUKA contact details and social media.
 //  Edit this file to change what appears in the footer.
@@ -28,30 +32,33 @@ export const SITE = {
 };
 
 // Navbar links. `to` opens a page, `id` scrolls to a section of the home page, `children` makes a dropdown.
+// `icon` is shown in the phone menu.
 export const NAV_ITEMS = [
-  { to: '/learn', label: 'Courses' },
-  { to: '/opportunities', label: 'Opportunities' },
+  { to: '/learn', label: 'Courses', icon: BookOpen },
+  { to: '/opportunities', label: 'Opportunities', icon: GraduationCap },
   {
     label: 'Tools',
+    icon: Sparkles,
     children: [
-      { to: '/tools', label: 'All free tools' },
-      { to: '/next-step', label: 'See your options (S6 results)' },
-      { to: '/universities', label: 'Universities & colleges' },
-      { to: '/scam-check', label: 'Scholarship scam checker' },
-      { to: '/verify', label: 'Verify a certificate' },
+      { to: '/tools', label: 'All free tools', icon: Sparkles },
+      { to: '/next-step', label: 'See your options (S6 results)', icon: Compass },
+      { to: '/universities', label: 'Universities & colleges', icon: Building2 },
+      { to: '/scam-check', label: 'Scholarship scam checker', icon: ShieldCheck },
+      { to: '/verify', label: 'Verify a certificate', icon: BadgeCheck },
     ],
   },
-  { to: '/news', label: 'News' },
+  { to: '/news', label: 'News', icon: Newspaper },
   {
     label: 'About',
+    icon: Info,
     children: [
-      { id: 'mission', label: 'Our mission' },
-      { id: 'how-it-works', label: 'How it works' },
-      { id: 'accessibility', label: 'Accessibility' },
-      { id: 'impact', label: 'Our impact' },
-      { id: 'team', label: 'Our team' },
-      { id: 'partners', label: 'Partners & sponsors' },
-      { id: 'faq', label: 'FAQ' },
+      { id: 'mission', label: 'Our mission', icon: Target },
+      { id: 'how-it-works', label: 'How it works', icon: ListOrdered },
+      { id: 'accessibility', label: 'Accessibility', icon: Accessibility },
+      { id: 'impact', label: 'Our impact', icon: ChartNoAxesColumn },
+      { id: 'team', label: 'Our team', icon: UsersRound },
+      { id: 'partners', label: 'Partners & sponsors', icon: Handshake },
+      { id: 'faq', label: 'FAQ', icon: CircleHelp },
     ],
   },
 ];
