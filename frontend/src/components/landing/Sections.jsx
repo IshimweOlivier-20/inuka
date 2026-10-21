@@ -15,8 +15,8 @@ import RichText from '../../components/ui/RichText';
 
 /* ---------- Who INUKA is for: photo, title, text, button ---------- */
 const AUDIENCES = [
-  { key: 'graduates', title: 'High school graduates', text: 'You finished S4, S5 or S6 and want to go to university, but you are not sure where to start. Improve your English, learn computer basics and find scholarships you qualify for.', cta: 'Start for free', to: '/register' },
-  { key: 'refugees', title: 'Refugee and displaced youth', text: 'You have finished secondary school and want to continue, wherever you live now. See refugee-friendly scholarships, know which documents to prepare and get guidance.', cta: 'Start for free', to: '/register' },
+  { key: 'graduates', title: 'High school graduates', text: 'You finished S6 and want to go further, but you are not sure where to start. Type your results to see the programmes and scholarships you qualify for, improve your English and computer skills, and find second-chance paths if your marks are low.', cta: 'Start for free', to: '/register' },
+  { key: 'refugees', title: 'Refugee and displaced youth', text: 'You have finished secondary school and want to continue, wherever you live now. Use results from any country, see refugee-friendly scholarships, prepare your documents and letters, and avoid fake scholarship offers.', cta: 'Start for free', to: '/register' },
   { key: 'mentors', title: 'Mentors', text: 'You work in education or you have been through the process, and you want to help. Share your experience, review essays and plans, and choose your own hours.', cta: 'Become a mentor', to: '/register?role=mentor' },
 ];
 
@@ -33,7 +33,7 @@ function AudiencePhoto({ photo }) {
 export function AudienceSection() {
   return (
     <section id="who" className="scroll-mt-16 max-w-[1200px] mx-auto px-5 py-16 md:py-20">
-      <Reveal><SectionHeading label="Who it's for" title="Who INUKA is for" intro="One platform for the whole journey, from your last school exam to your first university day." /></Reveal>
+      <Reveal><SectionHeading label="Who it's for" title="Who INUKA is for" intro="One free platform for the whole journey, from your last school exam to your first university day. Accessible for students with disabilities too." /></Reveal>
       <div className="grid md:grid-cols-3 gap-6">
         {AUDIENCES.map((a, i) => (
           <Reveal key={a.key} delay={i * 110} className="group bg-surface rounded-lg border border-line overflow-hidden flex flex-col shadow-[0_2px_10px_-6px_rgba(7,41,77,0.12)] hover:shadow-[0_18px_36px_-22px_rgba(7,41,77,0.45)] transition-shadow duration-300">

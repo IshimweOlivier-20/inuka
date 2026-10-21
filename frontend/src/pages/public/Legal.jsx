@@ -99,8 +99,12 @@ export function Privacy() {
             <li><strong>Your profile:</strong> country of origin, country where you live, education level, language, and if you choose to share them, your age, refugee or displaced status and a profile photo.</li>
             <li><strong>Your learning:</strong> lessons completed, quiz answers, study streak, badges and certificates.</li>
             <li><strong>Your scholarships:</strong> scholarships you save and the applications you track.</li>
-            <li><strong>Your documents:</strong> files you upload to your Documents vault, such as your ID or school reports.</li>
+            <li><strong>Your documents:</strong> files you upload to your Documents vault, such as your ID or school reports, and recommendation letters your teachers upload for you.</li>
+            <li><strong>Your S6 results</strong>, only if you choose to save them in “See your options”. You can delete them at any time.</li>
+            <li><strong>Recommendation letter requests:</strong> the name and email address of the teacher you ask, so we can send them the request.</li>
+            <li><strong>Accessibility settings</strong> (text size, contrast, extra exam time) and, only if you choose to share it, the type of disability.</li>
           </ul>
+          <p>Messages you paste into the <strong>scam checker</strong> are checked and then forgotten: we do not store them. Results typed into “See your options” without an account are not saved either.</p>
         </>],
         ['why', 'Why we use it', <>
           <ul>
@@ -117,12 +121,17 @@ export function Privacy() {
             <li><strong>Your documents are private.</strong> Only you can open them.</li>
             <li><strong>Mentors</strong> you book will see your name, country and photo, and what you write in your booking request.</li>
             <li><strong>Mentors' profiles</strong> (name, photo, title, bio, languages) are shown to students so they can choose who to book.</li>
+            <li><strong>Teachers</strong> you ask for a letter see your name, how they know you and what the letter is for. They never see your other information.</li>
+            <li><strong>Certificates:</strong> anyone with your certificate's code or QR code can see your name, the course, the date and your final exam score, so they can check it is real.</li>
             <li><strong>A small INUKA team</strong> can see account information to keep the website safe and help you when you ask.</li>
           </ul>
           <p>We use trusted services to run INUKA, such as our web hosting and our email provider (used only to send you INUKA emails). They only use your information to provide that service to us.</p>
         </>],
         ['sensitive', 'Refugee status', <>
           <p>Telling us whether you are a refugee or displaced person is always optional, and you can choose "Prefer not to say". We only use it to show you suitable scholarships. We never share it with anyone outside the INUKA team. You can change or remove it at any time in your Profile.</p>
+        </>],
+        ['disability', 'Disability information', <>
+          <p>Sharing a disability is always optional. We only use it to show you scholarships and universities that support students with disabilities, and to apply the accessibility settings you choose. Mentors and other students never see it. You can change or remove it at any time in Profile → Accessibility.</p>
         </>],
         ['ai', 'INUKA AI', <>
           <p>When you chat with INUKA AI, your messages are sent to the AI service we use to write the answers (for example Google Gemini). Depending on the service and plan, that company may use the conversation to improve its products. <strong>Never type passwords, ID numbers or other private details into the chat.</strong></p>

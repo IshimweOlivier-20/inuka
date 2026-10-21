@@ -242,5 +242,23 @@
       "websiteUrl": "https://www.wvi.org/rwanda",
       "logoUrl": "/partners/world-vision.png"
     }
+  ],
+  "faqAdditions": [
+    {
+      "question": "Can INUKA show which universities I qualify for with my S6 results?",
+      "answer": "Yes. Open “See your options”, choose your combination and type your grades. You will see the degrees and diplomas where you meet the minimum, the ones you almost meet (with the exact gap), matching scholarships, and second-chance paths if your marks are low. It is free and works without an account. INUKA does not connect to NESA: you type your own results, and you should always confirm requirements on the university's website."
+    },
+    {
+      "question": "What does INUKA offer students with disabilities?",
+      "answer": "Every page can be made easier to use: bigger text, high contrast, an easy-to-read font, read aloud and stopped animations (the accessibility button at the top). You can speak instead of typing, read transcripts of lesson audio, get extra time in final exams, and filter scholarships and universities that support students with disabilities. Sharing a disability is optional and private."
+    },
+    {
+      "question": "How do I know if a scholarship message is a scam?",
+      "answer": "Paste it into the free scam checker. It looks for warning signs such as fees, requests for passwords, Gmail addresses pretending to be universities and fake links, and gives a red, yellow or green result with the reasons. Remember: a real scholarship never asks you to pay to be selected."
+    },
+    {
+      "question": "How do I get recommendation letters from my teachers?",
+      "answer": "Go to Profile → Letters and press “Ask a teacher”. Your teacher receives an email with a link to upload the letter, without creating an account. The letter is saved in your documents and you can follow its status and send a reminder."
+    }
   ]
 }

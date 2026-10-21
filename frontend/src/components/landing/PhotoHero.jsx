@@ -49,7 +49,7 @@ export default function PhotoHero() {
             Your future<br />starts here.
           </h1>
           <p className="mt-5 text-base sm:text-lg text-white max-w-[44ch] [text-shadow:0_1px_10px_rgba(0,0,0,0.3)]">
-            Learn English, build computer skills, find scholarships and meet mentors. Made for African high school graduates and refugees.
+            Learn English and computer skills, see which universities and scholarships fit your results, and meet mentors. Free, accessible, and made for African high school graduates and refugees.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             {user ? (

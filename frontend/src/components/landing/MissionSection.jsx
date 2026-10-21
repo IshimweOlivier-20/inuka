@@ -40,7 +40,10 @@ export default function MissionSection() {
             to English, to digital skills, to information about scholarships, and to someone who can guide them.
           </p>
           <p className="mt-4 text-ink-soft">
-            INUKA brings all of that together in one free place, so a student with a phone and a dream can rise to university.
+            INUKA brings all of that together in one free place: courses, scholarships, mentors, and tools that show your
+            options after S6, check scholarship messages for scams and get your recommendation letters ready. It is built to be
+            accessible, so students with a disability can learn and apply on equal terms, and a student with a phone and a dream
+            can rise to university.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Button to="/register" className="min-h-12 px-6">Start learning for free</Button>

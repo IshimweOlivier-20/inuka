@@ -9,6 +9,7 @@ import FeaturedCourses from '../../components/landing/FeaturedCourses';
 import MissionSection from '../../components/landing/MissionSection';
 import ImpactSection from '../../components/landing/ImpactSection';
 import ToolsSection from '../../components/landing/ToolsSection';
+import AccessibilitySection from '../../components/landing/AccessibilitySection';
 import {
   AudienceSection, FaqSection, JoinSection, PartnersSection,
   TeamSection, TestimonialsSection,
@@ -16,9 +17,9 @@ import {
 import { api } from '../../services/api';
 
 const STEPS = [
-  { title: 'Learn', text: 'Take free English and computer courses made for beginners. Short lessons, simple words, audio support.' },
-  { title: 'Discover', text: 'Find scholarships in Africa and around the world, filtered for your level and your situation.' },
-  { title: 'Apply', text: 'Get your documents ready, get help from a mentor, and apply with confidence.' },
+  { title: 'Learn', text: 'Take free English and computer courses made for beginners. Short lessons, simple words, audio with transcripts, and a certificate anyone can verify.' },
+  { title: 'Discover', text: 'Type your S6 results to see the universities, colleges and scholarships that fit you, including second-chance paths and options for refugees.' },
+  { title: 'Prepare & apply', text: 'Follow your readiness score, upload your documents, get letters from your teachers, check offers for scams and apply with a mentor’s help.' },
 ];
 
 export default function Landing() {
@@ -44,6 +45,7 @@ export default function Landing() {
       <FeaturedCourses />
       <AudienceSection />
       <ToolsSection />
+      <AccessibilitySection />
 
       {/* How it works */}
       <section id="how-it-works" className="scroll-mt-16 bg-surface border-y border-line py-16 md:py-20">

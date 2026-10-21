@@ -3,8 +3,8 @@
 //  Edit this file to change what appears in the footer.
 // ─────────────────────────────────────────────────────────────
 export const SITE = {
-  contactEmail: 'hello@inuka.app',
-  partnersEmail: 'partners@inuka.app',
+  contactEmail: 'hello.inuka@gmail.com',
+  partnersEmail: 'hello.inuka@gmail.com',
 
   // Leave phone empty ('') to hide it.
   phone: '',                      // e.g. '+250 788 000 000'
@@ -47,6 +47,7 @@ export const NAV_ITEMS = [
     children: [
       { id: 'mission', label: 'Our mission' },
       { id: 'how-it-works', label: 'How it works' },
+      { id: 'accessibility', label: 'Accessibility' },
       { id: 'impact', label: 'Our impact' },
       { id: 'team', label: 'Our team' },
       { id: 'partners', label: 'Partners & sponsors' },

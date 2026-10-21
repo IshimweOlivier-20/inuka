@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Award, BookOpen, Bot, ChevronLeft, ChevronRight, GraduationCap, HeartHandshake, ListChecks, ShieldCheck } from 'lucide-react';
+import { Accessibility, Award, BookOpen, Bot, ChevronLeft, ChevronRight, GraduationCap, HeartHandshake, ListChecks, ShieldCheck, Sparkles } from 'lucide-react';
 
 // Navy panel that overlaps the bottom of the home hero: a title on the left and a row of
 // coloured cards (courses, lessons, scholarships…) with live numbers. Arrows slide the row.
@@ -16,6 +16,8 @@ export default function PlatformPanel({ stats }) {
     { to: '/register', icon: HeartHandshake, label: 'Mentors', value: s.mentorCount >= 10 ? fmt(s.mentorCount) : 'Free', tone: 'text-green' },
     { to: '/register', icon: Bot, label: 'INUKA AI', value: '24/7', tone: 'text-coral' },
     { to: '/learn', icon: Award, label: 'Certificates', value: 'Free', tone: 'text-blue' },
+    { to: '/tools', icon: Sparkles, label: 'Free tools', value: '6', tone: 'text-accent-hover' },
+    { to: '/tools#accessibility', icon: Accessibility, label: 'Accessible', value: 'Yes', tone: 'text-green' },
   ];
 
   const track = useRef(null);

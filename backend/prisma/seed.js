@@ -93,6 +93,15 @@ async function seedHomeContent() {
   };
   await fill('tip', home.tips, 'tips');
   await fill('faqItem', home.faq, 'FAQ items');
+  // Questions added after launch: inserted once (matched by question), so existing websites get them too.
+  let newFaq = 0;
+  for (const f of home.faqAdditions || []) {
+    if (await prisma.faqItem.findFirst({ where: { question: f.question } })) continue;
+    const last = await prisma.faqItem.aggregate({ _max: { orderIndex: true } });
+    await prisma.faqItem.create({ data: { ...f, orderIndex: (last._max.orderIndex ?? -1) + 1 } });
+    newFaq += 1;
+  }
+  if (newFaq) console.log(`✓ ${newFaq} new FAQ items`);
   await fill('teamMember', home.team, 'team members');
   // Placeholder team members get stock photos of young Africans (free Unsplash photos) until real people are added.
   // Real team members are never given a stock photo: add their own photo in Admin → Website content → Team.

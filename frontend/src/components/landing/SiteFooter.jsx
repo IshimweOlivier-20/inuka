@@ -37,8 +37,8 @@ export default function SiteFooter() {
           <div>
             <Link to="/" aria-label="INUKA home"><Logo light tagline size="lg" /></Link>
             <p className="mt-5 text-[15px] leading-[1.7] text-white/85 max-w-sm">
-              INUKA is a free place to learn English and computer skills, find scholarships and meet mentors,
-              made for African high school graduates and refugee youth.
+              INUKA is a free, accessible place to learn English and computer skills, find your university and scholarship options
+              and meet mentors, made for African high school graduates and refugee youth.
             </p>
           </div>
           <FooterCol title="Company">
