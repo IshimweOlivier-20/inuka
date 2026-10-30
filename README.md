@@ -5,6 +5,18 @@ Built from the *INUKA Full Project Specification* by Olivier Ishimwe.
 
 **Stack:** React 19 + Vite + Tailwind CSS 4 (frontend) · Node.js + Express 5 (backend) · PostgreSQL + Prisma 6
 
+**Live website:** [inuka-learn.vercel.app](https://inuka-learn.vercel.app)
+
+## Demo video
+
+[![Watch the INUKA demo video on YouTube](https://img.youtube.com/vi/hSqIf2MUXnU/hqdefault.jpg)](https://www.youtube.com/watch?v=hSqIf2MUXnU)
+
+▶️ **[Watch the demo on YouTube](https://www.youtube.com/watch?v=hSqIf2MUXnU)**: a walkthrough of the website, the student, mentor and admin dashboards, and the free tools.
+
+## Technical report
+
+📄 **[Read the INUKA technical report (Google Drive)](https://drive.google.com/file/d/13OZY6Or6h9h8hrhmQdEHwO0opPFEtMqV/view?usp=sharing)**: features, architecture, technologies and how the project is structured.
+
 ---
 
 ## 1. What you need
@@ -121,7 +133,7 @@ Refresh the home page to see the change. You can also use pgAdmin.
 to a future date schedules the article.
 
 **Email sign-ups** from the "Get scholarship alerts" box are saved in the `subscribers` table.
-Alert emails go out automatically when an admin adds a new scholarship or publishes a guide/news article (see section 36).
+Sending the alert emails comes in a later phase.
 
 **Course skill tags** (used by the "Skills you will build" filter on `/learn`) are in the `skills` column of the `courses` table. Edit them in Prisma Studio.
 
@@ -156,7 +168,7 @@ Inuka/
 │   │   ├── mentor/               # Mentor dashboard: /api/mentor/...
 │   │   └── admin/                # Admin dashboard: /api/admin/...
 │   ├── src/middleware/           # JWT auth, roles, rate limit, upload validation, errors
-│   ├── src/services/             # email (Nodemailer), reminders, alerts, file storage (disk/S3), AI, scholarship search
+│   ├── src/services/             # email (SendGrid), file storage, scholarship search
 │   ├── src/utils/                # streaks, badges, tokens, notifications
 │   ├── uploads/                  # uploaded documents (development)
 │   ├── .env                      # your settings (copy from .env.example)
@@ -190,16 +202,15 @@ add its route in the matching block of `frontend/src/App.jsx`, and add a sidebar
 | Public pages for visitors | ✅ `/learn` and `/opportunities` each have a blue hero (search box and a slider of real courses or featured scholarships) and professional filters: a sidebar with counts next to every option, removable filter chips, sorting, a slide-up filter sheet on phones, and filters saved in the page address so a search can be shared. Scholarship filters: refugee eligibility, funding, study level, deadline, what it covers, region, study destination, language. Course filters: subject, level, skills, length, and (when signed in) my progress. `/news` also public. Navbar: Courses, Opportunities, News, About ▾ (edit `NAV_ITEMS` in `frontend/src/config/site.js`). |
 | §6 Student dashboard | ✅ Done: collapsible sidebar (remembered on the device) with all 8 links including `/logout`, bottom tabs on phones; welcome banner with date and a daily quote from 100 (`frontend/src/utils/quotes.js`); progress bar; Continue Learning card with thumbnail; English and Computer levels calculated from quiz scores; scholarship card; mentorship card with the next session and a Join button that opens 15 minutes before; streak, latest badge; quick actions |
 | §7–8 Courses, lessons, quizzes (60% pass mark), lesson locking, listen-aloud audio | ✅ Done — 5 lessons have full content; the other 67 have titles and need content |
-| §9 My Learning (tracks, streak heatmap, badges, certificates, weekly bar chart, quiz history) | ✅ Done |
+| §9 My Learning (tracks, streak heatmap, badges, certificates) | ✅ Done (weekly bar chart and quiz history table: Phase 2) |
 | §10 Scholarships: search, filters, save, detail, **Document Checklist modal**, application tracker | ✅ Done |
-| §14 Profile + Document Vault | ✅ Done (local disk or Amazon S3: `STORAGE_DRIVER`) |
-| §15 Notifications | ✅ Done: in-app + email (Nodemailer), deadline and session reminders, announcements by email, scholarship alerts |
+| §14 Profile + Document Vault | ✅ Done (local disk storage; S3 in Phase 4) |
+| §15 In-app notifications | ✅ Done (email reminders: Phase 4) |
 | §17 Database schema | ✅ All tables |
 | §12 Mentorship | ✅ Done: mentor directory with filters, ratings and "Available this week"; booking (topic, real free times for 14 days in the student's time zone, 200-word message); accept/decline with message; video link; Join button from 15 minutes before; cancel; mark as done; session notes (shown in My Learning); 1–5 star reviews; First Mentor Session badge; emails and notifications for every step; mentor calendar, history and availability editing |
 | §13 INUKA AI chatbot | ✅ Done: full page `/ai` with saved conversations, floating bubble on every student page, greeting and the 5 quick-start buttons, the hardcoded system prompt from §13.5, 30 messages per student per hour. Needs an API key (see section 15) |
 | §16 Admin dashboard | ✅ Done: overview (§16.1) and every capability in §16.2: users, mentor approval with feedback, course/lesson/quiz editor, scholarship listings, analytics with drop-off points, anonymised AI query themes, announcements |
-| §19.4 PWA / offline | ✅ Done: installable app, lessons readable offline |
-| §11 University directory, i18n (French) | ⏳ Not built yet |
+| §11 University directory, §19.4 PWA/offline, i18n (French) | ⏳ Phase 4 |
 
 ## 8. Before launch: verify the scholarship data
 
@@ -324,7 +335,7 @@ messages. Each student can send 30 messages per hour.
 ## 16. Emails for mentorship
 
 Booking requests, confirmations, declines and cancellations are emailed to the student and the mentor through
-Nodemailer (printed in the backend terminal while `SMTP_USER`/`SMTP_PASS` are empty). Times in emails use
+SendGrid (printed in the backend terminal while `SENDGRID_API_KEY` is empty). Times in emails use
 `APP_TIMEZONE` (default `Africa/Kigali`); on the website everyone sees times in their own time zone.
 
 ## 17. Light and dark mode
@@ -341,7 +352,7 @@ Tailwind's `dark:` prefix works, for example `dark:bg-black`.
 
 In **Users → Add account**, an admin can create a student, mentor or admin. Nobody types a password for them:
 the person receives an email with a link to choose their own password (valid 3 days). In development, without
-email set up (SMTP), the link is shown on the screen instead. Mentors created this way are approved straight away and add
+SendGrid, the link is shown on the screen instead. Mentors created this way are approved straight away and add
 their photo and weekly availability after signing in.
 
 ## 19. Writing content: the text editor
@@ -514,339 +525,3 @@ team, partners, FAQ. Each section heading has a small label above it with a yell
   heart-handshake for mentors (`components/auth/AuthArt.jsx`).
   Smaller headings and text, password and confirm side by side.
 
-
-## 29. Course pictures
-
-Every course card (home page "Featured courses", the Courses page, the student "My courses" page and the dashboard's
-"Continue learning" box) now has a photo that matches the course:
-
-| Course | Photo |
-|---|---|
-| Reading & Comprehension | Young man reading a book on a library floor (Makmot Robin) |
-| Writing: Sentences & Paragraphs | Young woman writing in a notebook (Iwaria Inc.) |
-| Essay Composition | Student writing on paper, Accra, Ghana (Kingsley Hemans) |
-| Speaking & Pronunciation | Young woman speaking into a microphone, Luanda, Angola (Emmanuel Zua) |
-| Writing for Scholarships | Young woman writing on her laptop (Iwaria Inc.) |
-| Introduction to Computers | Young man at a laptop in a computer class, Lagos (NESA by Makers) |
-| Internet & Email Basics | Young man browsing on a laptop, Yaba, Nigeria (NESA by Makers) |
-| Digital Tools for Education | Young man using a smartphone, Lagos (Olumide Bamgbelu) |
-| Preparing for University Online | College student holding a laptop (Seth Ebenezer Tetteh) |
-
-All are free under the Unsplash License. They are set in `frontend/src/config/photos.js` (`COURSE_PHOTOS`, by course
-slug). To use your own picture for a course, paste its link in **Admin → Courses → Thumbnail image link**; that always
-wins over these photos. No database change or re-seed is needed.
-
-## 30. Courses page redesign
-
-- **Hero**: the course photos slide (fade) behind the title and search box. The course slider card on the right is gone.
-- **Course cards**: white cards (no coloured band) with the course photo, a yellow "Free" badge, the course letter,
-  a round subject icon on the photo's edge, subject and level, the title, and a footer with the number of lessons
-  and **View details**. Visitors get a details window (description, skills, all lessons, "Start this course for
-  free"); signed-in students go straight to the course (or "Continue" / "Review" when they have started it).
-- **Grid / List switch** at the top right (next to "Sort by"). The choice is remembered on that device.
-- **Page numbers** (1 2 ›) under the cards: 6 courses per page. Change `PER_PAGE` in `pages/public/Learn.jsx`.
-- Files: `components/courses/CourseCards.jsx` (cards, switch, page numbers, details) and `PageHero` in
-  `components/landing/PublicShell.jsx` (new `photos` option for a sliding photo background).
-
-## 31. Scholarships page hero and navy page buttons
-
-- **Scholarships page hero**: graduation photos of young Africans fade behind the title and search box (set in
-  `SCHOLAR_PHOTOS`, `frontend/src/config/photos.js`). The "Featured scholarships" card slider is removed
-  (`components/landing/Showcase.jsx` was deleted, nothing uses it any more).
-- **Courses page**: the page numbers and the Grid / List switch now use the navy primary colour instead of blue.
-
-## 32. Scholarship cards with photos, Grid / List and page numbers
-
-- **Every scholarship has a photo**: the place where you would study (Big Ben for Chevening, Oxford for
-  Commonwealth, Heidelberg for DAAD, Seoul, Beijing, Istanbul, Paris, Tokyo, a US campus, Kigali, UCT, Cape Town,
-  Nairobi, Kampala) or young African graduates for programmes across Africa (Mastercard, DAFI, African Union,
-  Aga Khan, Intra-Africa, AfDB). Set in `SCHOLARSHIP_PHOTOS` in `frontend/src/config/photos.js`.
-- **Your own photo**: Admin → Scholarships → *Card photo link*. New scholarships without one get a photo for their
-  country, otherwise a graduation photo. **Database change**: run `npx prisma migrate deploy` in `backend`
-  (migration `20261003000000_scholarship_image` adds the `image_url` column).
-- **New card**: photo with a **Save** button (bookmark icon) at the top right, country, name and organisation,
-  then **Learn more** and **Apply now** side by side, then the deadline and the days left.
-  Funding, "Open to refugees", study level and language are shown when you click **Learn more** (the details
-  window now also shows the photo). The student "Scholarships" page uses the same card.
-- **Grid / List switch** and **page numbers** (1 2 3 ›, 9 per page) on the public Scholarships page. The "Show more"
-  button is gone. The switch and page numbers live in `components/ui/ListControls.jsx` (shared with Courses).
-
-## 33. A page for every scholarship
-
-- **`/opportunities/<slug>`** (e.g. `/opportunities/chevening`) replaces the old pop-up window
-  (`pages/public/ScholarshipPage.jsx`; `components/scholarships/ScholarshipDetail.jsx` was deleted).
-  - Hero with the scholarship's photo, country (yellow), name, organisation, **Apply now** and **Save**.
-  - Main column: About, Who can apply and What it covers (green-tick lists), How to apply (numbered steps).
-  - Side panel: deadline and days left, then **key facts as a list with icons** (Funding, Refugees, Study level,
-    Language, Country, University, Region) instead of coloured tags; Apply now, Save for later, Official website.
-  - "Need help applying?" box with a photo and a **Find a mentor** button; "You may also like" cards.
-- **Save / Apply**: visitors are asked to sign in and come back to the same page. Signed-in users save right away
-  (also from the cards on the Scholarships page, which now show what is already saved). "Apply now" (on the page
-  or on a card) opens the document checklist, then the official website.
-- "Learn more" everywhere (public page, student Scholarships page, dashboard, the top search) opens this page.
-- Cards: the "days left" is plain coloured text (no background). Scholarships page title: the word "and" is yellow.
-
-## 34. White sidebar, status colours, and INUKA AI for everyone (free)
-
-**Dashboard sidebar** (`components/layout/AppLayout.jsx`): white background, grey links, navy on hover. The active
-link has a light navy background, navy bold text and a **yellow bar** on the left. "Log out" turns red on hover.
-
-**Status colours** — use the same ones everywhere (tokens in `src/index.css`, each with a `-soft` background and
-`-ink` text colour, also in dark mode):
-
-| Colour | Meaning | Examples |
-|---|---|---|
-| green `success` | done, accepted, active, plenty of time | "Active" users, accepted applications, deadline 30+ days |
-| amber `warning` | needs attention soon, waiting | mentors waiting for approval, "Email not confirmed", "Awaiting response", deadline in 14–29 days |
-| red `danger` / `urgent` | urgent, error, rejected | suspended, rejected, deadline in under 14 days, errors |
-| blue `info` | neutral, in progress | "In progress", "Submitted", information notes |
-
-Use them with `<Pill tone="success|warning|danger|info">`, `<Alert tone="success|warning|error|info">` and
-`toast.success / toast.warning / toast.error / toast.info`. "My applications" now shows a coloured status badge and
-a coloured left edge per application; the admin dashboard colours "waiting for approval" (amber) and "close within
-30 days" (red).
-
-**INUKA AI — chatbot + AI agent, free for everyone**
-- **Chat button** (bottom right, yellow "AI" badge) on every public page *and* every dashboard (students, mentors,
-  admins). Visitors can use it without an account; their chat stays while they move between pages (this tab only).
-  Students keep their saved conversations on the full **INUKA AI** page as before.
-- **It is an agent**: instead of guessing, it looks things up on INUKA with tools
-  (`backend/src/services/agent.js`): search scholarships (country, level, fully funded, open to refugees, closing
-  soon), scholarship details, upcoming deadlines, free courses — and for signed-in students: their course progress,
-  saved scholarships, document checklist for a scholarship, mentors, and it can **save a scholarship** when asked.
-  Answers include links (e.g. to `/opportunities/chevening`).
-- **Always free**:
-  - *AI mode*: set a FREE key in `backend/.env` — `AI_PROVIDER=gemini` + key from aistudio.google.com/apikey
-    (or `groq`, or `ollama` on your own computer, no key). Restart the backend.
-  - *Basic mode*: with no key (or if the AI service is down) the assistant still answers using the same tools and
-    simple rules — no outside service, no cost. The chat shows "Free · Basic mode" or "Free · AI answers by …".
-- Limits: 40 messages per hour per person (visitors: per internet address), 30 per hour on the student INUKA AI page.
-- New API: `GET /api/assistant/status`, `POST /api/assistant/chat` (`backend/src/routes/assistant.js`).
-
-## 35. INUKA AI — checked against the INUKA document (section 13, 18.5 and the course plan)
-
-| Requirement in the document | Where it is |
-|---|---|
-| Conversational AI for guidance, chatbot 24/7 | Chat bubble on every page + `/ai` page (students). Always on: AI mode or free basic mode. |
-| AI calls proxied through the Node.js backend, key protected | All calls go `browser → /api/ai/…, /api/assistant/… → backend → AI service`. Keys only in `backend/.env`. |
-| OpenAI GPT-4o, or Amazon Bedrock as alternative | `AI_PROVIDER=openai` (GPT-4o) or **`AI_PROVIDER=bedrock`** (new: uses `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`; default model `amazon.nova-lite-v1:0`, change with `AI_MODEL`). Free options: `gemini`, `groq`, `ollama`. |
-| 13.5 System prompt hardcoded, sent with every call | `SYSTEM_PROMPT` in `backend/src/services/aiService.js` (exact text), sent with every call: chat, agent, writing review, speaking practice. |
-| 13.2 Floating bubble bottom-right, minimised; full page `/ai` in the sidebar | `components/ai/ChatBubble.jsx`; sidebar "INUKA AI". |
-| 13.3 Sprout avatar (animated), header "INUKA AI — Your Learning Guide", greeting, 5 quick-start buttons | Exact wording and buttons in `components/ai/ChatPanel.jsx` / `ChatBubble.jsx`. |
-| 13.4 Capabilities (scholarships, essays, documents, grammar, course advice, forms, refugee rights, computer help) | System prompt + agent tools (`services/agent.js`): scholarship search/details/deadlines, **profile matching**, courses, mentors, progress, saved list, document checklist, save. |
-| 13.6 Conversations saved per user, scroll back; admin sees only anonymised themes | Saved in `chat_messages`; `/ai` lists them; Admin → Analytics shows theme counts only. |
-| 18.5 `POST /api/ai/chat`, `GET /api/ai/history` | Both exist (**`/api/ai/history` is new**: all conversations with messages; `?conversationId=` for one). |
-| English Writing L8 "Final Writing Task + AI Feedback" | **New** box in the lesson: paste text → INUKA AI review (score, strengths, what to improve, small fixes, next step). |
-| Essays L10 "Full Essay Practice" (400 words + AI feedback) | **New**, same box, checks thesis, paragraphs, PEEL examples, conclusion. |
-| Scholarship Writing L8 "Full Draft Review" | **New**, same box, reviews like a scholarship reader (goals, why this scholarship, community, real story). |
-| Speaking L4 "Introducing Yourself — practice conversation with AI voice" | **New** speaking partner: INUKA AI asks questions out loud, the student answers with the microphone (or types), gets tips and a model introduction at the end. Uses the browser's free speech features (Chrome/Edge/Android for the microphone). |
-| AI-powered scholarship matching from the student profile | **New** `GET /api/scholarships/matches`: scores open scholarships by study level, refugee status, country/region, language, funding and time left, with reasons. Shown as **"Recommended for you"** on the student dashboard, the **"For you"** tab on Scholarships, and used by INUKA AI ("Find a Scholarship"). |
-
-All of this is **free**: with a free AI key (Gemini/Groq/Ollama) you get full AI answers; with no key INUKA uses its
-built-in basic mode — the writing checker (spelling, capital letters, sentence length, repeated words, linking words,
-structure), a scripted speaking partner, and rule-based answers using the same tools. Writing reviews are also saved
-on the student's INUKA AI page. Activities are matched by course and lesson title in
-`backend/src/services/lessonAi.js` (`AI_ACTIVITIES`) — edit there to add AI activities to other lessons.
-After updating: run `npm install` in `backend` (adds the Amazon Bedrock library).
-
-
-## 36. Emails with Nodemailer, reminders, alerts, S3, offline app, My Learning charts
-
-**Emails (Nodemailer / SMTP)** — `backend/src/services/emailService.js`. Every email has a branded HTML version
-(navy header, yellow button) and a plain-text version. Set in `backend/.env`:
-
-```
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=465
-SMTP_SECURE=true
-SMTP_USER=hello.inuka@gmail.com
-SMTP_PASS=your16letterapppassword
-EMAIL_FROM="INUKA <hello.inuka@gmail.com>"
-```
-
-Gmail: turn on **2-Step Verification**, then create an **App password** at myaccount.google.com/apppasswords and use
-it as `SMTP_PASS` (not your normal password). Gmail sends about 500 emails a day; for more, use any SMTP service
-(Brevo, Zoho, Mailgun…). Check the setup with `npm run email:test -- your.email@example.com` (in `backend`).
-The backend also prints `✓ Email: sending through smtp.gmail.com` when it starts. Without SMTP settings, emails are
-printed in the terminal (development).
-
-**What is emailed**
-- Account: confirm email (button), reset password (button), account created by an admin.
-- Mentorship: request, confirmed, declined, cancelled, video link added, session done (rate it), session notes.
-- Learning: course completed (certificate). Badges stay in the app only.
-- **Reminders** (`services/reminders.js`, checked every 15 minutes, each sent only once): saved scholarships 7 days and
-  1 day before the deadline (not if already applied); mentor sessions 24 hours and 1 hour before (student and mentor).
-  `REMINDERS=off` turns them off.
-- **Announcements**: the admin form has "Also send it by email" (on by default).
-- **Scholarship alerts** (`services/alerts.js`): subscribers get an email when an admin adds a new scholarship or
-  publishes a guide/news article — once per item, with an **Unsubscribe** link (`/unsubscribe` page).
-- Home page "Submit your query": emailed to `CONTACT_EMAIL` (or `SMTP_USER`), with Reply-To set to the sender.
-
-Database change: run `npx prisma migrate deploy` (migration `20261012000000_reminders_alerts`).
-
-**Amazon S3 storage** — `STORAGE_DRIVER=s3` plus `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`,
-`AWS_S3_BUCKET`. The bucket stays private (encrypted); INUKA's backend serves documents only to their owner and
-photos/images to everyone.
-
-**Installable app + offline (spec §19.4)** — `frontend/public/manifest.webmanifest` and `frontend/public/sw.js`.
-On phones, "Add to Home screen" installs INUKA. Lessons and courses a student has opened can be read again without
-internet ("You are offline" bar). Sign-in, documents and AI need internet. Signing out removes the saved lessons.
-Works on the built site (`npm run build`), not in `npm run dev`.
-
-**My Learning** — new "Lessons per week" bar chart (last 8 weeks) and "Quiz history" table.
-
-## 37. Course builder: lessons, quizzes and final exams
-
-**Database change:** run `npx prisma migrate deploy` in `backend` (migration `20261012100000_course_tools_exams`).
-Existing quiz questions keep working (their single answer is copied to the new list of correct answers).
-
-**Courses** (Admin → Courses)
-- Reorder courses (↑ ↓ = order on the website) and **Duplicate** a course (a hidden copy with all lessons, quizzes and exam).
-- Edit subject (English / Computer skills), course letter (A–Z), level, skills, description, and **upload the course picture**.
-- Numbers on top: students started, finished all lessons, passed the exam, certificates. Each lesson row shows how many
-  finished it and the average quiz score.
-
-**Lessons** (open a lesson)
-- Time to study ("About 15 minutes"), its own **quiz pass mark** (empty = 60%).
-- **Upload listening audio** (MP3/M4A) — students get an audio player.
-- **Files to download**: upload worksheets, slides or readings (PDF, Word, PowerPoint, Excel, pictures; 25 MB) or add links.
-- **INUKA AI activity**: writing feedback (paragraph / essay / personal statement, task, word limits) or speaking practice,
-  or none. Lessons without a setting keep INUKA's built-in activities.
-- **Duplicate** a lesson.
-
-**Questions** (lesson quizzes and exams use the same editor)
-- Four types: one correct answer, several correct answers, true or false, short typed answer (several accepted answers;
-  capital letters, accents and full stops do not matter).
-- A picture on any question, an explanation, reorder ↑ ↓, and "x% right" labels from students' answers.
-- **Paste many**: write questions as text (`Q:` question, `-` wrong answer, `*` correct answer, `A: True`, `A: answer`,
-  `E:` explanation), press **Check** to preview, then **Add**.
-
-**Final exam** (course page → Create final exam, `/admin/courses/:id/exam`)
-- Settings: title, instructions, pass mark, time limit, random set of questions per student, shuffle, number of tries,
-  hours to wait after a failed try, show correct answers after submitting, required for the certificate, published.
-- Questions: add, paste many, or **Copy lesson quiz questions** in one click; points per question.
-- Results: every attempt (score, time taken), pass rate, average, hardest questions first, and **Another try** for a student.
-
-**Students**
-- Lesson page: time, audio player, files to download, the new question types.
-- When a course has a published exam that is required, finishing the last lesson **opens the exam** (no certificate yet).
-  The exam page (`/courses/:slug/exam`) shows the rules, a timer, question numbers, and saves answers as the student goes —
-  if the connection or phone stops, opening the page again continues the exam. When the time is up the answers are
-  sent automatically. Passing it gives the certificate (notification + email).
-
-API: `/api/admin/files`, `/api/admin/courses/:id/(move|duplicate|stats|exam…)`, `/api/admin/lessons/:id/(duplicate|quizzes/import)`,
-`/api/admin/exam-questions/:id`, `/api/admin/exam-attempts/:id`; students: `/api/courses/:slug/exam`, `/api/courses/:slug/exam/start`,
-`/api/exam-attempts/:id` (GET, `PUT …/answers`, `POST …/submit`).
-
-## 38. Mentor sessions (book, reschedule, cancel) and Messages
-
-**Database change:** run `npx prisma migrate deploy` in `backend` (migration `20261014090000_sessions_messages`).
-
-**Students — Mentorship → My sessions** has three tabs: **Upcoming**, **Completed**, **Cancelled**. Each card shows the
-mentor's photo, how you meet (video call, voice call or messages), the status, date and time, and a round button to
-message the mentor.
-- **Book a session** (`/mentorship/book/:mentorId`): 1) choose a day on the calendar and a free hour → 2) choose video
-  call, voice call or messages, the topic and your message → 3) check and send. A "Request sent!" message follows.
-- **Session page** (`/mentorship/sessions/:id`): mentor, date and time, your details, how you meet, mentor notes, the
-  Join / Messages button (opens 15 minutes before), rating after the session. The ⋯ menu has Reschedule, Message and Cancel.
-- **Reschedule**: choose a reason → choose a new day and hour → "Session moved!". The mentor confirms the new time
-  again (the session goes back to "Waiting for mentor"). A session can be moved 3 times.
-- **Cancel**: "Are you sure?" → choose a reason → "Session cancelled". The mentor gets an email with the reason.
-
-**Mentors — Sessions** uses the same three tabs. Mentors see when a student asked to move a session (old time and reason),
-can cancel a confirmed session with a reason (the student is emailed), and message the student from each card.
-
-**Messages** (`/messages`, in the menu for students and mentors, with an unread number):
-- A student can message a mentor after booking them; the mentor can then reply.
-- Text, pictures (also from the phone camera), PDF/Word files and **voice messages** (press the microphone), 10 MB at most.
-  Files are private: only the two people can open them.
-- Ticks show sent ✓ and read ✓✓ (yellow). New messages appear by themselves (checked every 4 seconds).
-- INUKA writes short grey lines in the chat when a session is requested, confirmed, moved, cancelled or completed.
-- ⋯ menu: Sessions, **Export chat** (text file), **Clear chat** (hides the messages for you only). The search icon finds words in the chat.
-
-## 39. Google sign-in: if it still says "not switched on"
-
-- The keys must be in **backend/.env** (not frontend/.env), named exactly `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
-- While developing, saving backend/.env is now enough: the backend reads it again by itself (before, `npm run dev`
-  had to be stopped and started again). The terminal prints `✓ Google sign-in: on` or what is wrong.
-- The Client ID ends with `.apps.googleusercontent.com`. The note under the button now says exactly what is missing.
-- In Google Cloud → Credentials → your OAuth client, **Authorized redirect URIs** must contain
-  `http://localhost:5173/api/auth/google/callback` (and your real site's address in production).
-- While the OAuth consent screen is in "Testing", only the Google accounts added as **Test users** can sign in.
-
-## 40. Dashboard look: dark sidebar, calmer text, hours on the booking calendar
-
-- **Sidebar** (all three dashboards): a dark-blue floating panel with white icons. The open page is a light "tab"
-  that comes out of the panel (curved corners, `.side-tab` in `index.css`). The round button at the bottom folds it
-  to icons only. On phones it opens from the menu button.
-- **Text size**: dashboards use a slightly smaller scale (15px base, `html.dash` in `index.css`) and smaller page titles.
-  The public website is unchanged.
-- **Booking calendar**: under "Select hour" you see all the mentor's hours for the chosen day; hours already booked
-  are crossed out. The calendar and hours always show, even when a mentor is fully booked.
-
-## 41. More hours, News & guides with pictures, likes, comments and sharing
-
-**Database change:** run `npx prisma migrate deploy` in `backend` (migration `20261014140000_post_reactions`).
-
-**Hours when booking a mentor.** A session (1 hour) can now start every half hour: 09:00, 09:30, 10:00…, inside the
-hours the mentor set in **Mentor → My profile** (touching hours are joined, so 09:00–10:00 + 10:00–11:00 also offers 09:30).
-The test mentor used to have only two hours a week (that is why you saw only 4:00 PM). Run `npm run seed` in
-`backend` once: it gives the test mentor Monday–Friday 09:00–12:00 and 14:00–18:00, Saturday 10:00–13:00 (Kigali time).
-Moving a session can now use a time close to its old time.
-
-**Courses (student dashboard).** The course cards have no coloured box any more: the picture, then the course letter,
-level, title, description, progress and button directly below it.
-
-**News & guides** (`/news`)
-- Every article has a picture: the one uploaded in **Admin → Website content → News & guides → Article picture**, or else a
-  matching photo (`postPhoto` in `config/photos.js`).
-- The newest article is shown big at the top. Filters: All / Guides / News / Student stories (with numbers), a search box,
-  and Latest / Most liked.
-- Article page: big picture, author and date, **Like / Unlike**, **Comment**, **Share** (WhatsApp, Facebook, X, LinkedIn,
-  copy link, or the phone's share menu), comments with name, photo and a "Mentor" or "INUKA team" label,
-  "Keep reading" with pictures.
-- Liking and commenting need an account (the page sends people to sign in and back). People can delete their own
-  comments; admins can delete any comment. At most 10 comments per person in 10 minutes.
-
-## 42. Six "next step" features (plan: INUKA Priority Features)
-
-**Update the database first (with the backend server stopped):** `cd backend && npm run db:update`
-(= `npx prisma migrate deploy`, `npx prisma generate`, `npm run db:seed`). On Windows, `prisma generate` fails or
-silently keeps the old client while `npm run dev` is running, which shows up as 500 errors such as
-"Cannot read properties of undefined (reading 'findMany')" or "Unknown field `coverUrl`".
-(migration `20261017090000_next_step_features`; the seed adds 9 sample universities and 25 programmes).
-
-1. **Type your S6 results, see your options** — public at `/next-step`, in the student dashboard at `/options` ("Next step").
-   Rwanda S6 grades (A–F, points out of 18) or percentages from another country (refugees; INUKA shows an *estimate*).
-   Shows degrees and diplomas the student meets ("You meet the minimum") or almost meets (with the exact gap), scholarships,
-   and **Second chance**: polytechnic/TVET diplomas, a re-sit plan with hours per week, free skills courses and
-   scholarships with no grade minimum. No NESA connection: students type their own results.
-   - **University directory** `/universities` (filters: type, field, disability support) and one page per institution.
-   - **Admin → Universities**: add institutions and programmes (combinations, required subjects with minimum grade,
-     minimum points). **The seeded entries are SAMPLE data** (hidden on the live site). Check each one against the official
-     page and tick "I checked this against the official page today" — that makes it real data.
-   - The grade scale is in `backend/src/lib/grading.js` (A 6 … F 0). Confirm it with NESA's rules before launch.
-2. **Scholarship readiness** — "You are 62% ready" on every scholarship page (signed-in students) and on the dashboard,
-   with each missing item linked to its fix (profile, S6 results, English, documents, personal statement, letters).
-   Admins can set a minimum S6 points value per scholarship.
-3. **Accessibility** — the ♿ button at the top of every page: text size, high contrast, easy-to-read font, underline links,
-   stop animations, read aloud (select text → Listen). Saved on the device and in the account. Profile → Accessibility:
-   **extra time in exams** (+25/50/100%) and optional, private disability information. Scholarships and universities can be
-   marked as supporting students with disabilities (filters on both). Lessons with audio have a **transcript** field
-   (Admin → lesson). **Voice input** (microphone button) on INUKA AI chat, writing feedback, short exam answers and the scam checker
-   (Chrome / Edge / Android).
-4. **Scam checker** — `/scam-check` (public) and "Scam checker" in the student dashboard. Red / yellow / green with reasons:
-   fees, requests for passwords, Gmail "officials", short links, pressure, agents, and links that are not the scholarship's
-   official website. Uses rules on our server (free); when INUKA AI is on, it adds its own reading. Nothing pasted is stored.
-5. **QR certificates** — every certificate has a code and a QR code. Anyone can check it at `/verify/<code>`
-   (name, course, date, final-exam score). Existing certificates got codes in the migration.
-6. **Recommendation letters** — Profile → Letters: the student enters the teacher's name and email; the teacher gets an email
-   link (`/letters/<token>`, valid 60 days, no account) to upload a PDF/Word letter or decline. The letter goes into the
-   student's document vault (Recommendation letter 1, then 2). Statuses: Waiting → (reminder after 3 days) → Received /
-   Declined. Emails need SMTP set up (section 36); without it they are printed in the backend terminal.
-
-## 43. Free hosting (Vercel + Render + Neon + Supabase Storage + Brevo)
-
-Step-by-step guide: **[HOSTING.md](HOSTING.md)**. New settings for hosting:
-`BREVO_API_KEY` (email over HTTPS, because Render's free plan blocks SMTP), `S3_ENDPOINT` (S3-compatible file storage
-such as Supabase Storage), `TRUST_PROXY=2` (Vercel → Render). Config files: `frontend/vercel.json`, `render.yaml`.
