@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CircleAlert, CircleCheck, Info, ShieldAlert, ShieldCheck, ShieldQuestion, Sparkles, TriangleAlert } from 'lucide-react';
+import { CircleAlert, CircleCheck, Info, Lock, Scale, ShieldAlert, ShieldCheck, ShieldQuestion, Sparkles, TriangleAlert, UserCheck, Users } from 'lucide-react';
 import { Alert, Button } from '../../components/ui';
 import ToolShell, { DashTitle, ToolHeader } from '../../components/tools/ToolShell';
 import VoiceInputButton from '../../components/ui/VoiceInput';
@@ -49,7 +49,7 @@ function ScamTool() {
             </div>
             <Button type="submit" loading={busy} disabled={text.trim().length < 10} className="!min-h-10 !px-5 text-sm">Check it</Button>
           </div>
-          <p className="text-xs text-ink-soft mt-3">We do not store what you paste. Remove personal details (your ID number, passwords) before checking.</p>
+          <p className="text-xs text-ink-soft mt-3">INUKA does not store what you paste. Remove personal details (ID numbers, passwords, other people's phone numbers) before checking. By checking, you agree to <a href="#responsible-use" className="underline underline-offset-2 hover:text-ink">use the result responsibly</a>.</p>
         </form>
 
         {error && <Alert>{error}</Alert>}
@@ -75,7 +75,7 @@ function ScamTool() {
             )}
             <p className="text-sm font-semibold mt-4">What to do</p>
             <ul className="mt-1 space-y-1 text-sm">{res.advice.map((a) => <li key={a} className="flex gap-2"><CircleCheck size={15} className="text-success shrink-0 mt-0.5" aria-hidden="true" />{a}</li>)}</ul>
-            <p className="text-xs text-ink-soft mt-3">This is an automatic check{res.aiUsed ? ' (rules + INUKA AI)' : ''}. It can miss things: when in doubt, ask a mentor.</p>
+            <p className="text-xs text-ink-soft mt-3">This is an automatic check{res.aiUsed ? ' (rules + INUKA AI)' : ''} of the words in the message. It shows warning signs, not proof: it can miss a scam or flag a real offer. Please do not use it to accuse anyone. If you think it is fraud, report it to RIB on 166.</p>
           </section>
         )}
       </div>
@@ -84,7 +84,35 @@ function ScamTool() {
         <ul className="mt-3 space-y-2 text-sm">{SIGNS.map((s) => <li key={s} className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-danger mt-2 shrink-0" aria-hidden="true" />{s}</li>)}</ul>
         <p className="text-sm mt-4 pt-4 border-t border-line"><span className="font-semibold">Remember:</span> real scholarships never ask you to pay to be selected. You can always apply yourself, for free, on the official website.</p>
       </aside>
+      <ResponsibleUse />
     </div>
+  );
+}
+
+// How the checker is meant to be used: guidance, not a verdict; fair; private; for protection only.
+const PRINCIPLES = [
+  [Scale, 'A guide, not a verdict', 'The result shows warning signs in the words of the message. Red does not prove that someone is a scammer, and green does not prove an offer is real. Always confirm on the official website of the scholarship or university.'],
+  [Users, 'No accusations', 'Please do not use a result to publicly accuse, shame or threaten a person or organisation. If you believe it is fraud, report it: Rwanda Investigation Bureau (RIB) on 166, the real scholarship provider, or the app where you received it.'],
+  [UserCheck, 'Fair by design', 'The checker looks at the content of the message: payment requests, requests for passwords, pressure to hurry, links and contact addresses. It never judges a sender by their name, nationality, language or religion.'],
+  [Lock, 'Your privacy', 'INUKA does not save what you paste. When INUKA AI is switched on, the text is also sent to our AI provider so it can read it. Do not paste other people\u2019s personal details.'],
+  [ShieldCheck, 'For protection only', 'This tool exists to help students protect themselves. Please do not use it to test or improve scam messages.'],
+  [Info, 'Not legal or financial advice', 'Already paid someone? Contact your bank or mobile money provider at once, keep the messages, and report to RIB on 166. A mentor can help you with next steps.'],
+];
+
+function ResponsibleUse() {
+  return (
+    <section id="responsible-use" aria-labelledby="responsible-title" className="lg:col-span-2 scroll-mt-24 bg-surface border border-line rounded-md p-5">
+      <h2 id="responsible-title" className="text-base font-semibold flex items-center gap-2"><Scale size={17} className="text-brand" aria-hidden="true" />Responsible use of the scam checker</h2>
+      <p className="text-sm text-ink-soft mt-1">The scam checker is built to protect students, ethically and fairly. Please use it the same way.</p>
+      <ul className="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {PRINCIPLES.map(([Icon, title, text]) => (
+          <li key={title} className="rounded-lg bg-paper border border-line p-3.5">
+            <p className="flex items-center gap-2 text-sm font-semibold"><Icon size={16} className="text-brand shrink-0" aria-hidden="true" />{title}</p>
+            <p className="text-sm text-ink-soft mt-1.5 leading-relaxed">{text}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

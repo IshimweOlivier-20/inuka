@@ -69,6 +69,10 @@ export function Terms() {
           <p>We collect scholarship details from each programme's official website and check them carefully. But programmes change their rules and deadlines every year, and we cannot guarantee that every detail is still correct.</p>
           <p><strong>Always check the official website of the scholarship before you apply.</strong> INUKA does not decide who receives a scholarship and cannot promise that you will get one.</p>
         </>],
+        ['scam-checker', 'Scam checker', <>
+          <p>The scam checker looks for common warning signs in a message (fees, requests for passwords, pressure, hidden links). Its result is <strong>guidance, not a decision</strong>: it can miss a scam or flag a real offer, and it is not legal or financial advice.</p>
+          <p>Use it to protect yourself only. Do not use a result to publicly accuse or threaten any person or organisation, and do not use the tool to test or improve scam messages. If you believe a message is fraud, report it to the Rwanda Investigation Bureau (RIB) on 166 or to the real scholarship provider.</p>
+        </>],
         ['mentors', 'Mentors', <>
           <p>Mentors are volunteers. The INUKA team reviews every mentor before students can book them. Mentors give advice, but you make your own decisions about your studies and applications.</p>
           <p>Mentors must be respectful, keep what students share private, and never ask students for money or personal favours. If a mentor makes you uncomfortable, tell us at <a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a>.</p>
@@ -104,7 +108,7 @@ export function Privacy() {
             <li><strong>Recommendation letter requests:</strong> the name and email address of the teacher you ask, so we can send them the request.</li>
             <li><strong>Accessibility settings</strong> (text size, contrast, extra exam time) and, only if you choose to share it, the type of disability.</li>
           </ul>
-          <p>Messages you paste into the <strong>scam checker</strong> are checked and then forgotten: we do not store them. Results typed into “See your options” without an account are not saved either.</p>
+          <p>Messages you paste into the <strong>scam checker</strong> are checked and then forgotten: we do not store them. When INUKA AI is switched on, the text is also sent to our AI provider so it can read it. Results typed into “See your options” without an account are not saved either.</p>
         </>],
         ['why', 'Why we use it', <>
           <ul>
