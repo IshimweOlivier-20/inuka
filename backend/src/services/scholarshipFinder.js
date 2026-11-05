@@ -153,7 +153,8 @@ export async function importFromUrl(rawUrl) {
       if (!ai) notes.push('INUKA AI could not read this page; only the title and description were filled.');
     } catch (e) {
       console.warn('Scholarship import: AI failed:', e.message);
-      const why = /quota|rate|429|exhausted/i.test(e.message) ? 'the free AI limit is reached for now; try again in a minute'
+      const why = /high demand|overloaded|unavailable|try again later/i.test(e.message) ? 'the free AI service is very busy right now; wait a minute and press \u201cFill in the form\u201d again'
+        : /quota|rate|429|exhausted/i.test(e.message) ? 'the free AI limit is reached for now; try again in a minute'
         : e.message === 'timeout' ? 'it took too long' : `the AI service said: ${String(e.message).slice(0, 120)}`;
       notes.push(`INUKA AI could not fill in the form (${why}). Only the title and description were filled.`);
     }

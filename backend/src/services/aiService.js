@@ -7,6 +7,7 @@
 //             Default model amazon.nova-lite-v1:0 (any Bedrock chat model works, e.g. anthropic.claude-3-haiku-20240307-v1:0).
 //   anthropic — Claude (paid)
 // AI_API_KEY=... (not needed for ollama)   AI_MODEL=(optional)   AI_BASE_URL=(optional, to override the address)
+// AI_FALLBACK_MODEL=(optional) model to use when the main one is busy (Gemini default: gemini-flash-lite-latest)
 // Without a key (or with AI_PROVIDER empty) the assistant is switched off and the website says so.
 
 // Spec 13.5 — hardcoded system prompt, sent with every call.
@@ -14,7 +15,7 @@ export const SYSTEM_PROMPT = `You are INUKA AI, a warm, patient, and encouraging
 
 // Free and paid services. All except Anthropic speak the OpenAI "chat completions" format.
 const PRESETS = {
-  gemini: { baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai', model: 'gemini-3.6-flash' },
+  gemini: { baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai', model: 'gemini-3.6-flash', fallback: 'gemini-flash-lite-latest' },
   groq: { baseUrl: 'https://api.groq.com/openai/v1', model: 'llama-3.3-70b-versatile' },
   ollama: { baseUrl: 'http://localhost:11434/v1', model: 'llama3.2', noKey: true },
   openai: { baseUrl: 'https://api.openai.com/v1', model: 'gpt-4o' },
@@ -75,18 +76,36 @@ export async function callModel({ system, messages, tools = [], maxTokens = 1024
         toolCalls: blocks.filter((b) => b.type === 'tool_use').map((b) => ({ id: b.id, name: b.name, args: b.input || {} })),
       };
     }
-    const res = await fetch(`${(process.env.AI_BASE_URL || preset.baseUrl).replace(/\/$/, '')}/chat/completions`, {
-      method: 'POST', signal: controller.signal,
-      headers: { ...(key && { Authorization: `Bearer ${key}` }), 'content-type': 'application/json' },
-      body: JSON.stringify({
-        model, max_tokens: maxTokens, temperature: json ? 0.1 : 0.4,
-        messages: [{ role: 'system', content: system }, ...messages],
-        ...(json && !tools.length && p !== 'ollama' && { response_format: { type: 'json_object' } }),
-        ...(tools.length && { tools: tools.map((t) => ({ type: 'function', function: { name: t.name, description: t.description, parameters: t.parameters } })) }),
-      }),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new AiError((Array.isArray(data) ? data[0]?.error?.message : data?.error?.message) || `${p} error ${res.status}`);
+    // Free services are sometimes "busy" (503 / high demand). Wait and try again, then try the lighter back-up model.
+    const send = async (m) => {
+      const res = await fetch(`${(process.env.AI_BASE_URL || preset.baseUrl).replace(/\/$/, '')}/chat/completions`, {
+        method: 'POST', signal: controller.signal,
+        headers: { ...(key && { Authorization: `Bearer ${key}` }), 'content-type': 'application/json' },
+        body: JSON.stringify({
+          model: m, max_tokens: maxTokens, temperature: json ? 0.1 : 0.4,
+          messages: [{ role: 'system', content: system }, ...messages],
+          ...(json && !tools.length && p !== 'ollama' && { response_format: { type: 'json_object' } }),
+          ...(tools.length && { tools: tools.map((t) => ({ type: 'function', function: { name: t.name, description: t.description, parameters: t.parameters } })) }),
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const err = new AiError((Array.isArray(data) ? data[0]?.error?.message : data?.error?.message) || `${p} error ${res.status}`);
+        err.busy = [500, 502, 503, 504].includes(res.status) || /high demand|overloaded|unavailable|try again later/i.test(err.message);
+        throw err;
+      }
+      return data;
+    };
+    const fallback = process.env.AI_FALLBACK_MODEL || preset.fallback;
+    const plan = [model, model, ...(fallback && fallback !== model ? [fallback] : [])];
+    let data;
+    for (let i = 0; i < plan.length; i += 1) {
+      try { data = await send(plan[i]); break; } catch (e) {
+        if (!e.busy || i === plan.length - 1) throw e;
+        console.warn(`AI service busy (${plan[i]}), trying again: ${e.message.slice(0, 100)}`);
+        await new Promise((r) => setTimeout(r, 2000 * (i + 1)));
+      }
+    }
     const msg = data.choices?.[0]?.message || {};
     return {
       text: (msg.content || '').trim(),
