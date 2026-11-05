@@ -167,7 +167,7 @@ export function AdminScholarshipForm() {
       <BackLink to="/admin/scholarships">All scholarships</BackLink>
       <PageTitle title={isNew ? 'Add a scholarship' : 'Edit scholarship'} intro="Copy the details from the programme's official website. Never guess a deadline." />
       {msg && <Alert tone={msg.tone}>{msg.text}</Alert>}
-      {isNew && <ScholarshipImport initialUrl={params.get('import') || ''} onDraft={applyDraft} />}
+      {isNew && <ScholarshipImport initialUrl={params.get('import') || ''} onDraft={applyDraft} onLink={(u) => setF((x) => ({ ...x, applyUrl: u }))} />}
       <form onSubmit={save} className="space-y-6" noValidate>
         <Card className="space-y-4">
           <h2 className="text-lg font-semibold">Basics</h2>

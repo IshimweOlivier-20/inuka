@@ -6,7 +6,7 @@ import { api, errorMessage } from '../../services/api';
 
 // "Import from the official page": INUKA reads the page and fills in the scholarship form.
 // The admin checks every field before saving; imported listings start hidden from the website.
-export default function ScholarshipImport({ initialUrl, onDraft }) {
+export default function ScholarshipImport({ initialUrl, onDraft, onLink }) {
   const [url, setUrl] = useState(initialUrl || '');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -19,7 +19,8 @@ export default function ScholarshipImport({ initialUrl, onDraft }) {
     try {
       const { data } = await api.post('/admin/scholarships/import', { url: link.trim() }, { timeout: 60000 });
       setResult(data);
-      onDraft(data.draft);
+      // A form or empty page: keep what the admin typed, only save the link as the application link.
+      if (data.unreadable) onLink?.(data.page.url); else onDraft(data.draft);
     } catch (e) { setError(errorMessage(e)); } finally { setBusy(false); }
   };
   useEffect(() => { if (initialUrl && !ran.current) { ran.current = true; run(initialUrl); } }, [initialUrl]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -38,10 +39,16 @@ export default function ScholarshipImport({ initialUrl, onDraft }) {
       {error && <p className="mt-3 text-sm text-danger-ink" role="alert">{error}</p>}
       {result && (
         <div className="mt-3 rounded-lg bg-surface border border-line p-3 text-sm space-y-2" aria-live="polite">
-          <p className="font-semibold text-success-ink">
-            Form filled from <a href={result.page.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">{result.page.host}<ExternalLink size={12} className="inline ml-0.5 -mt-0.5" aria-hidden="true" /></a>
-            {result.aiUsed ? ' with INUKA AI.' : '.'} It is set to hidden until you tick “Visible on the website”.
-          </p>
+          {result.unreadable ? (
+            <p className="font-semibold text-warning-ink">
+              Nothing was filled in from <a href={result.page.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">{result.page.host}<ExternalLink size={12} className="inline ml-0.5 -mt-0.5" aria-hidden="true" /></a>. The link was saved as the application link.
+            </p>
+          ) : (
+            <p className="font-semibold text-success-ink">
+              Form filled from <a href={result.page.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">{result.page.host}<ExternalLink size={12} className="inline ml-0.5 -mt-0.5" aria-hidden="true" /></a>
+              {result.aiUsed ? ' with INUKA AI.' : '.'} It is set to hidden until you tick “Visible on the website”.
+            </p>
+          )}
           {result.notes.length > 0 && (
             <ul className="space-y-1">
               {result.notes.map((n) => <li key={n} className="flex gap-2 text-warning-ink"><TriangleAlert size={15} className="shrink-0 mt-0.5" aria-hidden="true" />{n}</li>)}
@@ -50,7 +57,7 @@ export default function ScholarshipImport({ initialUrl, onDraft }) {
           {result.existing.length > 0 && (
             <p className="text-warning-ink">Maybe already on INUKA: {result.existing.map((s, i) => <span key={s.id}>{i > 0 && ', '}<Link to={`/admin/scholarships/${s.id}`} className="underline underline-offset-2">{s.name}</Link></span>)}</p>
           )}
-          <p className="text-xs text-ink-soft">Always compare the deadline, eligibility and the application link with the official website before you publish.</p>
+          {!result.unreadable && <p className="text-xs text-ink-soft">Always compare the deadline, eligibility and the application link with the official website before you publish.</p>}
         </div>
       )}
     </section>

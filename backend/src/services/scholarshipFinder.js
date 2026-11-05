@@ -192,7 +192,7 @@ export async function importFromUrl(rawUrl) {
   const existing = words.length
     ? await prisma.scholarship.findMany({ where: { AND: words.map((w) => ({ name: { contains: w, mode: 'insensitive' } })) }, select: { id: true, name: true, slug: true }, take: 3 })
     : [];
-  return { draft, notes, aiUsed: !!ai, page: { url: page.url, title: read.title, host, official }, existing };
+  return { draft, notes, aiUsed: !!ai, unreadable: appPage || thin, page: { url: page.url, title: read.title, host, official }, existing };
 }
 
 // ---------- RSS / Atom feeds ----------
