@@ -128,7 +128,15 @@ export async function importFromUrl(rawUrl) {
   const read = readPage(page.text, page.url);
   const notes = [];
   let ai = null;
-  if (aiEnabled() && read.text.length > 80) {
+  // Form and database pages (Airtable, Google Forms, Typeform…) and pages behind a login build their content with
+  // JavaScript, so a server sees almost no text. Say so plainly instead of asking the AI to guess.
+  const appPage = /(^|\.)(airtable\.com|forms\.gle|docs\.google\.com|typeform\.com|jotform\.com|forms\.office\.com|notion\.site)$/i.test(new URL(page.url).hostname);
+  const thin = read.text.replace(/\s+/g, ' ').length < 150 || /enable javascript|javascript is (required|disabled)/i.test(read.text);
+  if (appPage || thin) {
+    notes.push(appPage
+      ? 'This is an application form or database page (for example Airtable or Google Forms). INUKA cannot read these. Paste the scholarship\u2019s information page instead, and use this link as the application link.'
+      : 'This page shows almost no text to INUKA (it may need JavaScript or a login). Paste the scholarship\u2019s main information page instead.');
+  } else if (aiEnabled()) {
     const linkList = read.links.map((l) => `- ${l.label}: ${l.href}`).join('\n').slice(0, 4000);
     const ask = (pageChars, extra = '') => callModel({
       system: SYSTEM + extra, maxTokens: 4096, json: true,
@@ -145,7 +153,9 @@ export async function importFromUrl(rawUrl) {
       if (!ai) notes.push('INUKA AI could not read this page; only the title and description were filled.');
     } catch (e) {
       console.warn('Scholarship import: AI failed:', e.message);
-      notes.push('INUKA AI is not available right now; only the title and description were filled.');
+      const why = /quota|rate|429|exhausted/i.test(e.message) ? 'the free AI limit is reached for now; try again in a minute'
+        : e.message === 'timeout' ? 'it took too long' : `the AI service said: ${String(e.message).slice(0, 120)}`;
+      notes.push(`INUKA AI could not fill in the form (${why}). Only the title and description were filled.`);
     }
   } else if (!aiEnabled()) notes.push('INUKA AI is off, so only the title and description were filled. Add AI_API_KEY to fill in more fields automatically.');
 
@@ -175,7 +185,7 @@ export async function importFromUrl(rawUrl) {
   const official = ai ? !!ai.isOfficialPage : null;
   if (official === false) notes.push(`This page is on ${host}, which looks like a news or listing site. Open the official link and check every detail there before publishing.`);
   for (const w of list(ai?.warnings)) notes.push(w);
-  if (ai && !draft.deadline) notes.push('No deadline was found on the page.');
+  if (ai && !draft.deadline && !notes.some((n) => /deadline/i.test(n))) notes.push('No deadline was found on the page.');
 
   // Already on INUKA?
   const words = draft.name.toLowerCase().replace(/scholarships?|programme|program|the|for|and|of|\d{4}/g, ' ').split(/\W+/).filter((w) => w.length > 3).slice(0, 4);
