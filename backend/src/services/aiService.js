@@ -46,22 +46,24 @@ export async function askAi(messages, context = '') {
 //   messages: OpenAI-style list. For tools, the agent adds { role: 'assistant', tool_calls } and { role: 'tool', ... } items.
 //   tools: [{ name, description, parameters (JSON schema) }]
 // Returns { text, toolCalls: [{ id, name, args }] }.
-export async function callModel({ system, messages, tools = [] }) {
+// maxTokens: room for the answer (thinking models such as Gemini also spend part of it on reasoning).
+// json: ask OpenAI-style services for a JSON object (used to fill in forms).
+export async function callModel({ system, messages, tools = [], maxTokens = 1024, json = false }) {
   const p = provider();
   const preset = PRESETS[p];
   const key = process.env.AI_API_KEY;
   if (!key && !preset.noKey) throw new AiError('not_configured');
   const model = process.env.AI_MODEL || preset.model;
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), p === 'ollama' ? 120000 : 45000); // a home computer can be slow
+  const timer = setTimeout(() => controller.abort(), p === 'ollama' ? 120000 : maxTokens > 2000 ? 90000 : 45000); // a home computer can be slow
   try {
-    if (p === 'bedrock') return await callBedrock({ model, system, messages, tools, signal: controller.signal });
+    if (p === 'bedrock') return await callBedrock({ model, system, messages, tools, maxTokens, signal: controller.signal });
     if (p === 'anthropic') {
       const res = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST', signal: controller.signal,
         headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
         body: JSON.stringify({
-          model, max_tokens: 1024, system, messages: toAnthropic(messages),
+          model, max_tokens: maxTokens, system, messages: toAnthropic(messages),
           ...(tools.length && { tools: tools.map((t) => ({ name: t.name, description: t.description, input_schema: t.parameters })) }),
         }),
       });
@@ -77,8 +79,9 @@ export async function callModel({ system, messages, tools = [] }) {
       method: 'POST', signal: controller.signal,
       headers: { ...(key && { Authorization: `Bearer ${key}` }), 'content-type': 'application/json' },
       body: JSON.stringify({
-        model, max_tokens: 1024, temperature: 0.4,
+        model, max_tokens: maxTokens, temperature: json ? 0.1 : 0.4,
         messages: [{ role: 'system', content: system }, ...messages],
+        ...(json && !tools.length && p !== 'ollama' && { response_format: { type: 'json_object' } }),
         ...(tools.length && { tools: tools.map((t) => ({ type: 'function', function: { name: t.name, description: t.description, parameters: t.parameters } })) }),
       }),
     });
@@ -99,7 +102,7 @@ export async function callModel({ system, messages, tools = [] }) {
 
 // Amazon Bedrock (Converse API). The AWS SDK signs the request with the AWS keys from backend/.env.
 let bedrockClient = null;
-async function callBedrock({ model, system, messages, tools, signal }) {
+async function callBedrock({ model, system, messages, tools, maxTokens = 1024, signal }) {
   const { BedrockRuntimeClient, ConverseCommand } = await import('@aws-sdk/client-bedrock-runtime');
   if (!bedrockClient) {
     const endpoint = process.env.AI_BASE_URL; // optional, e.g. a VPC endpoint or a local test server
@@ -112,7 +115,7 @@ async function callBedrock({ model, system, messages, tools, signal }) {
       modelId: model,
       system: [{ text: system }],
       messages: toBedrock(messages),
-      inferenceConfig: { maxTokens: 1024, temperature: 0.4 },
+      inferenceConfig: { maxTokens, temperature: 0.4 },
       ...(tools.length && { toolConfig: { tools: tools.map((t) => ({ toolSpec: { name: t.name, description: t.description, inputSchema: { json: t.parameters } } })) } }),
     }), { abortSignal: signal });
     const content = res.output?.message?.content || [];

@@ -105,9 +105,17 @@ Reply ONLY with one JSON object, no other text, with these keys:
  "warnings": string[] (anything uncertain, e.g. "deadline not stated", or signs of a scam such as fees)}
 Rules: use ONLY what the page says. Never invent a deadline, amount or rule: use null or [] when the page does not say. Short, simple English. At most 8 items per list.`;
 
+// The model's JSON, also when wrapped in ```json fences or followed by a sentence; tolerates trailing commas.
 const parseJson = (s) => {
-  const m = String(s || '').match(/\{[\s\S]*\}/);
-  try { return m ? JSON.parse(m[0]) : null; } catch { return null; }
+  const t = String(s || '').replace(/```(?:json)?/gi, '');
+  const start = t.indexOf('{');
+  const end = t.lastIndexOf('}');
+  if (start < 0 || end <= start) return null;
+  const body = t.slice(start, end + 1);
+  for (const candidate of [body, body.replace(/,\s*([}\]])/g, '$1')]) {
+    try { return JSON.parse(candidate); } catch { /* try the next form */ }
+  }
+  return null;
 };
 const list = (v) => (Array.isArray(v) ? v.map((x) => String(x).trim()).filter(Boolean).slice(0, 8) : []);
 const pick = (v, allowed, fallback) => (allowed.includes(v) ? v : fallback);
@@ -122,14 +130,23 @@ export async function importFromUrl(rawUrl) {
   let ai = null;
   if (aiEnabled() && read.text.length > 80) {
     const linkList = read.links.map((l) => `- ${l.label}: ${l.href}`).join('\n').slice(0, 4000);
+    const ask = (pageChars, extra = '') => callModel({
+      system: SYSTEM + extra, maxTokens: 4096, json: true,
+      messages: [{ role: 'user', content: `Page address: ${page.url}\nPage title: ${read.title}\n\nPage text:\n${read.text.slice(0, pageChars)}\n\nLinks on the page:\n${linkList}` }],
+    });
     try {
-      const { text } = await callModel({
-        system: SYSTEM,
-        messages: [{ role: 'user', content: `Page address: ${page.url}\nPage title: ${read.title}\n\nPage text:\n${read.text.slice(0, 14000)}\n\nLinks on the page:\n${linkList}` }],
-      });
+      let { text } = await ask(14000);
       ai = parseJson(text);
+      if (!ai) { // second try: shorter page and shorter lists, so the answer fits
+        console.warn('Scholarship import: AI answer was not JSON, retrying. Start of answer:', String(text).slice(0, 200));
+        ({ text } = await ask(8000, '\nKeep every list to at most 5 short items. Output the JSON object only.'));
+        ai = parseJson(text);
+      }
       if (!ai) notes.push('INUKA AI could not read this page; only the title and description were filled.');
-    } catch { notes.push('INUKA AI is not available right now; only the title and description were filled.'); }
+    } catch (e) {
+      console.warn('Scholarship import: AI failed:', e.message);
+      notes.push('INUKA AI is not available right now; only the title and description were filled.');
+    }
   } else if (!aiEnabled()) notes.push('INUKA AI is off, so only the title and description were filled. Add AI_API_KEY to fill in more fields automatically.');
 
   const host = new URL(page.url).hostname.replace(/^www\./, '');

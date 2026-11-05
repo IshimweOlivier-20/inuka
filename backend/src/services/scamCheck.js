@@ -66,7 +66,7 @@ export async function checkScam(text) {
     try {
       const { text: out } = await callModel({
         system: 'You check messages that young African students receive about scholarships, for signs of scams. Reply ONLY with JSON: {"level":"red|yellow|green","reasons":["short plain-English reason", "..."]} with at most 3 reasons. Do not invent facts about real scholarships.',
-        messages: [{ role: 'user', content: t.slice(0, 4000) }],
+        messages: [{ role: 'user', content: t.slice(0, 4000) }], maxTokens: 2048, json: true,
       });
       const json = JSON.parse(String(out).replace(/^[^{]*/, '').replace(/[^}]*$/, ''));
       if (['red', 'yellow', 'green'].includes(json.level)) ai = { level: json.level, reasons: (json.reasons || []).slice(0, 3).map(String) };
