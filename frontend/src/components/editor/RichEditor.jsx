@@ -255,7 +255,7 @@ function InsertDialog({ kind, editor, onClose }) {
   };
 
   return (
-    <Modal open onClose={onClose} title={titles[kind]}
+    <Modal open onClose={onClose} title={titles[kind]} wide={kind === 'video'}
       footer={<><Button variant="ghost" onClick={onClose}>Cancel</Button><Button onClick={insert} loading={busy}>{kind === 'link' && !url ? 'Remove link' : 'Insert'}</Button></>}>
       <div className="space-y-4">
         {error && <Alert>{error}</Alert>}
@@ -269,9 +269,65 @@ function InsertDialog({ kind, editor, onClose }) {
         )}
         <Field label={kind === 'link' ? 'Link address' : kind === 'image' ? 'or paste an image link' : 'YouTube link'} value={url} onChange={(e) => setUrl(e.target.value)}
           placeholder={kind === 'video' ? 'https://www.youtube.com/watch?v=…' : 'https://…'} hint={kind === 'link' ? 'A web address, or a page on INUKA such as /scholarships.' : undefined} />
+        {kind === 'video' && <YouTubeSearch selected={url} onPick={(u) => { setUrl(u); setError(''); }} />}
         {kind === 'image' && <Field label="Describe the image (for people who cannot see it)" value={alt} onChange={(e) => setAlt(e.target.value)} />}
         {kind === 'image' && url && <img src={url} alt="" className="max-h-48 rounded-lg border border-line" />}
       </div>
     </Modal>
+  );
+}
+
+// Find a free YouTube video for a lesson (admins; needs YOUTUBE_API_KEY on the server). The video stays on YouTube.
+let ytEnabled = null;
+function YouTubeSearch({ selected, onPick }) {
+  const [enabled, setEnabled] = useState(ytEnabled);
+  const [q, setQ] = useState('');
+  const [videos, setVideos] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    if (ytEnabled !== null) return;
+    api.get('/admin/youtube/status').then((r) => { ytEnabled = !!r.data.enabled; setEnabled(ytEnabled); }).catch(() => { ytEnabled = false; setEnabled(false); });
+  }, []);
+  if (!enabled) return null;
+  const search = async (e) => {
+    e?.preventDefault();
+    if (q.trim().length < 2) return;
+    setBusy(true); setError('');
+    try { setVideos((await api.get('/admin/youtube/search', { params: { q: q.trim() } })).data.videos); } catch (err) { setError(errorMessage(err)); } finally { setBusy(false); }
+  };
+  return (
+    <div className="rounded-xl border border-line p-3">
+      <p className="text-sm font-semibold mb-2">Search YouTube</p>
+      <div className="flex gap-2">
+        <input value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') search(e); }} placeholder="e.g. present simple tense for beginners" aria-label="Search YouTube"
+          className="flex-1 min-w-0 min-h-10 rounded-lg border border-line bg-surface px-3 text-sm" />
+        <Button type="button" variant="dark" onClick={search} loading={busy} className="!min-h-10 !px-4 text-sm">Search</Button>
+      </div>
+      {error && <p className="mt-2 text-sm text-danger-ink" role="alert">{error}</p>}
+      {videos && (videos.length === 0 ? <p className="mt-3 text-sm text-ink-soft">No videos found. Try other words.</p> : (
+        <ul className="mt-3 grid sm:grid-cols-2 gap-2 max-h-80 overflow-y-auto pr-1">
+          {videos.map((v) => {
+            const on = selected === v.url;
+            return (
+              <li key={v.id}>
+                <button type="button" onClick={() => onPick(v.url)} aria-pressed={on}
+                  className={`w-full text-left flex gap-2.5 rounded-lg border p-2 transition-colors ${on ? 'border-brand bg-brand-soft' : 'border-line hover:border-brand'}`}>
+                  <span className="relative shrink-0">
+                    <img src={v.thumbnail} alt="" loading="lazy" className="w-28 h-16 rounded object-cover bg-line" />
+                    {v.duration && <span className="absolute right-1 bottom-1 rounded bg-black/75 text-white text-[10px] font-semibold px-1">{v.duration}</span>}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-sm font-semibold leading-snug line-clamp-2">{v.title}</span>
+                    <span className="block text-xs text-ink-soft mt-0.5 truncate">{v.channel}{v.views ? ` · ${new Intl.NumberFormat('en', { notation: 'compact' }).format(v.views)} views` : ''}</span>
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      ))}
+      <p className="mt-2 text-xs text-ink-soft">Choose a video, then press Insert. It plays from YouTube and keeps its channel name. Prefer trusted teaching channels and watch it before publishing.</p>
+    </div>
   );
 }

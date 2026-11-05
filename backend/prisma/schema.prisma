@@ -820,3 +820,35 @@ model RecommendationRequest {
   @@index([studentId])
   @@map("recommendation_requests")
 }
+
+// ---------- Scholarship finder: news feeds the team follows, and what they found (reviewed by an admin) ----------
+model LeadSource {
+  id            String    @id @default(uuid())
+  name          String
+  url           String    @unique // an RSS or Atom feed
+  isActive      Boolean   @default(true) @map("is_active")
+  lastCheckedAt DateTime? @map("last_checked_at")
+  lastError     String?   @map("last_error")
+  lastFound     Int       @default(0) @map("last_found")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  leads ScholarshipLead[]
+
+  @@map("lead_sources")
+}
+
+model ScholarshipLead {
+  id            String      @id @default(uuid())
+  sourceId      String?     @map("source_id")
+  title         String
+  url           String      @unique
+  summary       String?
+  publishedAt   DateTime?   @map("published_at")
+  status        String      @default("new") // new | imported | dismissed
+  scholarshipId String?     @map("scholarship_id") // the INUKA listing made from it
+  createdAt     DateTime    @default(now()) @map("created_at")
+  source        LeadSource? @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@map("scholarship_leads")
+}

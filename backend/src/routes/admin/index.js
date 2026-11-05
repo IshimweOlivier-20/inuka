@@ -9,6 +9,7 @@ import insightRoutes from './insights.js';
 import contentRoutes from './content.js';
 import examRoutes from './exams.js';
 import universityRoutes from './universities.js';
+import finderRoutes from './finder.js';
 
 const router = Router();
 router.use(requireAuth, requireRole('admin'));
@@ -98,5 +99,6 @@ router.use(insightRoutes);
 router.use(contentRoutes);
 router.use(examRoutes);
 router.use(universityRoutes);
+router.use(finderRoutes);
 
 export default router;

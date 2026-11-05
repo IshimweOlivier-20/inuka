@@ -73,6 +73,7 @@ const AdminExam = lazy(() => import('./pages/admin/AdminExam'));
 const AdminScholarships = lazy(() => import('./pages/admin/AdminScholarships').then((m) => ({ default: m.AdminScholarships })));
 const AdminScholarshipForm = lazy(() => import('./pages/admin/AdminScholarships').then((m) => ({ default: m.AdminScholarshipForm })));
 const AdminAnalytics = lazy(() => import('./pages/admin/AdminInsights').then((m) => ({ default: m.AdminAnalytics })));
+const AdminScholarshipFinder = lazy(() => import('./pages/admin/AdminScholarshipFinder'));
 const AdminUniversities = lazy(() => import('./pages/admin/AdminUniversities').then((m) => ({ default: m.AdminUniversities })));
 const AdminUniversity = lazy(() => import('./pages/admin/AdminUniversities').then((m) => ({ default: m.AdminUniversity })));
 const AdminContent = lazy(() => import('./pages/admin/AdminContent'));
@@ -201,6 +202,7 @@ export default function App() {
           <Route path="/admin/lessons/:id" element={<AdminLesson />} />
           <Route path="/admin/courses/:id/exam" element={<AdminExam />} />
           <Route path="/admin/scholarships" element={<AdminScholarships />} />
+          <Route path="/admin/scholarships/finder" element={<AdminScholarshipFinder />} />
           <Route path="/admin/scholarships/:id" element={<AdminScholarshipForm />} />
           <Route path="/admin/universities" element={<AdminUniversities />} />
           <Route path="/admin/universities/:id" element={<AdminUniversity />} />

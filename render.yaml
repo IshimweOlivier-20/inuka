@@ -49,3 +49,5 @@ services:
         sync: false
       - key: AI_API_KEY
         sync: false
+      - key: YOUTUBE_API_KEY
+        sync: false

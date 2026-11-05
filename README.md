@@ -525,3 +525,22 @@ team, partners, FAQ. Each section heading has a small label above it with a yell
   heart-handshake for mentors (`components/auth/AuthArt.jsx`).
   Smaller headings and text, password and confirm side by side.
 
+
+## 44. Scholarship finder and YouTube lessons (less typing, still checked by a person)
+
+There is no free official API for African and refugee scholarships, and course sites like Coursera have no open
+catalogue API, so INUKA automates the *finding* and keeps a person for the *checking*:
+
+- **Fill in from a link** (Admin → Scholarships → Add scholarship): paste the official page; INUKA reads it and fills in
+  the form (with INUKA AI: name, organisation, country, level, funding, deadline, eligibility, coverage, steps, documents,
+  official link; without AI: title and description). It warns when the page is a news site rather than the official one,
+  when no deadline was found, and when the scholarship may already be on INUKA. Imported listings start **hidden**.
+- **Find new scholarships** (Admin → Scholarships → Find new scholarships): INUKA reads RSS feeds of scholarship news sites
+  every 12 hours (`SCHOLARSHIP_FEEDS=off` stops it) and lists new posts as *Waiting for review*. **Import** opens the form
+  filled from the post; **Dismiss** hides it. Three feeds are suggested by the seed; add, pause or remove feeds there.
+  Only public web pages are read (private addresses are refused), up to 2 MB, one site at a time.
+- **YouTube in lessons** (Admin → lesson → Insert YouTube video): search YouTube and insert a video; it plays from YouTube
+  with its channel name. Needs a free `YOUTUBE_API_KEY` (Google Cloud → YouTube Data API v3); without it, paste a link.
+
+New database tables (migration `20261105090000_scholarship_finder`): `lead_sources`, `scholarship_leads`.
+After updating: `npx prisma migrate deploy` (Render does this on deploy) and, once, `npm run db:seed` for the suggested feeds.

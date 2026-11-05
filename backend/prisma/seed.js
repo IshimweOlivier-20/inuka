@@ -67,6 +67,19 @@ async function seedScholarships() {
 // University directory (S6 results page). SAMPLE data: entry requirements must be checked against each
 // institution's official page and confirmed in Admin → Universities (that marks them as real data).
 // Universities are added once by slug; programmes only when the university has none (admin edits are never overwritten).
+// Scholarship finder: news feeds suggested to follow (Admin → Scholarships → Find new scholarships).
+// Added once; admins can switch any of them off, delete them or add others. Every lead is reviewed before it is published.
+async function seedLeadSources() {
+  const feeds = [
+    ['Opportunities for Africans (scholarships)', 'https://www.opportunitiesforafricans.com/category/scholarships/feed/'],
+    ['Scholarships for Africans', 'https://scholarshipsforafricans.com/feed/'],
+    ['Scholars4Dev', 'https://www.scholars4dev.com/feed/'],
+  ];
+  if ((await prisma.leadSource.count()) > 0) return console.log('• scholarship feeds: already set, skipped');
+  for (const [name, url] of feeds) await prisma.leadSource.create({ data: { name, url } });
+  console.log(`✓ ${feeds.length} scholarship news feeds to follow`);
+}
+
 async function seedUniversities() {
   const list = load('universities.json');
   for (const { programmes, ...u } of list) {
@@ -198,6 +211,7 @@ try {
   await seedBadges();
   await seedScholarships();
   await seedUniversities();
+  await seedLeadSources();
   await seedHomeContent();
   await seedAdmin();
   await seedTestStudent();

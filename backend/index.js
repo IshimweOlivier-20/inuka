@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { verifyEmail } from './src/services/emailService.js';
 import { startReminders } from './src/services/reminders.js';
+import { startFeedChecks } from './src/services/scholarshipFinder.js';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -73,6 +74,7 @@ app.listen(port, () => {
   console.log(`✓ INUKA API running on http://localhost:${port}`);
   verifyEmail().then((r) => console.log(r.ok ? `✓ Email: sending through ${r.via || process.env.SMTP_HOST}` : `• Email: ${r.reason}`));
   startReminders(); // reminder emails (scholarship deadlines, mentor sessions)
+  startFeedChecks(); // scholarship news feeds, every 12 hours (Admin → Scholarships → Find new)
   const g = googleProblem();
   console.log(g ? `• Google sign-in: off — ${g}` : '✓ Google sign-in: on');
   checkDatabase();

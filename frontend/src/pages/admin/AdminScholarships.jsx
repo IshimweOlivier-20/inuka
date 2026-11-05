@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Plus } from 'lucide-react';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Plus, Radar } from 'lucide-react';
+import ScholarshipImport from '../../components/admin/ScholarshipImport';
 import { Alert, Button, Card, Field, Pill } from '../../components/ui';
 import { ListRowsSkeleton } from '../../components/ui/Skeletons';
 import RichEditor from '../../components/editor/RichEditor';
@@ -19,7 +20,11 @@ export function AdminScholarships() {
   const [data, setData] = useState(null);
   const [msg, setMsg] = useState(null);
   const load = () => api.get('/admin/scholarships', { params: { q, status, page } }).then((r) => setData(r.data)).catch((e) => setMsg({ tone: 'error', text: errorMessage(e) }));
-  useEffect(() => { document.title = 'Scholarships — INUKA admin'; }, []);
+  const [newLeads, setNewLeads] = useState(0);
+  useEffect(() => {
+    document.title = 'Scholarships — INUKA admin';
+    api.get('/admin/scholarship-leads', { params: { status: 'new' } }).then((r) => setNewLeads(r.data.counts.new || 0)).catch(() => {});
+  }, []);
   useEffect(() => { const t = setTimeout(load, q ? 300 : 0); return () => clearTimeout(t); }, [q, status, page]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggle = async (s, field) => {
@@ -46,7 +51,10 @@ export function AdminScholarships() {
   return (
     <div className="space-y-5">
       <PageTitle title="Scholarships" intro="Every listing students see on INUKA. Hidden scholarships stay here, so you can show them again next year."
-        action={<Button to="/admin/scholarships/new"><Plus size={18} aria-hidden="true" />Add scholarship</Button>} />
+        action={<div className="flex flex-wrap gap-2">
+          <Button to="/admin/scholarships/finder" variant="outline"><Radar size={18} aria-hidden="true" />Find new scholarships{newLeads > 0 && <span className="ml-1 rounded-full bg-accent text-night text-xs font-bold px-2 py-0.5">{newLeads}</span>}</Button>
+          <Button to="/admin/scholarships/new"><Plus size={18} aria-hidden="true" />Add scholarship</Button>
+        </div>} />
       {msg && <Alert tone={msg.tone}>{msg.text}</Alert>}
       {data?.expiredActive > 0 && (
         <div className="rounded-xl bg-surface border border-danger/30 p-4 flex flex-wrap items-center gap-3">
@@ -110,6 +118,15 @@ export function AdminScholarshipForm() {
   const [opts, setOpts] = useState(null);
   const [msg, setMsg] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [params] = useSearchParams();
+  const leadId = params.get('lead');
+
+  // A draft read from the official page (Fill in from a link). Imported listings start hidden.
+  const applyDraft = (d) => setF((x) => ({
+    ...x, ...d, hostUniversity: d.hostUniversity || '', deadlineNote: d.deadlineNote || '', deadline: d.deadline || '',
+    eligibility: toLines(d.eligibility), coverage: toLines(d.coverage), applicationSteps: toLines(d.applicationSteps),
+    documentsRequired: d.documentsRequired || [], isActive: false,
+  }));
 
   useEffect(() => {
     api.get('/admin/scholarships/options').then((r) => setOpts(r.data));
@@ -131,7 +148,11 @@ export function AdminScholarshipForm() {
     };
     delete body.id; delete body.slug; delete body.createdAt; delete body.requirements;
     try {
-      if (isNew) { const { data } = await api.post('/admin/scholarships', body); navigate(`/admin/scholarships/${data.scholarship.id}`, { replace: true }); toast.success(body.isActive ? 'Scholarship added. It is on the website now.' : 'Scholarship added (hidden).'); }
+      if (isNew) {
+        const { data } = await api.post('/admin/scholarships', body);
+        if (leadId) await api.post(`/admin/scholarship-leads/${leadId}/imported`, { scholarshipId: data.scholarship.id }).catch(() => {});
+        navigate(`/admin/scholarships/${data.scholarship.id}`, { replace: true }); toast.success(body.isActive ? 'Scholarship added. It is on the website now.' : 'Scholarship added (hidden).');
+      }
       else { await api.put(`/admin/scholarships/${id}`, body); toast.success('Changes saved.'); }
     } catch (err) { setMsg({ tone: 'error', text: errorMessage(err) }); window.scrollTo({ top: 0, behavior: 'smooth' }); } finally { setBusy(false); }
   };
@@ -146,6 +167,7 @@ export function AdminScholarshipForm() {
       <BackLink to="/admin/scholarships">All scholarships</BackLink>
       <PageTitle title={isNew ? 'Add a scholarship' : 'Edit scholarship'} intro="Copy the details from the programme's official website. Never guess a deadline." />
       {msg && <Alert tone={msg.tone}>{msg.text}</Alert>}
+      {isNew && <ScholarshipImport initialUrl={params.get('import') || ''} onDraft={applyDraft} />}
       <form onSubmit={save} className="space-y-6" noValidate>
         <Card className="space-y-4">
           <h2 className="text-lg font-semibold">Basics</h2>
