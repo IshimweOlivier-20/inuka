@@ -9,6 +9,7 @@ import { awardBadge } from '../../utils/badgeChecker.js';
 import { sendEmail } from '../../services/emailService.js';
 import { formatWhen, SESSION_MINUTES } from '../../utils/slots.js';
 import { systemMessage } from '../../services/chat.js';
+import { sendMeetingDetails } from '../../utils/sessionEmail.js';
 
 const router = Router();
 router.use(requireAuth, requireRole('mentor'));
@@ -103,7 +104,9 @@ router.get('/sessions', async (req, res) => {
   res.json({ sessions: await withStudentPreview(sessions) });
 });
 
-// POST /api/mentor/bookings/:id/accept { videoLink?, message? }
+// POST /api/mentor/bookings/:id/accept { videoLink, message? }
+// Approving sends the meeting details (date, time, call link) by email to BOTH the student and the mentor.
+// A video or voice session needs its call link at approval, so the student never waits for it.
 router.post('/bookings/:id/accept', async (req, res) => {
   const { videoLink, message } = z.object({
     videoLink: z.url('Please enter a full link, starting with https://').optional().or(z.literal('')),
@@ -113,16 +116,14 @@ router.post('/bookings/:id/accept', async (req, res) => {
   const b = await myBooking(req, m);
   if (b.status !== 'pending') throw new HttpError(400, 'This request has already been answered.');
   if (b.scheduledAt < new Date()) throw new HttpError(400, 'This request is in the past and can no longer be accepted.');
-  await prisma.booking.update({ where: { id: b.id }, data: { status: 'confirmed', videoLink: videoLink || null } });
+  if (b.sessionType !== 'message' && !videoLink) throw new HttpError(400, 'Please add the call link (Google Meet, Zoom or WhatsApp). It is sent to the student with the meeting details.');
+  const link = b.sessionType === 'message' ? null : videoLink;
+  await prisma.booking.update({ where: { id: b.id }, data: { status: 'confirmed', videoLink: link } });
   const when = formatWhen(b.scheduledAt);
   const name = `${req.user.firstName} ${req.user.lastName}`;
-  await notify(b.studentId, 'booking_confirmed', `Your session with ${name} is confirmed for ${when}.`, `/mentorship/sessions/${b.id}`);
-  await systemMessage({ ...b, mentor: m }, `${req.user.firstName} confirmed the session: ${b.topic}, ${when}.${message ? ` Message: ${message}` : ''}`);
-  mail({
-    to: b.student.email, subject: `Confirmed: your session with ${name}`,
-    text: `Hi ${b.student.firstName},\n\nGood news! ${name} confirmed your session.\n\nTopic: ${b.topic}\nWhen: ${when}\n${videoLink ? `Video link: ${videoLink}\n` : 'Your mentor will share the video link before the session.\n'}${message ? `\nMessage from your mentor: ${message}\n` : ''}\nThe Join button on your INUKA dashboard opens 15 minutes before the session.\n\nRise. Learn. Succeed.\nThe INUKA team`,
-  });
-  mail({ to: req.user.email, subject: `You confirmed a session with ${b.student.firstName}`, text: `Hi ${req.user.firstName},\n\nYou confirmed the session "${b.topic}" with ${b.student.firstName} ${b.student.lastName} on ${when}.\n\nThank you for guiding students,\nThe INUKA team` });
+  await notify(b.studentId, 'booking_confirmed', `${name} approved your session for ${when}. The meeting details were sent to your email.`, `/mentorship/sessions/${b.id}`);
+  await systemMessage({ ...b, mentor: m }, `${req.user.firstName} confirmed the session: ${b.topic}, ${when}. Meeting details were sent by email.${message ? ` Message: ${message}` : ''}`);
+  sendMeetingDetails({ b: { ...b, videoLink: link }, mentorUser: req.user, message });
   res.json({ ok: true });
 });
 
@@ -146,13 +147,14 @@ router.post('/bookings/:id/decline', async (req, res) => {
 
 // PATCH /api/mentor/bookings/:id { videoLink } — add or change the video link of a confirmed session
 router.patch('/bookings/:id', async (req, res) => {
-  const { videoLink } = z.object({ videoLink: z.url('Please enter a full link, starting with https://').or(z.literal('')) }).parse(req.body);
+  const { videoLink } = z.object({ videoLink: z.url('Please enter a full link, starting with https://') }).parse(req.body);
   const m = await myMentor(req);
   const b = await myBooking(req, m);
   if (b.status !== 'confirmed') throw new HttpError(400, 'You can add a link to confirmed sessions only.');
   await prisma.booking.update({ where: { id: b.id }, data: { videoLink: videoLink || null } });
   if (videoLink) await systemMessage({ ...b, mentor: m }, `${req.user.firstName} added the video link for the session of ${formatWhen(b.scheduledAt)}.`);
-  if (videoLink) await notify(b.studentId, 'booking_link', `${req.user.firstName} added the video link for your session on ${formatWhen(b.scheduledAt)}.`, '/mentorship');
+  if (videoLink) await notify(b.studentId, 'booking_link', `${req.user.firstName} changed the call link for your session on ${formatWhen(b.scheduledAt)}. The new details were emailed to you.`, `/mentorship/sessions/${b.id}`);
+  if (videoLink && videoLink !== b.videoLink) sendMeetingDetails({ b: { ...b, videoLink }, mentorUser: req.user, updated: true });
   res.json({ ok: true });
 });
 

@@ -89,7 +89,7 @@ export function SessionDetail() {
         </div>
       </div>
 
-      {status === 'pending' && <div className="mt-5"><Alert tone="warning">Waiting for {m.user.firstName} to confirm{b.rescheduleCount ? ' the new time' : ''}. You will get a notification.</Alert></div>}
+      {status === 'pending' && <div className="mt-5"><Alert tone="warning">Waiting for {m.user.firstName} to approve{b.rescheduleCount ? ' the new time' : ' this session'}. When it is approved, you will receive the meeting details (date, time and call link) by email.</Alert></div>}
       {(b.status === 'cancelled' || b.status === 'declined') && (
         <div className="mt-5"><Alert tone="error">
           {b.status === 'declined' ? `${m.user.firstName} could not take this session.` : b.cancelledBy === 'mentor' ? `${m.user.firstName} cancelled this session.` : 'You cancelled this session.'}
@@ -118,7 +118,7 @@ export function SessionDetail() {
 
       <section className="mt-7">
         <h2 className="text-lg font-bold mb-2">How you meet</h2>
-        <TypeCard type={b.sessionType} extra={b.sessionType !== 'message' && b.status === 'confirmed' ? (b.videoLink ? 'The call link is ready.' : 'The call link will be added by your mentor.') : undefined} />
+        <TypeCard type={b.sessionType} extra={b.sessionType !== 'message' && b.status === 'confirmed' ? (b.videoLink ? 'The call link is ready and was sent to your email.' : 'The call link will be added by your mentor.') : undefined} />
       </section>
 
       {b.notes?.[0] && (

@@ -114,11 +114,11 @@ function ActionDialog({ kind, b, onClose, onDone }) {
   const save = async () => {
     setBusy(true); setError('');
     try {
-      if (kind === 'accept') { await api.post(`/mentor/bookings/${b.id}/accept`, { videoLink, message }); onDone(`Confirmed. ${b.student.firstName} has been told by email.`); }
+      if (kind === 'accept') { await api.post(`/mentor/bookings/${b.id}/accept`, { videoLink, message }); onDone(`Confirmed. You and ${b.student.firstName} were emailed the meeting details.`); }
       if (kind === 'decline') { await api.post(`/mentor/bookings/${b.id}/decline`, { message }); onDone(`Declined. ${b.student.firstName} has been told by email.`); }
       if (kind === 'notes') { await api.put(`/mentor/bookings/${b.id}/notes`, { notes }); onDone(`Notes saved. ${b.student.firstName} can read them in My Learning.`); }
       if (kind === 'cancel') { await api.post(`/mentor/bookings/${b.id}/cancel`, { reason }); onDone(`Cancelled. ${b.student.firstName} has been told by email.`); }
-      if (kind === 'link') { await api.patch(`/mentor/bookings/${b.id}`, { videoLink }); onDone('Video link saved.'); }
+      if (kind === 'link') { await api.patch(`/mentor/bookings/${b.id}`, { videoLink }); onDone(`Link saved. You and ${b.student.firstName} were emailed the new details.`); }
     } catch (e) { setError(errorMessage(e)); } finally { setBusy(false); }
   };
 
@@ -128,9 +128,12 @@ function ActionDialog({ kind, b, onClose, onDone }) {
       <div className="space-y-4">
         {error && <Alert>{error}</Alert>}
         <p className="text-sm text-ink-soft">{b.student.firstName} {b.student.lastName} · {b.topic} · {sessionDate(b.scheduledAt)}, {sessionTime(b.scheduledAt)}</p>
-        {(kind === 'accept' || kind === 'link') && (
-          <Field label={b.sessionType === 'voice' ? 'Call link or phone/WhatsApp details' : 'Video call link (Zoom, Google Meet or WhatsApp)'} type="url" placeholder="https://meet.google.com/…" value={videoLink} onChange={(e) => setVideoLink(e.target.value)}
-            hint={kind === 'accept' ? 'You can also add it later.' : 'The student sees it on their dashboard.'} />
+        {(kind === 'accept' || kind === 'link') && b.sessionType !== 'message' && (
+          <Field label={b.sessionType === 'voice' ? 'Call link (Google Meet, Zoom or WhatsApp call link)' : 'Video call link (Google Meet, Zoom or WhatsApp)'} type="url" required placeholder="https://meet.google.com/…" value={videoLink} onChange={(e) => setVideoLink(e.target.value)}
+            hint={kind === 'accept' ? 'Required. When you accept, you and the student both receive an email with the meeting details: date, time and this link.' : 'You and the student both receive an email with the new link.'} />
+        )}
+        {kind === 'accept' && b.sessionType === 'message' && (
+          <p className="text-sm rounded-lg bg-brand-soft px-3 py-2">This session happens in INUKA messages. When you accept, you and the student both receive an email with the date and time.</p>
         )}
         {(kind === 'accept' || kind === 'decline') && (
           <Field as="textarea" rows={3} label="Message to the student (optional)" value={message} onChange={(e) => setMessage(e.target.value)}

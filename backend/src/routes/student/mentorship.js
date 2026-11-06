@@ -18,6 +18,8 @@ const MAX_RESCHEDULES = 3;
 export const TOPICS = ['Scholarship Guidance', 'Personal Statement Review', 'English Writing Help', 'Computer Skills', 'University Application', 'Interview Preparation', 'Other'];
 const list = (v) => (Array.isArray(v) ? v : []);
 const words = (t) => t.trim().split(/\s+/).filter(Boolean).length;
+// The call link is only shown once the mentor has approved the session.
+const hideLink = (b) => ({ ...b, videoLink: b.status === 'confirmed' || b.status === 'completed' ? b.videoLink : null });
 const mail = (args) => sendEmail(args).catch((e) => console.error('Email failed', e.message));
 
 const mentorCard = (m) => ({
@@ -106,11 +108,11 @@ router.post('/bookings', async (req, res) => {
   await notify(m.userId, 'booking_request', `${student.firstName} ${student.lastName} asked for a session: ${data.topic}, ${when}.`, '/mentor');
   mail({
     to: m.user.email, subject: `New session request from ${student.firstName}`,
-    text: `Hi ${m.user.firstName},\n\n${student.firstName} ${student.lastName} would like a mentorship session with you.\n\nTopic: ${data.topic}\nHow: ${SESSION_TYPES[data.sessionType]}\nWhen: ${when}\nMessage: ${data.message}\n\nPlease accept or decline it in your INUKA mentor dashboard.\n\nThank you for guiding students,\nThe INUKA team`,
+    text: `Hi ${m.user.firstName},\n\n${student.firstName} ${student.lastName} would like a mentorship session with you.\n\nTopic: ${data.topic}\nHow: ${SESSION_TYPES[data.sessionType]}\nWhen: ${when}\nMessage: ${data.message}\n\nPlease accept or decline it in your INUKA mentor dashboard. When you accept, add the call link: you and the student will both receive the meeting details by email.\n\nThank you for guiding students,\nThe INUKA team`,
   });
   mail({
     to: student.email, subject: `Your session request to ${m.user.firstName} ${m.user.lastName}`,
-    text: `Hi ${student.firstName},\n\nYour request has been sent to ${m.user.firstName} ${m.user.lastName}.\n\nTopic: ${data.topic}\nWhen: ${when}\n\nWe will email you when the mentor confirms it.\n\nRise. Learn. Succeed.\nThe INUKA team`,
+    text: `Hi ${student.firstName},\n\nYour request has been sent to ${m.user.firstName} ${m.user.lastName}.\n\nTopic: ${data.topic}\nWhen: ${when}\n\nWhat happens next: ${m.user.firstName} reviews your request. When it is approved, you and ${m.user.firstName} both receive an email with the meeting details (date, time and the call link). Until then the session is not confirmed.\n\nRise. Learn. Succeed.\nThe INUKA team`,
   });
   res.status(201).json({ booking });
 });
@@ -126,7 +128,7 @@ router.get('/bookings', async (req, res) => {
       review: { select: { rating: true, comment: true } },
     },
   });
-  res.json({ bookings, topics: TOPICS, sessionTypes: SESSION_TYPES, cancelReasons: CANCEL_REASONS, rescheduleReasons: RESCHEDULE_REASONS });
+  res.json({ bookings: bookings.map(hideLink), topics: TOPICS, sessionTypes: SESSION_TYPES, cancelReasons: CANCEL_REASONS, rescheduleReasons: RESCHEDULE_REASONS });
 });
 
 // GET /api/bookings/:id — one session with everything (session details page)
@@ -141,7 +143,7 @@ router.get('/bookings/:id', async (req, res) => {
   });
   if (!booking) throw new HttpError(404, 'We could not find this session.');
   const me = await prisma.user.findUnique({ where: { id: req.user.id }, select: { firstName: true, lastName: true, countryResidence: true, countryOrigin: true, educationLevel: true, age: true, refugeeStatus: true } });
-  res.json({ booking, student: me, sessionTypes: SESSION_TYPES, maxReschedules: MAX_RESCHEDULES });
+  res.json({ booking: hideLink(booking), student: me, sessionTypes: SESSION_TYPES, maxReschedules: MAX_RESCHEDULES });
 });
 
 export const CANCEL_REASONS = ['I want to choose another mentor', 'I found the help I needed', 'I have a schedule clash', 'I am not available any more', 'I prefer not to say', 'Other'];

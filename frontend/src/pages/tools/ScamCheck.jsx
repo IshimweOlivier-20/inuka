@@ -24,6 +24,7 @@ function ScamTool() {
   const [res, setRes] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [agreed, setAgreed] = useState(false);
   const check = async (e) => {
     e?.preventDefault(); setError(''); setBusy(true); setRes(null);
     try { setRes((await api.post('/public/scam-check', { text })).data); } catch (err) { setError(errorMessage(err)); } finally { setBusy(false); }
@@ -31,6 +32,7 @@ function ScamTool() {
   const L = res && LEVEL[res.level];
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_320px] gap-5 items-start">
+      <ResponsibleUse />
       <div className="space-y-4">
         <form onSubmit={check} className="bg-surface border border-line rounded-md p-5">
           <label htmlFor="scam-text" className="block text-sm font-semibold">Paste the message, email or link you received</label>
@@ -47,9 +49,13 @@ function ScamTool() {
                 <button key={l} type="button" onClick={() => { setText(EXAMPLES[i]); setRes(null); }} className="h-7 px-2.5 rounded-full border border-line hover:border-brand hover:text-brand">{l}</button>
               ))}
             </div>
-            <Button type="submit" loading={busy} disabled={text.trim().length < 10} className="!min-h-10 !px-5 text-sm">Check it</Button>
+            <Button type="submit" loading={busy} disabled={text.trim().length < 10 || !agreed} className="!min-h-10 !px-5 text-sm">Check it</Button>
           </div>
-          <p className="text-xs text-ink-soft mt-3">INUKA does not store what you paste. Remove personal details (ID numbers, passwords, other people's phone numbers) before checking. By checking, you agree to <a href="#responsible-use" className="underline underline-offset-2 hover:text-ink">use the result responsibly</a>.</p>
+          <label className="mt-3 flex items-start gap-2 text-sm cursor-pointer">
+            <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="w-4 h-4 mt-0.5 shrink-0 accent-[#07294D]" />
+            <span>I have read the <a href="#responsible-use" className="font-semibold text-brand underline underline-offset-2">responsible use rules</a> above and I will use the result only to protect myself, not to accuse anyone.</span>
+          </label>
+          <p className="text-xs text-ink-soft mt-2">INUKA does not store what you paste. Remove personal details (ID numbers, passwords, other people's phone numbers) before checking.</p>
         </form>
 
         {error && <Alert>{error}</Alert>}
@@ -84,7 +90,6 @@ function ScamTool() {
         <ul className="mt-3 space-y-2 text-sm">{SIGNS.map((s) => <li key={s} className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-danger mt-2 shrink-0" aria-hidden="true" />{s}</li>)}</ul>
         <p className="text-sm mt-4 pt-4 border-t border-line"><span className="font-semibold">Remember:</span> real scholarships never ask you to pay to be selected. You can always apply yourself, for free, on the official website.</p>
       </aside>
-      <ResponsibleUse />
     </div>
   );
 }
@@ -102,13 +107,13 @@ const PRINCIPLES = [
 function ResponsibleUse() {
   return (
     <section id="responsible-use" aria-labelledby="responsible-title" className="lg:col-span-2 scroll-mt-24 bg-surface border border-line rounded-md p-5">
-      <h2 id="responsible-title" className="text-base font-semibold flex items-center gap-2"><Scale size={17} className="text-brand" aria-hidden="true" />Responsible use of the scam checker</h2>
-      <p className="text-sm text-ink-soft mt-1">The scam checker is built to protect students, ethically and fairly. Please use it the same way.</p>
+      <h2 id="responsible-title" className="text-base font-semibold flex items-center gap-2"><Scale size={17} className="text-brand" aria-hidden="true" />Before you paste: how to use the scam checker</h2>
+      <p className="text-sm text-ink-soft mt-1">The scam checker is built to protect students, ethically and fairly. Please read these rules and use it the same way.</p>
       <ul className="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {PRINCIPLES.map(([Icon, title, text]) => (
-          <li key={title} className="rounded-lg bg-paper border border-line p-3.5">
+          <li key={title} className="rounded-lg bg-paper border border-line p-3">
             <p className="flex items-center gap-2 text-sm font-semibold"><Icon size={16} className="text-brand shrink-0" aria-hidden="true" />{title}</p>
-            <p className="text-sm text-ink-soft mt-1.5 leading-relaxed">{text}</p>
+            <p className="text-[13px] text-ink-soft mt-1 leading-relaxed">{text}</p>
           </li>
         ))}
       </ul>

@@ -159,7 +159,7 @@ export default function BookSession() {
       <SuccessDialog open={!!done} title="Request sent!"
         primary={{ label: 'View session', onClick: () => navigate(`/mentorship/sessions/${done}`) }}
         secondary={{ label: 'Back to my sessions', onClick: () => navigate('/mentorship?tab=sessions') }}>
-        Your request was sent to {m.firstName}. You will get a notification when the session is confirmed.
+        Your request was sent to {m.firstName}. It is not confirmed yet. When {m.firstName} approves it, you will both receive an email with the meeting details: date, time and the call link.
       </SuccessDialog>
     </div>
   );
