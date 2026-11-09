@@ -38,6 +38,7 @@ export default function GoogleButton({ label = 'Continue with Google', from, div
         className="w-full min-h-11 rounded border-2 border-line bg-surface hover:border-brand/50 hover:bg-brand-soft inline-flex items-center justify-center gap-3 font-semibold text-[15px] text-ink transition-colors">
         <GoogleG />{label}
       </button>
+      <p className="mt-2 text-xs text-ink-soft text-center">New to INUKA? You will be asked to accept the <a href="/terms" target="_blank" rel="noopener" className="underline underline-offset-2">Terms of Use</a> and <a href="/privacy" target="_blank" rel="noopener" className="underline underline-offset-2">Privacy Policy</a> before you start.</p>
       {hint && (
         <p className="mt-2 text-xs rounded-lg bg-paper border border-line px-3 py-2 text-ink-soft" role="status">
           Google sign-in is not switched on yet{cfg.googleProblem ? `: ${cfg.googleProblem}` : '.'} Save backend/.env (no restart needed) and press the button again.

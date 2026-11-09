@@ -89,6 +89,8 @@ model User {
   extraTimePercent Int            @default(0) @map("extra_time_percent") // more time on timed quizzes and exams
   disabilities     Json? // optional and private: ["visual", "hearing", "physical", "learning", "other"]
   isVerified       Boolean        @default(false) @map("is_verified")
+  termsAcceptedAt  DateTime?      @map("terms_accepted_at") // when the person agreed to the Terms of Use and Privacy Policy
+  termsVersion     String?        @map("terms_version")     // which version they agreed to (see utils/terms.js)
   isActive         Boolean        @default(true) @map("is_active")
   createdAt        DateTime       @default(now()) @map("created_at")
   updatedAt        DateTime       @updatedAt @map("updated_at")

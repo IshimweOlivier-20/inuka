@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react';
+import TermsConsent from './components/auth/TermsConsent';
 import { Navigate, Route, Routes, useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import AppLayout from './components/layout/AppLayout';
@@ -90,6 +91,7 @@ function RequireAuth({ children, roles }) {
   if (loading) return <PageLoader />;
   if (!user) return <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />;
   if (roles && !roles.includes(user.role)) return <Navigate to={homeFor(user)} replace />;
+  if (user.mustAcceptTerms && !user.offline) return <TermsConsent />; // Google sign-ups and older accounts accept the Terms first
   return children;
 }
 

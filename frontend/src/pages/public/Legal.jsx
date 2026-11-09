@@ -100,6 +100,7 @@ export function Privacy() {
         ['collect', 'What we collect', <>
           <ul>
             <li><strong>Account details:</strong> your name, email address and password (stored scrambled, so nobody can read it). If you sign in with Google, we receive your name, email address and Google profile photo.</li>
+            <li><strong>Your agreement:</strong> the date you accepted these Terms of Use and this Privacy Policy, and which version you accepted.</li>
             <li><strong>Your profile:</strong> country of origin, country where you live, education level, language, and if you choose to share them, your age, refugee or displaced status and a profile photo.</li>
             <li><strong>Your learning:</strong> lessons completed, quiz answers, study streak, badges and certificates.</li>
             <li><strong>Your scholarships:</strong> scholarships you save and the applications you track.</li>

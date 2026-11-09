@@ -11,6 +11,7 @@ import { assertImage, photoUpload } from '../middleware/upload.js';
 import { savePhoto } from '../services/storageService.js';
 import { OAuth2Client } from 'google-auth-library';
 import { signAccessToken, issueRefreshToken, issueAuthToken, hashToken, publicUser } from '../utils/tokens.js';
+import { acceptedNow } from '../utils/terms.js';
 
 const router = Router();
 const COOKIE = 'inuka_refresh';
@@ -94,6 +95,7 @@ router.post('/register', photoUpload.single('photo'), async (req, res) => {
   const user = await prisma.user.create({
     data: {
       firstName: data.firstName, lastName: data.lastName, email: data.email, role: data.role, profilePhotoUrl,
+      ...acceptedNow(), // the sign-up form requires the Terms checkbox (acceptTerms: true)
       passwordHash: await bcrypt.hash(data.password, 12),
       countryOrigin: data.countryOrigin, countryResidence: data.countryResidence,
       refugeeStatus: data.refugeeStatus, educationLevel: data.educationLevel,
@@ -289,6 +291,14 @@ router.post('/reset-password', async (req, res) => {
     prisma.refreshToken.deleteMany({ where: { userId: record.userId } }),
   ]);
   res.json({ ok: true });
+});
+
+// POST /api/auth/accept-terms { accept: true } — people who signed up with Google, accounts created before
+// the Terms checkbox, and everyone after the Terms change, accept here before using INUKA.
+router.post('/accept-terms', requireAuth, async (req, res) => {
+  z.object({ accept: z.literal(true, { error: 'Please tick the box to accept the Terms of Use and Privacy Policy.' }) }).parse(req.body);
+  const user = await prisma.user.update({ where: { id: req.user.id }, data: acceptedNow(), include: { mentor: true } });
+  res.json({ user: publicUser(user) });
 });
 
 router.get('/me', requireAuth, async (req, res) => {

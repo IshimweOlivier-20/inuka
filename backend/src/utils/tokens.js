@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { termsAccepted } from './terms.js';
 import { createHash, randomBytes } from 'node:crypto';
 import { prisma } from '../lib/prisma.js';
 
@@ -29,5 +30,5 @@ export async function issueAuthToken(userId, type, hours) {
 
 export function publicUser(u) {
   const { passwordHash, googleId, ...rest } = u;
-  return rest;
+  return { ...rest, mustAcceptTerms: !termsAccepted(u) };
 }
