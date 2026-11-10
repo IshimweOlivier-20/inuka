@@ -174,8 +174,13 @@ function DocumentVault({ highlight }) {
                   <p className="font-semibold">{t.label}</p>
                   <p className="text-sm text-ink-soft">{t.formats.map((f) => f.toUpperCase()).join(', ')}, up to 5 MB</p>
                 </div>
-                <Pill tone={statusTone}>{statusLabel}</Pill>
-                {docs.length ? <Pill tone="sky"><CircleCheck size={14} aria-hidden="true" />Uploaded</Pill> : <Pill tone={t.status === 'required' ? 'red' : 'grey'}><TriangleAlert size={14} aria-hidden="true" />Missing</Pill>}
+                {/* Uploaded: only the green tick. Not uploaded yet: what kind of document it is, plus "Missing" for required ones. */}
+                {docs.length ? <Pill tone="success"><CircleCheck size={14} aria-hidden="true" />Uploaded</Pill> : (
+                  <>
+                    <Pill tone={statusTone}>{statusLabel}</Pill>
+                    {t.status === 'required' && <Pill tone="red"><TriangleAlert size={14} aria-hidden="true" />Missing</Pill>}
+                  </>
+                )}
                 <input ref={(el) => { inputs.current[t.key] = el; }} type="file" accept={accept} className="sr-only" aria-label={`Upload ${t.label}`}
                   onChange={(e) => { upload(t.key, e.target.files[0]); e.target.value = ''; }} />
                 <Button variant={docs.length ? 'ghost' : 'outline'} loading={uploading === t.key} onClick={() => inputs.current[t.key].click()}>
