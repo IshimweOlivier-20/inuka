@@ -29,15 +29,30 @@ const bucket = () => {
   return process.env.AWS_S3_BUCKET;
 };
 
+// A storage failure becomes a clear message for the person, and the real reason goes to the server log (Render → Logs).
+function storageError(e, action) {
+  const code = e.$metadata?.httpStatusCode;
+  const name = e.Code || e.name || 'Error';
+  console.error(`File storage ${action} failed: ${name} (${code || 'no response'}) ${e.message || ''}`.trim());
+  let hint = 'Check the S3 settings (S3_ENDPOINT, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_S3_BUCKET).';
+  if (/NoSuchBucket/i.test(name)) hint = `The bucket "${process.env.AWS_S3_BUCKET}" does not exist. Check AWS_S3_BUCKET.`;
+  else if (/InvalidAccessKeyId|SignatureDoesNotMatch|AccessDenied|Forbidden/i.test(name) || code === 403 || code === 401) hint = 'The storage keys were refused. Create new S3 access keys and update AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY.';
+  else if (!code || code >= 500 || /ENOTFOUND|ECONNREFUSED|ETIMEDOUT|fetch failed/i.test(`${name} ${e.message}`)) hint = 'The storage service did not answer. If you use Supabase, the free project may be paused: open supabase.com and press "Restore project".';
+  console.error(`File storage hint: ${hint}`);
+  return new HttpError(503, 'Files cannot be saved or opened right now. Please try again later. (The INUKA team has been told in the server log.)');
+}
+
 // ---------- Low-level: put / get / delete ----------
 async function put(key, buffer, contentType) {
   if (useS3()) {
     const { PutObjectCommand } = await import('@aws-sdk/client-s3');
-    await (await s3Client()).send(new PutObjectCommand({
-      Bucket: bucket(), Key: key, Body: buffer, ContentType: contentType || contentTypeOf(key),
-      // AWS S3: encrypt at rest. S3-compatible services (Supabase Storage, Cloudflare R2) encrypt by default and may refuse this header.
-      ...(!process.env.S3_ENDPOINT && { ServerSideEncryption: 'AES256' }),
-    }));
+    try {
+      await (await s3Client()).send(new PutObjectCommand({
+        Bucket: bucket(), Key: key, Body: buffer, ContentType: contentType || contentTypeOf(key),
+        // AWS S3: encrypt at rest. S3-compatible services (Supabase Storage, Cloudflare R2) encrypt by default and may refuse this header.
+        ...(!process.env.S3_ENDPOINT && { ServerSideEncryption: 'AES256' }),
+      }));
+    } catch (e) { throw storageError(e, 'upload'); }
     return;
   }
   await mkdir(dirname(join(root, key)), { recursive: true });
@@ -51,8 +66,8 @@ async function get(key) {
       const out = await (await s3Client()).send(new GetObjectCommand({ Bucket: bucket(), Key: key }));
       return Buffer.from(await out.Body.transformToByteArray());
     } catch (e) {
-      if (e.name === 'NoSuchKey' || e.$metadata?.httpStatusCode === 404) return null;
-      throw e;
+      if (e.name === 'NoSuchKey' || (e.$metadata?.httpStatusCode === 404 && !/NoSuchBucket/i.test(e.Code || e.name))) return null;
+      throw storageError(e, 'read');
     }
   }
   try { return await readFile(join(root, key)); } catch { return null; }
@@ -126,4 +141,17 @@ export async function saveChatFile(conversationId, file, ext) {
   const key = `chat/${conversationId}/${randomUUID()}.${ext}`;
   await put(key, file.buffer, file.mimetype);
   return key;
+}
+
+// Startup check (index.js): says in the log whether file storage works, so a paused or misconfigured store is noticed early.
+export async function checkStorage() {
+  if (!useS3()) return { ok: true, driver: 'local' };
+  try {
+    const { HeadBucketCommand } = await import('@aws-sdk/client-s3');
+    await (await s3Client()).send(new HeadBucketCommand({ Bucket: bucket() }));
+    return { ok: true, driver: 's3' };
+  } catch (e) {
+    storageError(e, 'check');
+    return { ok: false, driver: 's3' };
+  }
 }

@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { verifyEmail } from './src/services/emailService.js';
 import { startReminders } from './src/services/reminders.js';
 import { startFeedChecks } from './src/services/scholarshipFinder.js';
+import { checkStorage } from './src/services/storageService.js';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -78,6 +79,7 @@ app.listen(port, () => {
   const g = googleProblem();
   console.log(g ? `• Google sign-in: off — ${g}` : '✓ Google sign-in: on');
   checkDatabase();
+  checkStorage().then((r) => console.log(r.ok ? `✓ File storage: ${r.driver === 's3' ? `bucket "${process.env.AWS_S3_BUCKET}" OK` : 'local folder'}` : '✗ File storage: NOT working — uploads and photos will fail (see the hint above)'));
 });
 
 // Explains the two most common set-up problems after an update, instead of "500" errors in the browser:
